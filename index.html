@@ -71,7 +71,7 @@ a{color:var(--teal-d);}
 .item .ti{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .item .su{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;}
 .badge{font-size:11px;font-weight:600;padding:2px 9px;border-radius:999px;flex-shrink:0;}
-.b-ok{background:var(--ok-bg);color:var(--ok);}.b-wa{background:var(--warn-bg);color:var(--warn);}.b-mu{background:var(--s2);color:var(--muted);}
+.b-ok{background:var(--ok-bg);color:var(--ok);}.b-wa{background:var(--warn-bg);color:var(--warn);}.b-mu{background:var(--s2);color:var(--muted);}.b-er{background:var(--err-bg);color:var(--err);}
 .search{padding:12px 16px 2px;}
 .search input{border:1px solid var(--bd);border-radius:10px;min-height:46px;padding:0 14px;width:100%;background:var(--s0);color:var(--ink);font-size:15px;}
 .form{padding:16px;display:flex;flex-direction:column;gap:16px;}
@@ -213,6 +213,12 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
     <div class="list" id="fatt-list"></div>
   </section>
 
+  <!-- FATTURA DETTAGLIO (solo admin) -->
+  <section class="screen" id="s-fatt-dett">
+    <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title" id="fatt-dett-title">Fattura</div></div>
+    <div class="form" id="fatt-dett-body"></div>
+  </section>
+
   <!-- RAPPORTI LIST -->
   <section class="screen" id="s-rapporti">
     <div class="topbar"><div class="topbar-title">Rapporti</div><button class="topbar-action" onclick="rapNew()">+ Nuovo</button></div>
@@ -297,6 +303,12 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
     <div class="list" id="prev-list"></div>
   </section>
 
+  <!-- COMMESSA DETTAGLIO -->
+  <section class="screen" id="s-comm-dett">
+    <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title" id="comm-dett-title">Commessa</div></div>
+    <div class="form" id="comm-dett-body"></div>
+  </section>
+
   <!-- Preventivi: si creano solo con la skill Florial e li approva Flogert.
        Il gestionale mostra le commesse in sola lettura (schermata "Commesse").
        Il vecchio form di creazione della PWA è stato rimosso. -->
@@ -373,7 +385,7 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
 // ===== CONFIG (progetto di PROVA) =====
 const SB_URL = 'https://pubwwimufjqftikqyjpj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1Ynd3aW11ZmpxZnRpa3F5anBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MzIwOTcsImV4cCI6MjEwNzIwODA5N30.sDCZYxg_jZ685qcEYen-7Xdm_SpYI8kgTpCstIdHlzE';
-const APP_VERSION = '2026.10.21-2';
+const APP_VERSION = '2026.10.21-3';
 const DOMINIO = 'interno.florial.it';
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true, storageKey:'florial_auth' } });
 
@@ -554,7 +566,7 @@ function itemContratto(c){
 function openFatture(){ renderFatture(); show('s-fatture'); }
 async function renderFatture(filter=''){
   const el=$('fatt-list'); el.innerHTML=spinBox();
-  let q=sb.from('fatture').select('numero,data,cliente,oggetto,totale,scadenza').order('numero',{ascending:false}).limit(500);
+  let q=sb.from('fatture').select('fic_id,numero,data,cliente,oggetto,totale,scadenza').order('numero',{ascending:false}).limit(500);
   if(filter) q=q.ilike('cliente','%'+filter+'%');
   const { data, error }=await q;
   if(error){ el.innerHTML=emptyBox('Errore di caricamento'); $('fatt-tot').textContent=''; return; }
@@ -565,7 +577,30 @@ async function renderFatture(filter=''){
 }
 function itemFattura(f){
   const scad=f.scadenza?`<span class="su">Scadenza ${dataIt(f.scadenza)}</span>`:'';
-  return `<div class="item"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path><path d="M8 7h8M8 11h8M8 15h5"></path></svg></span><span class="bd"><span class="ti">${esc(f.cliente)||'—'}</span><span class="su">N° ${esc(f.numero)} · ${dataIt(f.data)}</span>${f.oggetto?`<span class="su">${esc(f.oggetto)}</span>`:''}${scad}</span><span class="badge b-mu" style="font-family:'IBM Plex Mono',monospace;white-space:nowrap;">${euro(f.totale)}</span></div>`;
+  return `<button class="item" onclick="apriFattura('${f.fic_id}')"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path><path d="M8 7h8M8 11h8M8 15h5"></path></svg></span><span class="bd"><span class="ti">${esc(f.cliente)||'—'}</span><span class="su">N° ${esc(f.numero)} · ${dataIt(f.data)}</span>${f.oggetto?`<span class="su">${esc(f.oggetto)}</span>`:''}${scad}</span><span class="badge b-mu" style="font-family:'IBM Plex Mono',monospace;white-space:nowrap;">${euro(f.totale)}</span></button>`;
+}
+function dettRow(l,v,mono){ return `<div style="display:flex;justify-content:space-between;gap:12px;padding:10px 2px;border-bottom:1px solid var(--bd);"><span style="color:var(--muted);font-size:13px;flex-shrink:0;">${esc(l)}</span><span style="text-align:right;font-weight:600;color:var(--ink);${mono?"font-family:'IBM Plex Mono',monospace;":''}">${v}</span></div>`; }
+async function apriFattura(ficId){
+  showLoader();
+  const { data:f } = await sb.from('fatture').select('*').eq('fic_id',ficId).single();
+  hideLoader(); if(!f) return;
+  $('fatt-dett-title').textContent='Fattura N° '+(f.numero||'');
+  $('fatt-dett-body').innerHTML =
+    `<div class="sect"><div class="sect-t">Cliente</div>`
+    + dettRow('Ragione sociale', esc(f.cliente)||'—')
+    + dettRow('P.IVA', esc(f.p_iva)||'—', true)
+    + `</div><div class="sect"><div class="sect-t">Documento</div>`
+    + dettRow('Numero', esc(f.numero)||'—', true)
+    + dettRow('Data', dataIt(f.data)||'—')
+    + dettRow('Scadenza', f.scadenza?dataIt(f.scadenza):'—')
+    + `</div>`
+    + (f.oggetto?`<div class="sect"><div class="sect-t">Oggetto</div><div style="padding:8px 2px;color:var(--ink);line-height:1.5;">${esc(f.oggetto)}</div></div>`:'')
+    + `<div class="sect"><div class="sect-t">Importi</div>`
+    + dettRow('Imponibile', euro(f.imponibile), true)
+    + dettRow('IVA', euro(f.iva), true)
+    + dettRow('Totale', euro(f.totale), true)
+    + `</div>`;
+  show('s-fatt-dett');
 }
 
 // ===== DATI =====
@@ -659,7 +694,7 @@ async function elimRap(){
 // ===== COMMESSE (tracciamento, sola lettura — fonte HubSpot via sync, nessun prezzo) =====
 function faseBadge(f){
   const n=parseInt(String(f||'').trim(),10);
-  const m={1:['Nuovo','b-mu'],2:['Sopralluogo','b-mu'],3:['In analisi','b-mu'],4:['Inviato','b-mu'],5:['Attesa acconto','b-wa'],6:['In esecuzione','b-wa'],7:['Collaudo','b-wa'],8:['Vinta','b-ok'],9:['Persa','b-mu']};
+  const m={1:['Nuovo','b-mu'],2:['Sopralluogo','b-mu'],3:['In analisi','b-mu'],4:['Inviato','b-mu'],5:['Attesa acconto','b-wa'],6:['In esecuzione','b-wa'],7:['Collaudo','b-wa'],8:['Vinta','b-ok'],9:['Persa','b-er']};
   return m[n]||[esc(f)||'—','b-mu'];
 }
 function itemPrev(c){
@@ -667,11 +702,26 @@ function itemPrev(c){
   const cod=c.codice?`<span style="font-family:'IBM Plex Mono',monospace;">${esc(c.codice)}</span> · `:'';
   const titolo=esc(c.cliente)||esc(c.nome)||'—';
   const desc=(c.nome&&c.cliente)?`<span class="su">${esc(c.nome)}</span>`:'';
-  return `<div class="item"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="M9 13h6M9 17h4"></path></svg></span><span class="bd"><span class="ti">${titolo}</span><span class="su">${cod}${esc(c.fase)||''}</span>${desc}</span><span class="badge ${fb[1]}" style="white-space:nowrap;">${fb[0]}</span></div>`;
+  return `<button class="item" onclick="apriCommessa('${c.hubspot_id}')"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="M9 13h6M9 17h4"></path></svg></span><span class="bd"><span class="ti">${titolo}</span><span class="su">${cod}${esc(c.fase)||''}</span>${desc}</span><span class="badge ${fb[1]}" style="white-space:nowrap;">${fb[0]}</span></button>`;
+}
+async function apriCommessa(hubId){
+  showLoader();
+  const { data:c } = await sb.from('commesse_hub').select('*').eq('hubspot_id',hubId).single();
+  hideLoader(); if(!c) return;
+  const fb=faseBadge(c.fase);
+  $('comm-dett-title').textContent = c.codice || 'Commessa';
+  let html = `<div class="sect"><div class="sect-t">Commessa</div>`
+    + dettRow('Cliente', esc(c.cliente)||'—')
+    + dettRow('Codice', esc(c.codice)||'—', true)
+    + `<div style="display:flex;justify-content:space-between;gap:12px;padding:10px 2px;border-bottom:1px solid var(--bd);"><span style="color:var(--muted);font-size:13px;">Fase</span><span class="badge ${fb[1]}">${fb[0]}</span></div></div>`;
+  if(c.nome) html += `<div class="sect"><div class="sect-t">Descrizione</div><div style="padding:8px 2px;color:var(--ink);line-height:1.5;">${esc(c.nome)}</div></div>`;
+  if(utente.ruolo==='admin' && c.importo!=null) html += `<div class="sect"><div class="sect-t">Importo · solo admin</div>`+dettRow('Totale commessa', euro(c.importo), true)+`</div>`;
+  $('comm-dett-body').innerHTML = html;
+  show('s-comm-dett');
 }
 async function renderPrev(filter=''){
   const el=$('prev-list'); el.innerHTML=spinBox();
-  let q=sb.from('commesse_hub').select('nome,codice,fase,cliente').limit(200);
+  let q=sb.from('commesse_hub').select('hubspot_id,nome,codice,fase,cliente').limit(200);
   if(filter){ const f=filter.replace(/[%,]/g,' ').trim(); if(f) q=q.or(`cliente.ilike.%${f}%,codice.ilike.%${f}%,nome.ilike.%${f}%`); }
   const { data, error }=await q;
   if(error){ el.innerHTML=emptyBox('Errore di caricamento'); return; }
