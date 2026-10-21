@@ -385,7 +385,7 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
 // ===== CONFIG (progetto di PROVA) =====
 const SB_URL = 'https://pubwwimufjqftikqyjpj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1Ynd3aW11ZmpxZnRpa3F5anBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MzIwOTcsImV4cCI6MjEwNzIwODA5N30.sDCZYxg_jZ685qcEYen-7Xdm_SpYI8kgTpCstIdHlzE';
-const APP_VERSION = '2026.10.21-3';
+const APP_VERSION = '2026.10.21-4';
 const DOMINIO = 'interno.florial.it';
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true, storageKey:'florial_auth' } });
 
@@ -521,7 +521,8 @@ async function salvaCodiceExtra(){
 async function renderCal(){
   const el=$('cal-list'); el.innerHTML=spinBox();
   const oggi=new Date(); const da=oggi.toISOString().slice(0,10);
-  const fine=new Date(oggi.getTime()+60*864e5).toISOString().slice(0,10);
+  const oriz=(utente&&utente.ruolo==='tecnico')?90:800;
+  const fine=new Date(oggi.getTime()+oriz*864e5).toISOString().slice(0,10);
   const { data, error } = await sb.rpc('calendario',{ da, a:fine });
   if(error){ el.innerHTML=emptyBox('Errore di caricamento'); return; }
   if(!data||!data.length){ el.innerHTML=emptyBox('Nessun lavoro in programma'); return; }
