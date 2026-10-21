@@ -1,0 +1,11 @@
+{
+  "name": "Florial App",
+  "short_name": "Florial",
+  "description": "App interna Florial Impianti",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#00726d",
+  "theme_color": "#00726d"
+}
