@@ -171,14 +171,14 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
     <div class="body">
       <div class="stats">
         <div class="stat"><div class="n" id="st-rap">—</div><div class="l">Rapporti</div></div>
-        <div class="stat"><div class="n" id="st-prev">—</div><div class="l">Preventivi</div></div>
+        <div class="stat"><div class="n" id="st-prev">—</div><div class="l">Commesse</div></div>
         <div class="stat"><div class="n" id="st-cli">—</div><div class="l">Clienti</div></div>
       </div>
       <div>
         <div class="s-lbl">Azioni rapide</div>
         <div class="qa">
           <button class="qa-card" onclick="rapNew()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="m9 14 2 2 4-4"></path></svg><span class="t">Nuovo rapporto</span><span class="s">Intervento</span></button>
-          <button class="qa-card" onclick="prevNew()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg><span class="t">Nuovo preventivo</span><span class="s">Offerta</span></button>
+          <button class="qa-card" onclick="go('preventivi')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="M9 13h6M9 17h4"></path></svg><span class="t">Commesse</span><span class="s">Stato trattative</span></button>
           <button class="qa-card" onclick="go('clienti')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path></svg><span class="t">Clienti</span><span class="s">Rubrica</span></button>
           <button class="qa-card" onclick="go('profilo')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><span class="t">Profilo</span><span class="s">Il mio codice</span></button>
           <button class="qa-card" id="qa-contratti" style="display:none;" onclick="openContratti()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M9 13h6M9 17h6"></path></svg><span class="t">Contratti</span><span class="s">Manutenzione</span></button>
@@ -292,54 +292,15 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
 
   <!-- PREVENTIVI LIST -->
   <section class="screen" id="s-preventivi">
-    <div class="topbar"><div class="topbar-title">Preventivi</div><button class="topbar-action" onclick="prevNew()">+ Nuovo</button></div>
-    <div class="search"><input id="q-prev" placeholder="Cerca cliente…" oninput="renderPrev(this.value)"></div>
+    <div class="topbar"><div class="topbar-title">Commesse</div></div>
+    <div class="search"><input id="q-prev" placeholder="Cerca cliente o codice…" oninput="renderPrev(this.value)"></div>
     <div class="list" id="prev-list"></div>
   </section>
 
-  <!-- PREVENTIVO FORM -->
-  <section class="screen" id="s-prev-form">
-    <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title" id="prev-title">Nuovo preventivo</div></div>
-    <div class="form">
-      <div class="sect">
-        <div class="sect-t">Riferimenti</div>
-        <div class="fg2">
-          <div class="fg"><span class="lbl">Data</span><input class="in" type="date" id="p-data"></div>
-          <div class="fg"><span class="lbl">N°</span><input class="in" id="p-num" readonly style="color:var(--teal-d);font-weight:600;"></div>
-        </div>
-        <div class="fg"><span class="lbl">Validità</span><select class="in" id="p-val"><option>30 giorni</option><option>60 giorni</option><option>90 giorni</option></select></div>
-      </div>
-      <div class="sect">
-        <div class="sect-t">Cliente</div>
-        <div class="fg"><span class="lbl">Ragione sociale</span><input class="in" id="p-rag" list="dl-cli" oninput="autoCli('p')"></div>
-        <div class="fg2">
-          <div class="fg"><span class="lbl">Referente</span><input class="in" id="p-ref"></div>
-          <div class="fg"><span class="lbl">Email</span><input class="in" id="p-email" type="email"></div>
-        </div>
-        <div class="fg2">
-          <div class="fg"><span class="lbl">Indirizzo</span><input class="in" id="p-ind"></div>
-          <div class="fg"><span class="lbl">Città</span><input class="in" id="p-cit"></div>
-        </div>
-      </div>
-      <div class="sect"><div class="sect-t">Oggetto</div><div class="fg"><textarea class="in" id="p-ogg"></textarea></div></div>
-      <div class="sect">
-        <div class="sect-t">Voci</div>
-        <table class="voci"><thead><tr><th style="width:48%">Descrizione</th><th style="width:13%;text-align:center">Qt</th><th style="width:18%;text-align:right">€/cad</th><th style="width:21%;text-align:right">Totale</th></tr></thead><tbody id="voci-b"></tbody></table>
-        <button type="button" class="addrow" onclick="addVoce()">+ Aggiungi voce</button>
-        <div class="tot"><span>Imponibile</span><span class="v" id="t-imp">€ 0,00</span></div>
-        <div style="display:flex;justify-content:space-between;padding:8px 14px;font-size:13px;color:var(--muted);"><span>IVA 22%</span><span id="t-iva">€ 0,00</span></div>
-        <div class="tot" style="background:var(--navy);"><span>Totale IVA inclusa</span><span class="v" id="t-tot">€ 0,00</span></div>
-      </div>
-      <div class="sect"><div class="sect-t">Pagamento</div>
-        <div class="fg"><select class="in" id="p-pag"><option>50% acconto alla conferma, 30% SAL, 20% saldo a 30 gg f.m.</option><option>50% acconto, 50% saldo</option><option>100% a completamento</option></select></div>
-        <div class="fg"><span class="lbl">Note / esclusioni</span><textarea class="in" id="p-note"></textarea></div>
-      </div>
-    </div>
-    <div class="actionbar">
-      <button class="btn" onclick="salvaPrev()">Salva</button>
-      <button class="btn danger" id="p-del" style="display:none;flex:0 0 52px;" onclick="elimPrev()" aria-label="Elimina"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-    </div>
-  </section>
+  <!-- Preventivi: si creano solo con la skill Florial e li approva Flogert.
+       Il gestionale mostra le commesse in sola lettura (schermata "Commesse").
+       Il vecchio form di creazione della PWA è stato rimosso. -->
+
 
   <!-- CLIENTI -->
   <section class="screen" id="s-clienti">
@@ -402,7 +363,7 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
     <button class="bnav on" data-tab="home" onclick="go('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path></svg>Home</button>
     <button class="bnav" data-tab="lavori" onclick="go('lavori')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>Lavori</button>
     <button class="bnav" data-tab="rapporti" onclick="go('rapporti')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path></svg>Rapporti</button>
-    <button class="bnav" data-tab="preventivi" onclick="go('preventivi')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>Preventivi</button>
+    <button class="bnav" data-tab="preventivi" onclick="go('preventivi')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>Commesse</button>
     <button class="bnav" data-tab="clienti" onclick="go('clienti')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path></svg>Clienti</button>
   </nav>
 </div>
@@ -412,7 +373,7 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
 // ===== CONFIG (progetto di PROVA) =====
 const SB_URL = 'https://pubwwimufjqftikqyjpj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1Ynd3aW11ZmpxZnRpa3F5anBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MzIwOTcsImV4cCI6MjEwNzIwODA5N30.sDCZYxg_jZ685qcEYen-7Xdm_SpYI8kgTpCstIdHlzE';
-const APP_VERSION = '2026.10.21-1';
+const APP_VERSION = '2026.10.21-2';
 const DOMINIO = 'interno.florial.it';
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true, storageKey:'florial_auth' } });
 
@@ -616,7 +577,7 @@ async function caricaClienti(){
 async function caricaStats(){
   const [r,p,c] = await Promise.all([
     sb.from('rapporti').select('id',{count:'exact',head:true}),
-    sb.from('preventivi').select('id',{count:'exact',head:true}),
+    sb.from('commesse_hub').select('hubspot_id',{count:'exact',head:true}),
     sb.from('clienti').select('id',{count:'exact',head:true})
   ]);
   $('st-rap').textContent = r.count??0; $('st-prev').textContent = p.count??0; $('st-cli').textContent = c.count??0;
@@ -695,63 +656,28 @@ async function elimRap(){
   hideLoader(); if(error){ toast('Errore'); return; } toast('Eliminato'); go('rapporti'); renderRap(); caricaStats();
 }
 
-// ===== PREVENTIVI =====
-function itemPrev(p){
-  return `<button class="item" onclick="apriPrev('${p.id}')"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></span><span class="bd"><span class="ti">${esc(p.ragione_sociale)||'—'}</span><span class="su">${esc(p.numero)} · ${euro(p.totale_ivainclusa)} · ${dataIt(p.data)}</span></span></button>`;
+// ===== COMMESSE (tracciamento, sola lettura — fonte HubSpot via sync, nessun prezzo) =====
+function faseBadge(f){
+  const n=parseInt(String(f||'').trim(),10);
+  const m={1:['Nuovo','b-mu'],2:['Sopralluogo','b-mu'],3:['In analisi','b-mu'],4:['Inviato','b-mu'],5:['Attesa acconto','b-wa'],6:['In esecuzione','b-wa'],7:['Collaudo','b-wa'],8:['Vinta','b-ok'],9:['Persa','b-mu']};
+  return m[n]||[esc(f)||'—','b-mu'];
+}
+function itemPrev(c){
+  const fb=faseBadge(c.fase);
+  const cod=c.codice?`<span style="font-family:'IBM Plex Mono',monospace;">${esc(c.codice)}</span> · `:'';
+  const titolo=esc(c.cliente)||esc(c.nome)||'—';
+  const desc=(c.nome&&c.cliente)?`<span class="su">${esc(c.nome)}</span>`:'';
+  return `<div class="item"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="M9 13h6M9 17h4"></path></svg></span><span class="bd"><span class="ti">${titolo}</span><span class="su">${cod}${esc(c.fase)||''}</span>${desc}</span><span class="badge ${fb[1]}" style="white-space:nowrap;">${fb[0]}</span></div>`;
 }
 async function renderPrev(filter=''){
   const el=$('prev-list'); el.innerHTML=spinBox();
-  let q=sb.from('preventivi').select('*').order('created_at',{ascending:false}).limit(50);
-  if(filter) q=q.ilike('ragione_sociale','%'+filter+'%');
+  let q=sb.from('commesse_hub').select('nome,codice,fase,cliente').limit(200);
+  if(filter){ const f=filter.replace(/[%,]/g,' ').trim(); if(f) q=q.or(`cliente.ilike.%${f}%,codice.ilike.%${f}%,nome.ilike.%${f}%`); }
   const { data, error }=await q;
   if(error){ el.innerHTML=emptyBox('Errore di caricamento'); return; }
-  if(!data.length){ el.innerHTML=emptyBox('Nessun preventivo'); return; }
+  if(!data||!data.length){ el.innerHTML=emptyBox('Nessuna commessa'); return; }
+  data.sort((a,b)=>((parseInt(b.fase)||0)-(parseInt(a.fase)||0))||String(a.codice||'').localeCompare(String(b.codice||'')));
   el.innerHTML=data.map(itemPrev).join('');
-}
-function prevNew(){
-  editPrev=null; $('prev-title').textContent='Nuovo preventivo'; $('p-del').style.display='none';
-  ['p-rag','p-ref','p-email','p-ind','p-cit','p-ogg','p-note'].forEach(i=>$(i).value=''); $('voci-b').innerHTML='';
-  $('p-data').valueAsDate=new Date();
-  sb.rpc('next_numero',{seq_id:'preventivi_'+new Date().getFullYear()}).then(({data})=>{ $('p-num').value='FL-'+new Date().getFullYear()+'-'+String(data||1).padStart(3,'0'); });
-  addVoce(); addVoce(); addVoce(); calc(); show('s-prev-form');
-}
-async function apriPrev(id){
-  showLoader(); const { data:p }=await sb.from('preventivi').select('*').eq('id',id).single(); hideLoader(); if(!p) return;
-  editPrev=id; $('prev-title').textContent=p.numero||'Preventivo'; $('p-del').style.display=utente.ruolo==='admin'?'flex':'none';
-  $('p-num').value=p.numero||''; $('p-data').value=p.data||''; $('p-val').value=p.validita||'30 giorni';
-  $('p-rag').value=p.ragione_sociale||''; $('p-ref').value=p.referente||''; $('p-email').value=p.email||'';
-  $('p-ind').value=p.indirizzo||''; $('p-cit').value=p.citta||''; $('p-ogg').value=p.oggetto||''; $('p-note').value=p.note||''; $('p-pag').value=p.pagamento||$('p-pag').options[0].value;
-  $('voci-b').innerHTML=''; (p.voci||[]).forEach(v=>{ addVoce(); const tr=$('voci-b').lastElementChild; const ins=tr.querySelectorAll('input'); ins[0].value=v.desc||''; ins[1].value=v.qty||''; ins[2].value=v.price||''; }); calc();
-  show('s-prev-form');
-}
-function addVoce(){
-  const tr=document.createElement('tr');
-  tr.innerHTML='<td><input class="vi" placeholder="Descrizione"></td><td><input class="vi c" type="number" step="0.5" min="0" oninput="calc()"></td><td><input class="vi r" type="number" step="0.01" min="0" oninput="calc()"></td><td class="vt" style="text-align:right;font-family:\'IBM Plex Mono\',monospace;font-size:13px;color:var(--teal-d);">€ 0,00</td>';
-  $('voci-b').appendChild(tr);
-}
-function calc(){
-  let tot=0;
-  $('voci-b').querySelectorAll('tr').forEach(tr=>{ const i=tr.querySelectorAll('input'); const l=(parseFloat(i[1].value)||0)*(parseFloat(i[2].value)||0); tr.querySelector('.vt').textContent=euro(l); tot+=l; });
-  $('t-imp').textContent=euro(tot); $('t-iva').textContent=euro(tot*0.22); $('t-tot').textContent=euro(tot*1.22);
-}
-async function salvaPrev(){
-  const rag=$('p-rag').value.trim(); if(!rag){ toast('Scrivi il cliente'); return; }
-  showLoader('Salvataggio…'); const voci=[]; let tot=0;
-  $('voci-b').querySelectorAll('tr').forEach(tr=>{ const i=tr.querySelectorAll('input'); if(i[0].value.trim()){ const q=parseFloat(i[1].value)||0,p=parseFloat(i[2].value)||0; voci.push({desc:i[0].value,qty:i[1].value,price:i[2].value}); tot+=q*p; } });
-  const row={ numero:$('p-num').value, data:$('p-data').value||null, validita:$('p-val').value, ragione_sociale:rag,
-    referente:$('p-ref').value||null, email:$('p-email').value||null, indirizzo:$('p-ind').value||null, citta:$('p-cit').value||null,
-    oggetto:$('p-ogg').value||null, voci, totale_imponibile:tot, totale_iva:tot*0.22, totale_ivainclusa:tot*1.22,
-    pagamento:$('p-pag').value, note:$('p-note').value||null,
-    tecnico_nome:[utente.nome,utente.cognome].filter(Boolean).join(' '), updated_at:new Date().toISOString() };
-  const { error } = editPrev ? await sb.from('preventivi').update(row).eq('id',editPrev) : await sb.from('preventivi').insert(row);
-  if(error){ hideLoader(); toast('Errore: '+error.message); return; }
-  await autoCliente(rag,$('p-ref').value,'',$('p-email').value,$('p-ind').value,$('p-cit').value);
-  await Promise.all([caricaStats(),caricaRecenti()]); hideLoader(); toast('Preventivo salvato'); go('preventivi'); renderPrev();
-}
-async function elimPrev(){
-  if(!editPrev || !confirm('Eliminare questo preventivo?')) return;
-  showLoader('Eliminazione…'); const { error }=await sb.from('preventivi').delete().eq('id',editPrev);
-  hideLoader(); if(error){ toast('Errore'); return; } toast('Eliminato'); go('preventivi'); renderPrev(); caricaStats();
 }
 
 // ===== CLIENTI =====
