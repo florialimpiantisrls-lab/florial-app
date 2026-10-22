@@ -252,6 +252,7 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
   <section class="screen" id="s-rap-form">
     <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title" id="rap-title">Nuovo rapporto</div></div>
     <div class="form">
+      <a class="btn" id="r-scan-btn" href="#" target="_blank" rel="noopener" style="display:none;text-decoration:none;align-items:center;justify-content:center;gap:8px;margin-bottom:4px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>Apri scansione originale</a>
       <div class="sect">
         <div class="sect-t">Riferimenti</div>
         <div class="fg2">
@@ -407,7 +408,7 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
 // ===== CONFIG (progetto di PROVA) =====
 const SB_URL = 'https://pubwwimufjqftikqyjpj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1Ynd3aW11ZmpxZnRpa3F5anBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MzIwOTcsImV4cCI6MjEwNzIwODA5N30.sDCZYxg_jZ685qcEYen-7Xdm_SpYI8kgTpCstIdHlzE';
-const APP_VERSION = '2026.10.22-4';
+const APP_VERSION = '2026.10.22-5';
 const DOMINIO = 'interno.florial.it';
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true, storageKey:'florial_auth' } });
 
@@ -676,7 +677,7 @@ async function impJson(){
   let arr; try{ arr=JSON.parse($('imp-json').value); }catch(e){ toast('Dati non validi'); return; }
   if(!Array.isArray(arr)||!arr.length){ toast('Niente da caricare'); return; }
   showLoader('Carico '+arr.length+'…');
-  const rows=arr.map(it=>({ data:it.data||null, ragione_sociale:(it.cliente||'—'), tipi:[it.tipo||'Manutenzione'], lavori:(it.lavori||null), esito:'Intervento completato', note:'Rapportino storico importato', origine:'storico', foto:(it.foto?[it.foto]:[]), tecnico_nome:(it.tecnico||null), updated_at:new Date().toISOString() }));
+  const rows=arr.map(it=>({ data:it.data||null, ragione_sociale:(it.cliente||'—'), tipi:[it.tipo||'Manutenzione'], descrizione:(it.descrizione||null), lavori:(it.lavori||null), esito:(it.esito||'Intervento completato'), note:(it.note||'Rapportino storico importato'), origine:'storico', foto:(it.foto?[it.foto]:[]), scansione_url:(it.scansione_url||null), tecnico_nome:(it.tecnico||null), updated_at:new Date().toISOString() }));
   const { error }=await sb.from('rapporti').insert(rows);
   hideLoader();
   if(error){ toast('Errore: '+error.message); return; }
@@ -732,6 +733,7 @@ function resetRap(){
   document.querySelectorAll('#r-tipi .chip').forEach(c=>c.classList.remove('on'));
   document.querySelectorAll('#r-esiti .esito').forEach(c=>c.classList.remove('on'));
   foto=[]; $('r-foto-grid').innerHTML=''; clearCnv('c-tec','hh-tec'); clearCnv('c-cli','hh-cli');
+  { const sc=$('r-scan-btn'); if(sc) sc.style.display='none'; }
 }
 async function apriRap(id){
   showLoader();
@@ -746,6 +748,7 @@ async function apriRap(id){
   (r.tipi||[]).forEach(t=>document.querySelectorAll('#r-tipi .chip').forEach(c=>{ if(c.textContent===t) c.classList.add('on'); }));
   document.querySelectorAll('#r-esiti .esito').forEach(c=>{ if(c.textContent===r.esito) c.classList.add('on'); });
   foto = Array.isArray(r.foto)? r.foto : []; renderFoto();
+  { const sc=$('r-scan-btn'); if(sc){ if(r.scansione_url){ sc.href=r.scansione_url; sc.style.display='flex'; } else { sc.style.display='none'; } } }
   show('s-rap-form'); requestAnimationFrame(()=>{ sizeFirme(); loadFirma('c-tec','hh-tec',r.firma_tecnico); loadFirma('c-cli','hh-cli',r.firma_cliente); });
 }
 async function salvaRap(){
