@@ -231,6 +231,10 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
         <div class="s-lbl" id="imp-info" style="padding:8px 2px 0;"></div>
         <div id="imp-list"></div>
       </div>
+      <div class="sect"><div class="sect-t">Caricamento assistito</div>
+        <textarea class="in" id="imp-json" style="min-height:64px;font-family:monospace;font-size:11px;" placeholder="(uso interno)"></textarea>
+        <button type="button" class="btn" onclick="impJson()" style="margin-top:8px;">Carica dati</button>
+      </div>
     </div>
     <div class="actionbar">
       <button class="btn" id="imp-btn" onclick="impSalva()" disabled style="opacity:.5;">Importa nell'app</button>
@@ -403,7 +407,7 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
 // ===== CONFIG (progetto di PROVA) =====
 const SB_URL = 'https://pubwwimufjqftikqyjpj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1Ynd3aW11ZmpxZnRpa3F5anBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MzIwOTcsImV4cCI6MjEwNzIwODA5N30.sDCZYxg_jZ685qcEYen-7Xdm_SpYI8kgTpCstIdHlzE';
-const APP_VERSION = '2026.10.22-3';
+const APP_VERSION = '2026.10.22-4';
 const DOMINIO = 'interno.florial.it';
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true, storageKey:'florial_auth' } });
 
@@ -667,6 +671,17 @@ async function impSalva(){
   impItems=[]; impRender();
   await Promise.all([caricaStats(),caricaRecenti()]);
   go('rapporti'); renderRap();
+}
+async function impJson(){
+  let arr; try{ arr=JSON.parse($('imp-json').value); }catch(e){ toast('Dati non validi'); return; }
+  if(!Array.isArray(arr)||!arr.length){ toast('Niente da caricare'); return; }
+  showLoader('Carico '+arr.length+'…');
+  const rows=arr.map(it=>({ data:it.data||null, ragione_sociale:(it.cliente||'—'), tipi:[it.tipo||'Manutenzione'], lavori:(it.lavori||null), esito:'Intervento completato', note:'Rapportino storico importato', origine:'storico', foto:(it.foto?[it.foto]:[]), tecnico_nome:(it.tecnico||null), updated_at:new Date().toISOString() }));
+  const { error }=await sb.from('rapporti').insert(rows);
+  hideLoader();
+  if(error){ toast('Errore: '+error.message); return; }
+  toast(arr.length+' caricati'); $('imp-json').value='';
+  await Promise.all([caricaStats(),caricaRecenti()]);
 }
 
 // ===== DATI =====
