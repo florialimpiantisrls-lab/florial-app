@@ -184,7 +184,7 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
           <button class="qa-card" id="qa-contratti" style="display:none;" onclick="openContratti()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M9 13h6M9 17h6"></path></svg><span class="t">Contratti</span><span class="s">Manutenzione</span></button>
           <button class="qa-card" id="qa-fatture" style="display:none;" onclick="openFatture()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path><path d="M8 7h8M8 11h8M8 15h5"></path></svg><span class="t">Fatture</span><span class="s">Fatture in Cloud</span></button>
           <button class="qa-card" id="qa-import" style="display:none;" onclick="openImport()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg><span class="t">Importa archivio</span><span class="s">Rapportini storici</span></button>
-          <button class="qa-card" id="qa-col16" style="display:none;" onclick="openCol16()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg><span class="t">Rapporto di prova</span><span class="s">Verifiche strumentali</span></button>
+          <button class="qa-card" id="qa-moduli" style="display:none;" onclick="openModuli()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect></svg><span class="t">Moduli operativi</span><span class="s">Schede digitali</span></button>
         </div>
       </div>
       <div><div class="s-lbl">Attività recenti</div><div id="recent"></div></div>
@@ -244,7 +244,7 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
 
   <!-- FLR-COL-16 · RAPPORTO DI PROVA — VERIFICHE STRUMENTALI -->
   <section class="screen" id="s-col16">
-    <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title">Rapporto di prova (FLR-COL-16)</div></div>
+    <div class="topbar"><button class="topbar-back" onclick="openModuli()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title">Rapporto di prova (FLR-COL-16)</div></div>
     <div class="form">
       <div class="sect">
         <div class="sect-t">1 · Impianto e strumento</div>
@@ -321,6 +321,140 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
     <div class="actionbar">
       <button class="btn" onclick="salvaCol16()">Salva rapporto di prova</button>
     </div>
+  </section>
+
+  <!-- MENU MODULI OPERATIVI (admin) -->
+  <section class="screen" id="s-moduli">
+    <div class="topbar"><button class="topbar-back" onclick="go('home')" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title">Moduli operativi</div></div>
+    <div class="form">
+      <div class="sect"><div class="sect-t">Schede da compilare</div>
+        <button class="btn" style="margin-bottom:8px;" onclick="openSop()">Sopralluogo</button>
+        <button class="btn" style="margin-bottom:8px;" onclick="openDis()">Distinta materiali di commessa</button>
+        <button class="btn" style="margin-bottom:8px;" onclick="openPrl()">Prelievi e resi magazzino</button>
+        <button class="btn" style="margin-bottom:8px;" onclick="openVar()">Ordine lavori extra / variante</button>
+        <button class="btn" style="margin-bottom:8px;" onclick="openCol16()">Rapporto di prova — verifiche strumentali</button>
+        <button class="btn" onclick="openReg()">Registro controlli e interventi</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FLR-SOP-02 SOPRALLUOGO -->
+  <section class="screen" id="s-sop">
+    <div class="topbar"><button class="topbar-back" onclick="openModuli()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title">Sopralluogo (FLR-SOP-02)</div></div>
+    <div class="form">
+      <div class="sect"><div class="sect-t">1 · Cliente</div>
+        <div class="fg"><span class="lbl">Soggetto che paga (ragione sociale)</span><input class="in" id="sop-rag" list="dl-cli"></div>
+        <div class="fg2"><div class="fg"><span class="lbl">P.IVA / C.F.</span><input class="in" id="sop-piva"></div><div class="fg"><span class="lbl">Referente che decide</span><input class="in" id="sop-ref"></div></div>
+        <div class="fg2"><div class="fg"><span class="lbl">Tel.</span><input class="in" id="sop-tel" type="tel"></div><div class="fg"><span class="lbl">SDI / PEC</span><input class="in" id="sop-sdi"></div></div>
+      </div>
+      <div class="sect"><div class="sect-t">2 · Locale e richiesta</div>
+        <div class="fg2"><div class="fg"><span class="lbl">Tipo locale</span><input class="in" id="sop-tipo"></div><div class="fg"><span class="lbl">m²</span><input class="in" id="sop-mq"></div></div>
+        <div class="fg2"><div class="fg"><span class="lbl">Piani</span><input class="in" id="sop-piani"></div><div class="fg"><span class="lbl">Orari / chiusura</span><input class="in" id="sop-orari"></div></div>
+        <div class="fg"><span class="lbl">Indirizzo</span><input class="in" id="sop-ind"></div>
+        <div class="fg2"><div class="fg"><span class="lbl">Chiavi</span><input class="in" id="sop-chiavi"></div><div class="fg"><span class="lbl">Ingresso</span><input class="in" id="sop-ingresso"></div></div>
+        <div class="fg"><span class="lbl">Cosa vuole e perché (ASL, apertura, guasto, adeguamento…)</span><textarea class="in" id="sop-richiesta"></textarea></div>
+        <div class="fg2"><div class="fg"><span class="lbl">Entro quando</span><input class="in" id="sop-entro"></div><div class="fg"><span class="lbl">Budget (se detto)</span><input class="in" id="sop-budget"></div></div>
+      </div>
+      <div class="sect"><div class="sect-t">3 · Stato di fatto</div>
+        <div class="fg"><span class="lbl">Fornitura/potenza, quadri, apparecchi cucina/bar (nome · kW · mono/tri)</span><textarea class="in" id="sop-stato"></textarea></div>
+      </div>
+      <div class="sect"><div class="sect-t">4 · Criticità</div><div id="sop-crit-list"></div><button type="button" class="btn" onclick="rowsAdd('sopCrit')" style="margin-top:8px;">+ Aggiungi criticità</button></div>
+      <div class="sect"><div class="sect-t">5 · Lavori da fare</div><div id="sop-lav-list"></div><button type="button" class="btn" onclick="rowsAdd('sopLav')" style="margin-top:8px;">+ Aggiungi lavorazione</button></div>
+      <div class="sect"><div class="sect-t">Accordi e note</div>
+        <div class="fg"><span class="lbl">Esclusi / di altri</span><input class="in" id="sop-esclusi"></div>
+        <div class="fg"><span class="lbl">Accordi col cliente (tempi, orari, cosa si toglie/mantiene)</span><textarea class="in" id="sop-accordi"></textarea></div>
+        <div class="fg"><span class="lbl">Da verificare (cosa · chi · entro quando)</span><textarea class="in" id="sop-verif"></textarea></div>
+        <div class="fg"><span class="lbl">Note</span><textarea class="in" id="sop-note"></textarea></div>
+      </div>
+    </div>
+    <div class="actionbar"><button class="btn" onclick="salvaSop()">Salva sopralluogo</button></div>
+  </section>
+
+  <!-- FLR-DIS-09 DISTINTA MATERIALI -->
+  <section class="screen" id="s-dis">
+    <div class="topbar"><button class="topbar-back" onclick="openModuli()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title">Distinta materiali (FLR-DIS-09)</div></div>
+    <div class="form">
+      <div class="sect"><div class="sect-t">1 · Commessa</div>
+        <div class="fg"><span class="lbl">Cliente</span><input class="in" id="dis-cli" list="dl-cli"></div>
+        <div class="fg"><span class="lbl">Cantiere / indirizzo</span><input class="in" id="dis-cant"></div>
+        <div class="fg2"><div class="fg"><span class="lbl">Inizio lavori previsto</span><input class="in" id="dis-inizio" type="date"></div><div class="fg"><span class="lbl">Capo squadra</span><input class="in" id="dis-capo"></div></div>
+        <div class="fg"><span class="lbl">Compilata da</span><input class="in" id="dis-comp"></div>
+      </div>
+      <div class="sect"><div class="sect-t">2 · Materiali</div><div id="dis-mat-list"></div><button type="button" class="btn" onclick="rowsAdd('disMat')" style="margin-top:8px;">+ Aggiungi materiale</button></div>
+      <div class="sect"><div class="sect-t">3 · Controlli</div>
+        <div class="chips" id="dis-controlli">
+          <button type="button" class="chip" onclick="this.classList.toggle('on')">Conferme d'ordine allegate</button>
+          <button type="button" class="chip" onclick="this.classList.toggle('on')">Materiale verificato prima di partire</button>
+          <button type="button" class="chip" onclick="this.classList.toggle('on')">Attrezzatura caricata</button>
+          <button type="button" class="chip" onclick="this.classList.toggle('on')">Resi/avanzi registrati a fine lavori</button>
+        </div>
+      </div>
+      <div class="sect"><div class="sect-t">Note</div><div class="fg"><textarea class="in" id="dis-note"></textarea></div></div>
+    </div>
+    <div class="actionbar"><button class="btn" onclick="salvaDis()">Salva distinta</button></div>
+  </section>
+
+  <!-- FLR-PRL-34 PRELIEVI E RESI MAGAZZINO -->
+  <section class="screen" id="s-prl">
+    <div class="topbar"><button class="topbar-back" onclick="openModuli()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title">Prelievi magazzino (FLR-PRL-34)</div></div>
+    <div class="form">
+      <div class="sect"><div class="sect-t">Tecnico e settimana</div>
+        <div class="fg"><span class="lbl">Tecnico</span><input class="in" id="prl-tec"></div>
+        <div class="fg2"><div class="fg"><span class="lbl">Settimana dal</span><input class="in" id="prl-da" type="date"></div><div class="fg"><span class="lbl">al</span><input class="in" id="prl-al" type="date"></div></div>
+      </div>
+      <div class="sect"><div class="sect-t">Movimenti (P = prelievo · R = reso)</div><div id="prl-list"></div><button type="button" class="btn" onclick="rowsAdd('prlRig')" style="margin-top:8px;">+ Aggiungi movimento</button></div>
+    </div>
+    <div class="actionbar"><button class="btn" onclick="salvaPrl()">Salva foglio prelievi</button></div>
+  </section>
+
+  <!-- FLR-VAR-35 ORDINE LAVORI EXTRA / VARIANTE -->
+  <section class="screen" id="s-var">
+    <div class="topbar"><button class="topbar-back" onclick="openModuli()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title">Lavori extra / variante (FLR-VAR-35)</div></div>
+    <div class="form">
+      <div class="sect"><div class="sect-t">1 · Riferimenti</div>
+        <div class="fg2"><div class="fg"><span class="lbl">Data</span><input class="in" id="var-data" type="date"></div><div class="fg"><span class="lbl">Contratto rif. PRV / CTR</span><input class="in" id="var-contr"></div></div>
+        <div class="fg"><span class="lbl">Committente (ragione sociale)</span><input class="in" id="var-comm" list="dl-cli"></div>
+        <div class="fg"><span class="lbl">Cantiere</span><input class="in" id="var-cant"></div>
+        <div class="fg2"><div class="fg"><span class="lbl">Richiesto da (nome e ruolo)</span><input class="in" id="var-rich"></div><div class="fg"><span class="lbl">Tel.</span><input class="in" id="var-tel" type="tel"></div></div>
+      </div>
+      <div class="sect"><div class="sect-t">2 · Lavori extra richiesti</div><div id="var-lav-list"></div><button type="button" class="btn" onclick="rowsAdd('varLav')" style="margin-top:8px;">+ Aggiungi lavorazione</button></div>
+      <div class="sect"><div class="sect-t">3 · Modalità di addebito</div>
+        <div class="chips" id="var-addebito">
+          <button type="button" class="chip" onclick="colOne(this)">A corpo</button>
+          <button type="button" class="chip" onclick="colOne(this)">In economia</button>
+          <button type="button" class="chip" onclick="colOne(this)">Da quotare (PRV-ADD)</button>
+        </div>
+        <div class="fg" style="margin-top:8px;"><span class="lbl">Importo a corpo € (IVA esclusa, se concordato)</span><input class="in" id="var-importo" type="number" step="0.01" min="0"></div>
+      </div>
+      <div class="sect"><div class="sect-t">4 · Esecuzione</div>
+        <div class="chips" id="var-esec">
+          <button type="button" class="chip" onclick="this.classList.toggle('on')">Subito</button>
+          <button type="button" class="chip" onclick="this.classList.toggle('on')">Allunga i tempi</button>
+        </div>
+      </div>
+      <div class="sect"><div class="sect-t">Note</div><div class="fg"><textarea class="in" id="var-note"></textarea></div></div>
+      <div class="sect"><div class="sect-t">Firme</div>
+        <div class="fg"><span class="lbl">Il Committente</span><div class="cnv-wrap" id="w-var-comm"><canvas id="c-var-comm"></canvas><div class="cnv-hint" id="hh-var-comm">Firma qui</div></div><button type="button" class="clear" onclick="clearCnv('c-var-comm','hh-var-comm')">Cancella</button></div>
+        <div class="fg"><span class="lbl">Il capo squadra Florial</span><div class="cnv-wrap" id="w-var-capo"><canvas id="c-var-capo"></canvas><div class="cnv-hint" id="hh-var-capo">Firma qui</div></div><button type="button" class="clear" onclick="clearCnv('c-var-capo','hh-var-capo')">Cancella</button></div>
+      </div>
+    </div>
+    <div class="actionbar"><button class="btn" onclick="salvaVar()">Salva ordine lavori extra</button></div>
+  </section>
+
+  <!-- FLR-REG-17 REGISTRO CONTROLLI -->
+  <section class="screen" id="s-reg">
+    <div class="topbar"><button class="topbar-back" onclick="openModuli()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title">Registro controlli (FLR-REG-17)</div></div>
+    <div class="form">
+      <div class="sect"><div class="sect-t">Impianto</div>
+        <div class="fg"><span class="lbl">Titolare / ragione sociale</span><input class="in" id="reg-tit" list="dl-cli"></div>
+        <div class="fg2"><div class="fg"><span class="lbl">Locale / insegna</span><input class="in" id="reg-loc"></div><div class="fg"><span class="lbl">Contratto CTR</span><input class="in" id="reg-ctr"></div></div>
+        <div class="fg"><span class="lbl">Indirizzo</span><input class="in" id="reg-ind"></div>
+        <div class="fg2"><div class="fg"><span class="lbl">DI.CO / DI.RI n° e data</span><input class="in" id="reg-dico"></div><div class="fg"><span class="lbl">Quadri n°</span><input class="in" id="reg-quadri"></div></div>
+        <div class="fg"><span class="lbl">Sistema</span><div class="chips" id="reg-sistema"><button type="button" class="chip" onclick="colOne(this)">TT</button><button type="button" class="chip" onclick="colOne(this)">TN</button></div></div>
+      </div>
+      <div class="sect"><div class="sect-t">Registro (Tipo: M manut. · G guasto · L lavori · V verifiche)</div><div id="reg-list"></div><button type="button" class="btn" onclick="rowsAdd('regRig')" style="margin-top:8px;">+ Aggiungi riga</button></div>
+    </div>
+    <div class="actionbar"><button class="btn" onclick="salvaReg()">Salva registro</button></div>
   </section>
 
   <!-- RAPPORTI LIST -->
@@ -490,7 +624,7 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
 // ===== CONFIG (progetto di PROVA) =====
 const SB_URL = 'https://pubwwimufjqftikqyjpj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1Ynd3aW11ZmpxZnRpa3F5anBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MzIwOTcsImV4cCI6MjEwNzIwODA5N30.sDCZYxg_jZ685qcEYen-7Xdm_SpYI8kgTpCstIdHlzE';
-const APP_VERSION = '2026.10.22-6';
+const APP_VERSION = '2026.10.22-7';
 const DOMINIO = 'interno.florial.it';
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true, storageKey:'florial_auth' } });
 
@@ -563,7 +697,7 @@ async function entra(){
   $('qa-contratti').style.display = (utente.ruolo==='tecnico') ? 'none' : '';
   $('qa-fatture').style.display = (utente.ruolo==='admin') ? '' : 'none';
   $('qa-import').style.display = (utente.ruolo==='admin') ? '' : 'none';
-  $('qa-col16').style.display = (utente.ruolo==='admin') ? '' : 'none';
+  $('qa-moduli').style.display = (utente.ruolo==='admin') ? '' : 'none';
   // admin: gestione accesso squadra
   if(utente.ruolo==='admin'){ $('adm-squadra').style.display=''; $('adm-codice').style.display=''; caricaSquadra(); aggiornaStatoCodice(); } else { $('adm-squadra').style.display='none'; $('adm-codice').style.display='none'; }
   initCnv();
@@ -1043,6 +1177,47 @@ async function salvaCol16(){
   if(error){ if(/verifiche|exist|relation|schema|42p01/i.test((error.message||'')+(error.code||''))){ toast('Schermata pronta: per salvare serve attivare la tabella (sblocco).'); } else { toast('Errore: '+error.message); } return; }
   toast('Rapporto di prova salvato'); go('home');
 }
+
+// ===== Moduli operativi: righe dinamiche generiche =====
+const ROWS={};
+function rowsInit(name,container,cols){ ROWS[name]={arr:[],container,cols}; }
+function rowsAdd(name){ ROWS[name].arr.push({}); rowsDraw(name); }
+function rowsDel(name,i){ ROWS[name].arr.splice(i,1); rowsDraw(name); }
+function rowsSet(name,i,k,v){ if(ROWS[name].arr[i]) ROWS[name].arr[i][k]=v; }
+function rowsClear(name){ ROWS[name].arr=[]; rowsDraw(name); }
+function rowsVal(name){ return ROWS[name].arr; }
+function rowsDraw(name){ const R=ROWS[name]; const el=$(R.container); if(!el) return;
+  el.innerHTML = R.arr.length ? R.arr.map((r,i)=>`<div style="padding:10px;margin-top:8px;border:1px solid var(--bd);border-radius:10px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><b>${i+1}</b><button type="button" class="clear" onclick="rowsDel('${name}',${i})">✕</button></div>${R.cols.map(c=>`<input class="in" style="margin-bottom:6px;" placeholder="${c.ph}" value="${esc(r[c.k]||'')}" oninput="rowsSet('${name}',${i},'${c.k}',this.value)">`).join('')}</div>`).join('') : '<div class="s-lbl" style="padding:6px 2px;">Vuoto — tocca «Aggiungi».</div>';
+}
+rowsInit('sopCrit','sop-crit-list',[{k:'crit',ph:'Criticità rilevata'},{k:'liv',ph:'Gravità (A/M/B)'},{k:'detta',ph:'Detta al cliente? (sì/no)'}]);
+rowsInit('sopLav','sop-lav-list',[{k:'lav',ph:'Lavorazione'},{k:'qta',ph:'Q.tà di massima'},{k:'note',ph:'Note'}]);
+rowsInit('disMat','dis-mat-list',[{k:'cod',ph:'Codice'},{k:'descr',ph:'Descrizione'},{k:'um',ph:'U.M.'},{k:'qta',ph:'Q.tà'},{k:'fonte',ph:'Fonte (magazzino/acquisto)'},{k:'forn',ph:'Fornitore'},{k:'conf',ph:'Conf. ordine n°'},{k:'stato',ph:'Stato (arrivato/caricato/usato/reso)'}]);
+rowsInit('prlRig','prl-list',[{k:'data',ph:'Data'},{k:'pr',ph:'P (prelievo) / R (reso)'},{k:'cod',ph:'Codice'},{k:'descr',ph:'Descrizione'},{k:'qta',ph:'Q.tà'},{k:'um',ph:'U.M.'},{k:'comm',ph:'Commessa / cliente'}]);
+rowsInit('varLav','var-lav-list',[{k:'descr',ph:'Descrizione lavorazione / fornitura'},{k:'qta',ph:'Q.tà'},{k:'note',ph:'Note'}]);
+rowsInit('regRig','reg-list',[{k:'data',ph:'Data'},{k:'tipo',ph:'Tipo (M/G/L/V)'},{k:'descr',ph:'Controllo / intervento ed esito'},{k:'rif',ph:'Rif. RSC/PRV/CTR'},{k:'tecnico',ph:'Tecnico'}]);
+
+function openModuli(){ show('s-moduli'); }
+function modChips(id){ return [...document.querySelectorAll('#'+id+' .chip.on')].map(c=>c.textContent); }
+function modChipOne(id){ const e=document.querySelector('#'+id+' .chip.on'); return e?e.textContent:null; }
+function modClear(ids){ ids.forEach(i=>{ const e=$(i); if(e)e.value=''; }); }
+function modClearChips(screenId){ document.querySelectorAll('#'+screenId+' .chip.on, #'+screenId+' .esito.on').forEach(c=>c.classList.remove('on')); }
+async function modSave(table,row,label){ showLoader('Salvataggio…'); const {error}=await sb.from(table).insert(row); hideLoader(); if(error){ if(/exist|relation|schema|42p01/i.test((error.message||'')+(error.code||''))){ toast('Schermata pronta: per salvare serve attivare la tabella (sblocco).'); } else { toast('Errore: '+error.message); } return; } toast(label+' salvato'); go('home'); }
+function modChi(){ return [utente.nome,utente.cognome].filter(Boolean).join(' '); }
+
+function openSop(){ modClear(['sop-rag','sop-piva','sop-ref','sop-tel','sop-sdi','sop-tipo','sop-mq','sop-piani','sop-ind','sop-orari','sop-chiavi','sop-ingresso','sop-richiesta','sop-entro','sop-budget','sop-stato','sop-esclusi','sop-accordi','sop-verif','sop-note']); modClearChips('s-sop'); rowsClear('sopCrit'); rowsClear('sopLav'); show('s-sop'); }
+function salvaSop(){ const rag=$('sop-rag').value.trim(); if(!rag){ toast('Scrivi il cliente'); return; } modSave('sopralluoghi',{ ragione_sociale:rag, piva:$('sop-piva').value||null, referente:$('sop-ref').value||null, tel:$('sop-tel').value||null, sdi_pec:$('sop-sdi').value||null, tipo_locale:$('sop-tipo').value||null, mq:$('sop-mq').value||null, piani:$('sop-piani').value||null, indirizzo:$('sop-ind').value||null, orari:$('sop-orari').value||null, chiavi:$('sop-chiavi').value||null, ingresso:$('sop-ingresso').value||null, richiesta:$('sop-richiesta').value||null, entro:$('sop-entro').value||null, budget:$('sop-budget').value||null, stato_fatto:$('sop-stato').value||null, criticita:rowsVal('sopCrit'), lavori:rowsVal('sopLav'), esclusi:$('sop-esclusi').value||null, accordi:$('sop-accordi').value||null, da_verificare:$('sop-verif').value||null, note:$('sop-note').value||null, compilato_da:modChi(), updated_at:new Date().toISOString() },'Sopralluogo'); }
+
+function openDis(){ modClear(['dis-cli','dis-cant','dis-inizio','dis-capo','dis-comp','dis-note']); modClearChips('s-dis'); rowsClear('disMat'); show('s-dis'); }
+function salvaDis(){ const cli=$('dis-cli').value.trim(); if(!cli){ toast('Scrivi il cliente'); return; } modSave('distinte',{ cliente:cli, cantiere:$('dis-cant').value||null, inizio_lavori:$('dis-inizio').value||null, capo_squadra:$('dis-capo').value||null, compilata_da:$('dis-comp').value||null, materiali:rowsVal('disMat'), controlli:modChips('dis-controlli'), note:$('dis-note').value||null, compilato_da:modChi(), updated_at:new Date().toISOString() },'Distinta'); }
+
+function openPrl(){ modClear(['prl-tec','prl-da','prl-al']); rowsClear('prlRig'); show('s-prl'); }
+function salvaPrl(){ const t=$('prl-tec').value.trim(); if(!t){ toast('Scrivi il tecnico'); return; } modSave('prelievi',{ tecnico:t, settimana_da:$('prl-da').value||null, settimana_al:$('prl-al').value||null, righe:rowsVal('prlRig'), compilato_da:modChi(), updated_at:new Date().toISOString() },'Foglio prelievi'); }
+
+function openVar(){ modClear(['var-data','var-comm','var-cant','var-contr','var-rich','var-tel','var-importo','var-note']); modClearChips('s-var'); rowsClear('varLav'); if($('var-data'))$('var-data').valueAsDate=new Date(); show('s-var'); requestAnimationFrame(()=>{ initSig('c-var-comm','w-var-comm','hh-var-comm'); initSig('c-var-capo','w-var-capo','hh-var-capo'); sizeSig('c-var-comm'); sizeSig('c-var-capo'); clearCnv('c-var-comm','hh-var-comm'); clearCnv('c-var-capo','hh-var-capo'); }); }
+function salvaVar(){ const c=$('var-comm').value.trim(); if(!c){ toast('Scrivi il committente'); return; } modSave('varianti',{ data:$('var-data').value||null, committente:c, cantiere:$('var-cant').value||null, contratto:$('var-contr').value||null, richiesto_da:$('var-rich').value||null, tel:$('var-tel').value||null, lavori:rowsVal('varLav'), addebito:modChipOne('var-addebito'), importo:parseFloat($('var-importo').value)||null, esecuzione:modChips('var-esec'), firma_committente:getFirma('c-var-comm'), firma_caposquadra:getFirma('c-var-capo'), note:$('var-note').value||null, compilato_da:modChi(), updated_at:new Date().toISOString() },'Ordine lavori extra'); }
+
+function openReg(){ modClear(['reg-tit','reg-loc','reg-ind','reg-ctr','reg-dico','reg-quadri']); modClearChips('s-reg'); rowsClear('regRig'); show('s-reg'); }
+function salvaReg(){ const t=$('reg-tit').value.trim(); if(!t){ toast('Scrivi il titolare / ragione sociale'); return; } modSave('registri',{ titolare:t, locale:$('reg-loc').value||null, indirizzo:$('reg-ind').value||null, ctr:$('reg-ctr').value||null, dico:$('reg-dico').value||null, quadri:$('reg-quadri').value||null, sistema:modChipOne('reg-sistema'), registro:rowsVal('regRig'), compilato_da:modChi(), updated_at:new Date().toISOString() },'Registro controlli'); }
 
 // ===== NAV =====
 function show(id){ const cur=document.querySelector('.screen.active'); if(cur)prevScreen=cur.id; document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); $(id).scrollTop=0; }
