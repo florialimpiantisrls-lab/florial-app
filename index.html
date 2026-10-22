@@ -403,7 +403,7 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
 // ===== CONFIG (progetto di PROVA) =====
 const SB_URL = 'https://pubwwimufjqftikqyjpj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1Ynd3aW11ZmpxZnRpa3F5anBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MzIwOTcsImV4cCI6MjEwNzIwODA5N30.sDCZYxg_jZ685qcEYen-7Xdm_SpYI8kgTpCstIdHlzE';
-const APP_VERSION = '2026.10.22-2';
+const APP_VERSION = '2026.10.22-3';
 const DOMINIO = 'interno.florial.it';
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true, storageKey:'florial_auth' } });
 
@@ -626,12 +626,15 @@ async function apriFattura(ficId){
 // ===== IMPORTA ARCHIVIO (rapportini storici, solo admin) =====
 let impItems = [];
 function openImport(){ impRender(); show('s-import'); }
-function impGuessCliente(name){
-  let s=(name||'').replace(/\.[a-z0-9]+$/i,'').replace(/[_\-]+/g,' ').replace(/\d{1,2}[\/.]\d{1,2}[\/.]\d{2,4}/g,' ').replace(/pag(ina)?\s*\d+/ig,' ').replace(/\b\d+\b/g,' ').replace(/\s+/g,' ').trim();
-  return s.replace(/\b\w/g,c=>c.toUpperCase());
+function impParse(name){
+  const base=(name||'').replace(/\.[a-z0-9]+$/i,'');
+  let data=''; const dm=base.match(/(20\d{2})-(\d{2})-(\d{2})/); if(dm) data=dm[0];
+  let cliente = base.includes('__') ? base.split('__')[0] : base.replace(/20\d{2}-\d{2}-\d{2}/,'');
+  cliente = cliente.replace(/[_\-]+/g,' ').replace(/pag(ina)?\s*\d+/ig,' ').replace(/\b\d+\b/g,' ').replace(/\s+/g,' ').trim().replace(/\b\w/g,c=>c.toUpperCase());
+  return {cliente:cliente, data:data};
 }
 function impAdd(input){
-  [...input.files].forEach(f=>{ const r=new FileReader(); r.onload=e=>comprimi(e.target.result,d=>{ impItems.push({dataUrl:d,cliente:impGuessCliente(f.name),data:'',tipo:'Manutenzione',lavori:''}); impRender(); }); r.readAsDataURL(f); });
+  [...input.files].forEach(f=>{ const r=new FileReader(); r.onload=e=>comprimi(e.target.result,d=>{ const p=impParse(f.name); impItems.push({dataUrl:d,cliente:p.cliente,data:p.data,tipo:'Manutenzione',lavori:''}); impRender(); }); r.readAsDataURL(f); });
   input.value='';
 }
 function impDel(i){ impItems.splice(i,1); impRender(); }
@@ -645,7 +648,7 @@ function impRender(){
       <img src="${it.dataUrl}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;flex-shrink:0;">
       <div style="flex:1;min-width:0;">
         <input class="in" list="dl-cli" placeholder="Cliente" value="${esc(it.cliente)}" oninput="impSet(${i},'cliente',this.value)" style="margin-bottom:6px;">
-        <div style="display:flex;gap:6px;"><input class="in" type="date" oninput="impSet(${i},'data',this.value)" style="flex:1;"><select class="in" onchange="impSet(${i},'tipo',this.value)" style="flex:1;"><option>Manutenzione</option><option>Assistenza</option><option>Installazione</option><option>Urgenza</option></select></div>
+        <div style="display:flex;gap:6px;"><input class="in" type="date" value="${esc(it.data)}" oninput="impSet(${i},'data',this.value)" style="flex:1;"><select class="in" onchange="impSet(${i},'tipo',this.value)" style="flex:1;"><option>Manutenzione</option><option>Assistenza</option><option>Installazione</option><option>Urgenza</option></select></div>
       </div>
       <button type="button" class="clear" onclick="impDel(${i})">✕</button>
     </div>
