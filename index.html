@@ -183,6 +183,7 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
           <button class="qa-card" onclick="go('profilo')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><span class="t">Profilo</span><span class="s">Il mio codice</span></button>
           <button class="qa-card" id="qa-contratti" style="display:none;" onclick="openContratti()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M9 13h6M9 17h6"></path></svg><span class="t">Contratti</span><span class="s">Manutenzione</span></button>
           <button class="qa-card" id="qa-fatture" style="display:none;" onclick="openFatture()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path><path d="M8 7h8M8 11h8M8 15h5"></path></svg><span class="t">Fatture</span><span class="s">Fatture in Cloud</span></button>
+          <button class="qa-card" id="qa-import" style="display:none;" onclick="openImport()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg><span class="t">Importa archivio</span><span class="s">Rapportini storici</span></button>
         </div>
       </div>
       <div><div class="s-lbl">Attività recenti</div><div id="recent"></div></div>
@@ -217,6 +218,23 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
   <section class="screen" id="s-fatt-dett">
     <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title" id="fatt-dett-title">Fattura</div></div>
     <div class="form" id="fatt-dett-body"></div>
+  </section>
+
+  <!-- IMPORTA ARCHIVIO (solo admin) -->
+  <section class="screen" id="s-import">
+    <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title">Importa archivio</div></div>
+    <div class="form">
+      <div class="sect">
+        <div class="sect-t">Rapportini storici — scansioni</div>
+        <button type="button" class="foto-drop" onclick="document.getElementById('imp-inp').click()">Tocca per scegliere le scansioni (foto o immagini)</button>
+        <input type="file" id="imp-inp" accept="image/*" multiple hidden onchange="impAdd(this)">
+        <div class="s-lbl" id="imp-info" style="padding:8px 2px 0;"></div>
+        <div id="imp-list"></div>
+      </div>
+    </div>
+    <div class="actionbar">
+      <button class="btn" id="imp-btn" onclick="impSalva()" disabled style="opacity:.5;">Importa nell'app</button>
+    </div>
   </section>
 
   <!-- RAPPORTI LIST -->
@@ -385,7 +403,7 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
 // ===== CONFIG (progetto di PROVA) =====
 const SB_URL = 'https://pubwwimufjqftikqyjpj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1Ynd3aW11ZmpxZnRpa3F5anBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MzIwOTcsImV4cCI6MjEwNzIwODA5N30.sDCZYxg_jZ685qcEYen-7Xdm_SpYI8kgTpCstIdHlzE';
-const APP_VERSION = '2026.10.21-4';
+const APP_VERSION = '2026.10.22-1';
 const DOMINIO = 'interno.florial.it';
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true, storageKey:'florial_auth' } });
 
@@ -457,6 +475,7 @@ async function entra(){
   $('cli-add-btn').style.display = (utente.ruolo==='tecnico') ? 'none' : '';
   $('qa-contratti').style.display = (utente.ruolo==='tecnico') ? 'none' : '';
   $('qa-fatture').style.display = (utente.ruolo==='admin') ? '' : 'none';
+  $('qa-import').style.display = (utente.ruolo==='admin') ? '' : 'none';
   // admin: gestione accesso squadra
   if(utente.ruolo==='admin'){ $('adm-squadra').style.display=''; $('adm-codice').style.display=''; caricaSquadra(); aggiornaStatoCodice(); } else { $('adm-squadra').style.display='none'; $('adm-codice').style.display='none'; }
   initCnv();
@@ -604,6 +623,49 @@ async function apriFattura(ficId){
   show('s-fatt-dett');
 }
 
+// ===== IMPORTA ARCHIVIO (rapportini storici, solo admin) =====
+let impItems = [];
+function openImport(){ impRender(); show('s-import'); }
+function impGuessCliente(name){
+  let s=(name||'').replace(/\.[a-z0-9]+$/i,'').replace(/[_\-]+/g,' ').replace(/\d{1,2}[\/.]\d{1,2}[\/.]\d{2,4}/g,' ').replace(/pag(ina)?\s*\d+/ig,' ').replace(/\b\d+\b/g,' ').replace(/\s+/g,' ').trim();
+  return s.replace(/\b\w/g,c=>c.toUpperCase());
+}
+function impAdd(input){
+  [...input.files].forEach(f=>{ const r=new FileReader(); r.onload=e=>comprimi(e.target.result,d=>{ impItems.push({dataUrl:d,cliente:impGuessCliente(f.name),data:'',tipo:'Manutenzione',lavori:''}); impRender(); }); r.readAsDataURL(f); });
+  input.value='';
+}
+function impDel(i){ impItems.splice(i,1); impRender(); }
+function impSet(i,campo,val){ if(impItems[i]) impItems[i][campo]=val; }
+function impRender(){
+  const el=$('imp-list'); if(!el) return;
+  $('imp-info').textContent = impItems.length ? impItems.length+' scansioni pronte — controlla cliente e data' : 'Nessuna scansione scelta';
+  const btn=$('imp-btn'); btn.disabled=!impItems.length; btn.style.opacity=impItems.length?'1':'.5';
+  el.innerHTML = impItems.map((it,i)=>`<div style="padding:10px;margin-top:10px;border:1px solid var(--bd);border-radius:10px;">
+    <div style="display:flex;gap:10px;align-items:flex-start;">
+      <img src="${it.dataUrl}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;flex-shrink:0;">
+      <div style="flex:1;min-width:0;">
+        <input class="in" list="dl-cli" placeholder="Cliente" value="${esc(it.cliente)}" oninput="impSet(${i},'cliente',this.value)" style="margin-bottom:6px;">
+        <div style="display:flex;gap:6px;"><input class="in" type="date" oninput="impSet(${i},'data',this.value)" style="flex:1;"><select class="in" onchange="impSet(${i},'tipo',this.value)" style="flex:1;"><option>Manutenzione</option><option>Assistenza</option><option>Installazione</option><option>Urgenza</option></select></div>
+      </div>
+      <button type="button" class="clear" onclick="impDel(${i})">✕</button>
+    </div>
+    <input class="in" placeholder="Lavori eseguiti (facoltativo)" oninput="impSet(${i},'lavori',this.value)" style="margin-top:6px;">
+  </div>`).join('');
+}
+async function impSalva(){
+  const pronti = impItems.filter(it=>it.cliente && it.cliente.trim());
+  if(!pronti.length){ toast('Scrivi almeno il cliente'); return; }
+  showLoader('Importo '+pronti.length+' rapportini…');
+  const rows = pronti.map(it=>({ data:it.data||null, ragione_sociale:it.cliente.trim(), tipi:[it.tipo], lavori:it.lavori||null, esito:'Intervento completato', note:'Rapportino storico importato', origine:'storico', foto:[it.dataUrl], tecnico_nome:[utente.nome,utente.cognome].filter(Boolean).join(' '), updated_at:new Date().toISOString() }));
+  const { error } = await sb.from('rapporti').insert(rows);
+  hideLoader();
+  if(error){ toast('Errore: '+error.message); return; }
+  toast(pronti.length+' rapportini importati');
+  impItems=[]; impRender();
+  await Promise.all([caricaStats(),caricaRecenti()]);
+  go('rapporti'); renderRap();
+}
+
 // ===== DATI =====
 async function caricaClienti(){
   const { data } = await sb.from('clienti').select('*').order('ragione_sociale');
@@ -630,11 +692,11 @@ function dataIt(d){ return d? new Date(d).toLocaleDateString('it-IT') : ''; }
 // ===== RAPPORTI =====
 function itemRap(r){
   const ok = (r.esito||'').toLowerCase().includes('complet');
-  return `<button class="item" onclick="apriRap('${r.id}')"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path></svg></span><span class="bd"><span class="ti">${esc(r.ragione_sociale)||'—'}</span><span class="su">N° ${esc(r.numero)} · ${dataIt(r.data)}</span></span><span class="badge ${ok?'b-ok':'b-wa'}">${esc(r.esito)||'—'}</span></button>`;
+  return `<button class="item" onclick="apriRap('${r.id}')"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path></svg></span><span class="bd"><span class="ti">${esc(r.ragione_sociale)||'—'}</span><span class="su">${r.numero?('N° '+esc(r.numero)+' · '):''}${dataIt(r.data)}${r.origine==='storico'?' · storico':''}</span></span><span class="badge ${ok?'b-ok':'b-wa'}">${esc(r.esito)||'—'}</span></button>`;
 }
 async function renderRap(filter=''){
   const el=$('rap-list'); el.innerHTML=spinBox();
-  let q = sb.from('rapporti').select('*').order('created_at',{ascending:false}).limit(50);
+  let q = sb.from('rapporti').select('id,numero,data,ragione_sociale,esito,origine').order('created_at',{ascending:false}).limit(50);
   if(filter) q = q.ilike('ragione_sociale','%'+filter+'%');
   const { data, error } = await q;
   if(error){ el.innerHTML=emptyBox('Errore di caricamento'); return; }
