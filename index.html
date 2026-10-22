@@ -403,7 +403,7 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
 // ===== CONFIG (progetto di PROVA) =====
 const SB_URL = 'https://pubwwimufjqftikqyjpj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1Ynd3aW11ZmpxZnRpa3F5anBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MzIwOTcsImV4cCI6MjEwNzIwODA5N30.sDCZYxg_jZ685qcEYen-7Xdm_SpYI8kgTpCstIdHlzE';
-const APP_VERSION = '2026.10.22-1';
+const APP_VERSION = '2026.10.22-2';
 const DOMINIO = 'interno.florial.it';
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true, storageKey:'florial_auth' } });
 
@@ -707,7 +707,7 @@ function rapNew(){
   editRap=null; foto=[]; $('rap-title').textContent='Nuovo rapporto'; $('r-del').style.display='none';
   resetRap(); $('r-data').valueAsDate=new Date();
   sb.rpc('next_numero',{seq_id:'rapporti_'+new Date().getFullYear()}).then(({data})=>{ $('r-num').value = String(data||1).padStart(3,'0')+'/'+new Date().getFullYear(); });
-  show('s-rap-form');
+  show('s-rap-form'); requestAnimationFrame(sizeFirme);
 }
 function resetRap(){
   ['r-ticket','r-rag','r-ref','r-tel','r-ind','r-cit','r-descr','r-lavori','r-ore','r-km','r-note'].forEach(i=>$(i).value='');
@@ -728,7 +728,7 @@ async function apriRap(id){
   (r.tipi||[]).forEach(t=>document.querySelectorAll('#r-tipi .chip').forEach(c=>{ if(c.textContent===t) c.classList.add('on'); }));
   document.querySelectorAll('#r-esiti .esito').forEach(c=>{ if(c.textContent===r.esito) c.classList.add('on'); });
   foto = Array.isArray(r.foto)? r.foto : []; renderFoto();
-  show('s-rap-form');
+  show('s-rap-form'); requestAnimationFrame(()=>{ sizeFirme(); loadFirma('c-tec','hh-tec',r.firma_tecnico); loadFirma('c-cli','hh-cli',r.firma_cliente); });
 }
 async function salvaRap(){
   const rag=$('r-rag').value.trim(); if(!rag){ toast('Scrivi il cliente'); return; }
@@ -864,6 +864,19 @@ function initCnv(){
     cv.addEventListener('mousedown',st); cv.addEventListener('mousemove',mv); window.addEventListener('mouseup',en);
     cv.addEventListener('touchstart',st,{passive:false}); cv.addEventListener('touchmove',mv,{passive:false}); cv.addEventListener('touchend',en);
   });
+}
+function sizeFirme(){
+  ['c-tec','c-cli'].forEach(cid=>{
+    const cv=$(cid); if(!cv||!cv.parentElement) return;
+    const r=cv.parentElement.getBoundingClientRect(); if(!r.width||!r.height) return;
+    if(cv.width===Math.round(r.width) && cv.height===Math.round(r.height)) return;
+    cv.width=Math.round(r.width); cv.height=Math.round(r.height);
+    const ctx=cv.getContext('2d'); ctx.strokeStyle='#0b2326'; ctx.lineWidth=2.2; ctx.lineCap='round'; ctx.lineJoin='round';
+  });
+}
+function loadFirma(cid,hid,dataUrl){
+  const cv=$(cid); if(!cv||!dataUrl) return;
+  const img=new Image(); img.onload=()=>{ try{ cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height); }catch(e){} if($(hid))$(hid).style.display='none'; }; img.src=dataUrl;
 }
 function clearCnv(cid,hid){ const c=$(cid); if(c&&c.getContext){ c.getContext('2d').clearRect(0,0,c.width,c.height); } if($(hid))$(hid).style.display=''; }
 function getFirma(cid){ const c=$(cid); try{ const blank=document.createElement('canvas'); blank.width=c.width; blank.height=c.height; if(c.toDataURL()===blank.toDataURL()) return null; return c.toDataURL('image/png'); }catch(e){ return null; } }
