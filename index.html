@@ -184,6 +184,7 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
           <button class="qa-card" id="qa-contratti" style="display:none;" onclick="openContratti()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M9 13h6M9 17h6"></path></svg><span class="t">Contratti</span><span class="s">Manutenzione</span></button>
           <button class="qa-card" id="qa-fatture" style="display:none;" onclick="openFatture()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path><path d="M8 7h8M8 11h8M8 15h5"></path></svg><span class="t">Fatture</span><span class="s">Fatture in Cloud</span></button>
           <button class="qa-card" id="qa-import" style="display:none;" onclick="openImport()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg><span class="t">Importa archivio</span><span class="s">Rapportini storici</span></button>
+          <button class="qa-card" id="qa-col16" style="display:none;" onclick="openCol16()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg><span class="t">Rapporto di prova</span><span class="s">Verifiche strumentali</span></button>
         </div>
       </div>
       <div><div class="s-lbl">Attività recenti</div><div id="recent"></div></div>
@@ -238,6 +239,87 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
     </div>
     <div class="actionbar">
       <button class="btn" id="imp-btn" onclick="impSalva()" disabled style="opacity:.5;">Importa nell'app</button>
+    </div>
+  </section>
+
+  <!-- FLR-COL-16 · RAPPORTO DI PROVA — VERIFICHE STRUMENTALI -->
+  <section class="screen" id="s-col16">
+    <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title">Rapporto di prova (FLR-COL-16)</div></div>
+    <div class="form">
+      <div class="sect">
+        <div class="sect-t">1 · Impianto e strumento</div>
+        <div class="fg"><span class="lbl">Cliente / locale</span><input class="in" id="col-cliente" list="dl-cli" placeholder="Nome del locale"></div>
+        <div class="fg2">
+          <div class="fg"><span class="lbl">Rif. PRV / CTR</span><input class="in" id="col-rif"></div>
+          <div class="fg"><span class="lbl">Data prove</span><input class="in" type="date" id="col-data"></div>
+        </div>
+        <div class="fg"><span class="lbl">Quadro / parte d'impianto verificata</span><input class="in" id="col-quadro"></div>
+        <div class="fg"><span class="lbl">Sistema</span><div class="chips" id="col-sistema"><button type="button" class="chip" onclick="colOne(this)">TT</button><button type="button" class="chip" onclick="colOne(this)">TN-S</button><button type="button" class="chip" onclick="colOne(this)">TN-C-S</button></div></div>
+        <div class="fg2">
+          <div class="fg"><span class="lbl">Tensione</span><div class="chips" id="col-tens"><button type="button" class="chip" onclick="colOne(this)">230 V</button><button type="button" class="chip" onclick="colOne(this)">400 V</button></div></div>
+          <div class="fg"><span class="lbl">Potenza kW</span><input class="in" id="col-pot" type="number" step="0.1" min="0"></div>
+        </div>
+        <div class="fg2">
+          <div class="fg"><span class="lbl">Strumento (marca e modello)</span><input class="in" id="col-strum"></div>
+          <div class="fg"><span class="lbl">Matricola</span><input class="in" id="col-matr"></div>
+        </div>
+        <div class="fg"><span class="lbl">Tarato fino al</span><input class="in" id="col-tarat" type="date"></div>
+      </div>
+      <div class="sect">
+        <div class="sect-t">2 · Esame a vista</div>
+        <div class="chips" id="col-vista">
+          <button type="button" class="chip" onclick="this.classList.toggle('on')">Componenti idonei, integri, marcatura CE</button>
+          <button type="button" class="chip" onclick="this.classList.toggle('on')">Protezione contatti diretti (IP)</button>
+          <button type="button" class="chip" onclick="this.classList.toggle('on')">Sezioni e colori dei conduttori</button>
+          <button type="button" class="chip" onclick="this.classList.toggle('on')">Circuiti identificati, etichette</button>
+          <button type="button" class="chip" onclick="this.classList.toggle('on')">PE ed equipotenziali collegati</button>
+          <button type="button" class="chip" onclick="this.classList.toggle('on')">Targa quadro e schemi presenti</button>
+        </div>
+      </div>
+      <div class="sect">
+        <div class="sect-t">3 · Misure generali</div>
+        <div class="fg2">
+          <div class="fg"><span class="lbl">Resistenza di terra RE (Ω)</span><input class="in" id="col-re" type="number" step="0.01" min="0"></div>
+          <div class="fg"><span class="lbl">IΔn più alta (mA)</span><input class="in" id="col-idn" type="number" min="0"></div>
+        </div>
+        <div class="chips" id="col-gen">
+          <button type="button" class="chip" onclick="this.classList.toggle('on')">RE × IΔn ≤ 50 V (TT)</button>
+          <button type="button" class="chip" onclick="this.classList.toggle('on')">Continuità PE ed equipotenziali</button>
+          <button type="button" class="chip" onclick="this.classList.toggle('on')">Polarità / senso ciclico fasi</button>
+        </div>
+      </div>
+      <div class="sect">
+        <div class="sect-t">4 · Misure per circuito</div>
+        <div id="col-circ-list"></div>
+        <button type="button" class="btn" onclick="colAddCirc()" style="margin-top:8px;">+ Aggiungi circuito</button>
+        <p class="s-lbl" style="padding:8px 2px 0;font-size:10px;line-height:1.4;">Isolamento ≥ 1 MΩ (500 V) · diff. generali: ≤ 300 ms a IΔn e ≤ 40 ms a 5·IΔn · TT: RE × IΔn ≤ 50 V.</p>
+      </div>
+      <div class="sect">
+        <div class="sect-t">5 · Prove funzionali</div>
+        <div class="chips" id="col-prove">
+          <button type="button" class="chip" onclick="this.classList.toggle('on')">Tasto di prova dei differenziali</button>
+          <button type="button" class="chip" onclick="this.classList.toggle('on')">Comandi, automatismi, interblocchi</button>
+          <button type="button" class="chip" onclick="this.classList.toggle('on')">Illuminazione di emergenza</button>
+          <button type="button" class="chip" onclick="this.classList.toggle('on')">Rivelatore gas ed elettrovalvola</button>
+          <button type="button" class="chip" onclick="this.classList.toggle('on')">Domotica / scenari</button>
+        </div>
+      </div>
+      <div class="sect">
+        <div class="sect-t">6 · Esito</div>
+        <div class="esiti" id="col-esiti">
+          <button type="button" class="esito" onclick="colPickEsito(this)">POSITIVO — idoneo</button>
+          <button type="button" class="esito" onclick="colPickEsito(this)">NEGATIVO — anomalie</button>
+        </div>
+        <div class="fg" style="margin-top:8px;"><span class="lbl">Anomalie / note</span><textarea class="in" id="col-note"></textarea></div>
+      </div>
+      <div class="sect">
+        <div class="sect-t">Firme</div>
+        <div class="fg"><span class="lbl">Tecnico che ha eseguito le prove</span><div class="cnv-wrap" id="w-col-tec"><canvas id="c-col-tec"></canvas><div class="cnv-hint" id="hh-col-tec">Firma qui</div></div><button type="button" class="clear" onclick="clearCnv('c-col-tec','hh-col-tec')">Cancella</button></div>
+        <div class="fg"><span class="lbl">Responsabile tecnico (D.M. 37/08)</span><div class="cnv-wrap" id="w-col-resp"><canvas id="c-col-resp"></canvas><div class="cnv-hint" id="hh-col-resp">Firma qui</div></div><button type="button" class="clear" onclick="clearCnv('c-col-resp','hh-col-resp')">Cancella</button></div>
+      </div>
+    </div>
+    <div class="actionbar">
+      <button class="btn" onclick="salvaCol16()">Salva rapporto di prova</button>
     </div>
   </section>
 
@@ -408,7 +490,7 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
 // ===== CONFIG (progetto di PROVA) =====
 const SB_URL = 'https://pubwwimufjqftikqyjpj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1Ynd3aW11ZmpxZnRpa3F5anBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MzIwOTcsImV4cCI6MjEwNzIwODA5N30.sDCZYxg_jZ685qcEYen-7Xdm_SpYI8kgTpCstIdHlzE';
-const APP_VERSION = '2026.10.22-5';
+const APP_VERSION = '2026.10.22-6';
 const DOMINIO = 'interno.florial.it';
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true, storageKey:'florial_auth' } });
 
@@ -481,6 +563,7 @@ async function entra(){
   $('qa-contratti').style.display = (utente.ruolo==='tecnico') ? 'none' : '';
   $('qa-fatture').style.display = (utente.ruolo==='admin') ? '' : 'none';
   $('qa-import').style.display = (utente.ruolo==='admin') ? '' : 'none';
+  $('qa-col16').style.display = (utente.ruolo==='admin') ? '' : 'none';
   // admin: gestione accesso squadra
   if(utente.ruolo==='admin'){ $('adm-squadra').style.display=''; $('adm-codice').style.display=''; caricaSquadra(); aggiornaStatoCodice(); } else { $('adm-squadra').style.display='none'; $('adm-codice').style.display='none'; }
   initCnv();
@@ -901,6 +984,65 @@ function loadFirma(cid,hid,dataUrl){
 }
 function clearCnv(cid,hid){ const c=$(cid); if(c&&c.getContext){ c.getContext('2d').clearRect(0,0,c.width,c.height); } if($(hid))$(hid).style.display=''; }
 function getFirma(cid){ const c=$(cid); try{ const blank=document.createElement('canvas'); blank.width=c.width; blank.height=c.height; if(c.toDataURL()===blank.toDataURL()) return null; return c.toDataURL('image/png'); }catch(e){ return null; } }
+// firma generica (riusabile su più schermate)
+function initSig(cid,wid,hid){
+  const cv=$(cid), wr=$(wid); if(!cv||!wr||cv.dataset.init) return; cv.dataset.init='1';
+  const ctx=cv.getContext('2d'); ctx.strokeStyle='#0b2326'; ctx.lineWidth=2.2; ctx.lineCap='round'; ctx.lineJoin='round';
+  let draw=false,lx=0,ly=0;
+  const pt=e=>{ const r=cv.getBoundingClientRect(); const s=e.touches?e.touches[0]:e; return [s.clientX-r.left,s.clientY-r.top]; };
+  const st=e=>{ e.preventDefault(); draw=true; [lx,ly]=pt(e); if($(hid))$(hid).style.display='none'; };
+  const mv=e=>{ if(!draw)return; e.preventDefault(); const [x,y]=pt(e); ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(x,y); ctx.stroke(); [lx,ly]=[x,y]; };
+  const en=()=>{ draw=false; };
+  cv.addEventListener('mousedown',st); cv.addEventListener('mousemove',mv); window.addEventListener('mouseup',en);
+  cv.addEventListener('touchstart',st,{passive:false}); cv.addEventListener('touchmove',mv,{passive:false}); cv.addEventListener('touchend',en);
+}
+function sizeSig(cid){ const cv=$(cid); if(!cv||!cv.parentElement) return; const r=cv.parentElement.getBoundingClientRect(); if(!r.width||!r.height) return; cv.width=Math.round(r.width); cv.height=Math.round(r.height); const ctx=cv.getContext('2d'); ctx.strokeStyle='#0b2326'; ctx.lineWidth=2.2; ctx.lineCap='round'; ctx.lineJoin='round'; }
+
+// ===== FLR-COL-16 · Rapporto di prova (verifiche strumentali) =====
+let colCirc=[];
+function colOne(el){ el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('on')); el.classList.add('on'); }
+function colPickEsito(el){ document.querySelectorAll('#col-esiti .esito').forEach(c=>c.classList.remove('on')); el.classList.add('on'); }
+function colChips(id){ return [...document.querySelectorAll('#'+id+' .chip.on')].map(c=>c.textContent); }
+function colChipOne(id){ const e=document.querySelector('#'+id+' .chip.on'); return e?e.textContent:null; }
+function openCol16(){
+  ['col-cliente','col-rif','col-quadro','col-pot','col-strum','col-matr','col-tarat','col-re','col-idn','col-note'].forEach(i=>{ const e=$(i); if(e)e.value=''; });
+  document.querySelectorAll('#s-col16 .chip.on, #s-col16 .esito.on').forEach(c=>c.classList.remove('on'));
+  colCirc=[]; colRenderCirc();
+  if($('col-data')) $('col-data').valueAsDate=new Date();
+  show('s-col16');
+  requestAnimationFrame(()=>{ initSig('c-col-tec','w-col-tec','hh-col-tec'); initSig('c-col-resp','w-col-resp','hh-col-resp'); sizeSig('c-col-tec'); sizeSig('c-col-resp'); clearCnv('c-col-tec','hh-col-tec'); clearCnv('c-col-resp','hh-col-resp'); });
+}
+function colAddCirc(){ colCirc.push({linea:'',prot:'',diff:'',iso:'',pe:'',zs:'',t1:'',t5:'',ok:false}); colRenderCirc(); }
+function colDelCirc(i){ colCirc.splice(i,1); colRenderCirc(); }
+function colSetCirc(i,campo,val){ if(colCirc[i]) colCirc[i][campo]=val; }
+function colRenderCirc(){
+  const el=$('col-circ-list'); if(!el) return;
+  el.innerHTML = colCirc.length ? colCirc.map((c,i)=>`<div style="padding:10px;margin-top:8px;border:1px solid var(--bd);border-radius:10px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><b>Circuito ${i+1}</b><button type="button" class="clear" onclick="colDelCirc(${i})">✕</button></div>
+    <input class="in" placeholder="Circuito / linea" value="${esc(c.linea)}" oninput="colSetCirc(${i},'linea',this.value)" style="margin-bottom:6px;">
+    <div class="fg2"><input class="in" placeholder="Protez. In (A)/curva" value="${esc(c.prot)}" oninput="colSetCirc(${i},'prot',this.value)"><input class="in" placeholder="Diff. IΔn (mA)/tipo" value="${esc(c.diff)}" oninput="colSetCirc(${i},'diff',this.value)"></div>
+    <div class="fg2" style="margin-top:6px;"><input class="in" placeholder="Isolam. (MΩ)" value="${esc(c.iso)}" oninput="colSetCirc(${i},'iso',this.value)"><input class="in" placeholder="Contin. PE (Ω)" value="${esc(c.pe)}" oninput="colSetCirc(${i},'pe',this.value)"></div>
+    <div class="fg2" style="margin-top:6px;"><input class="in" placeholder="Zs (Ω)" value="${esc(c.zs)}" oninput="colSetCirc(${i},'zs',this.value)"><input class="in" placeholder="t a IΔn (ms)" value="${esc(c.t1)}" oninput="colSetCirc(${i},'t1',this.value)"></div>
+    <div class="fg2" style="margin-top:6px;align-items:center;"><input class="in" placeholder="t a 5·IΔn (ms)" value="${esc(c.t5)}" oninput="colSetCirc(${i},'t5',this.value)"><label class="opt" style="display:flex;align-items:center;gap:6px;"><input type="checkbox" ${c.ok?'checked':''} onchange="colSetCirc(${i},'ok',this.checked)"> Esito OK</label></div>
+  </div>`).join('') : '<div class="s-lbl" style="padding:6px 2px;">Nessun circuito — tocca «Aggiungi circuito».</div>';
+}
+async function salvaCol16(){
+  const cliente=$('col-cliente').value.trim(); if(!cliente){ toast('Scrivi cliente / locale'); return; }
+  const esitoEl=document.querySelector('#col-esiti .esito.on');
+  const row={ cliente, rif:$('col-rif').value||null, data_prove:$('col-data').value||null, quadro:$('col-quadro').value||null,
+    sistema:colChipOne('col-sistema'), tensione:colChipOne('col-tens'), potenza_kw:parseFloat($('col-pot').value)||null,
+    strumento:$('col-strum').value||null, matricola:$('col-matr').value||null, tarato_fino:$('col-tarat').value||null,
+    esame_vista:colChips('col-vista'), re_ohm:parseFloat($('col-re').value)||null, idn_ma:parseFloat($('col-idn').value)||null,
+    misure_generali:colChips('col-gen'), circuiti:colCirc, prove_funzionali:colChips('col-prove'),
+    esito:esitoEl?esitoEl.textContent:null, note:$('col-note').value||null,
+    firma_tecnico:getFirma('c-col-tec'), firma_responsabile:getFirma('c-col-resp'),
+    compilato_da:[utente.nome,utente.cognome].filter(Boolean).join(' '), updated_at:new Date().toISOString() };
+  showLoader('Salvataggio…');
+  const { error } = await sb.from('verifiche').insert(row);
+  hideLoader();
+  if(error){ if(/verifiche|exist|relation|schema|42p01/i.test((error.message||'')+(error.code||''))){ toast('Schermata pronta: per salvare serve attivare la tabella (sblocco).'); } else { toast('Errore: '+error.message); } return; }
+  toast('Rapporto di prova salvato'); go('home');
+}
 
 // ===== NAV =====
 function show(id){ const cur=document.querySelector('.screen.active'); if(cur)prevScreen=cur.id; document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); $(id).scrollTop=0; }
