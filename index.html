@@ -45,6 +45,9 @@ a{color:var(--teal-d);}
 .lbl{font-size:11px;font-weight:600;letter-spacing:.02em;color:var(--muted);text-transform:uppercase;}
 .inp{border:1px solid var(--bd-d);border-radius:8px;padding:0 14px;min-height:50px;background:var(--s0);color:var(--ink);font-size:16px;width:100%;}
 .btn{background:var(--teal-d);border:none;border-radius:8px;min-height:52px;color:#fff;font-size:16px;font-weight:600;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;}
+.chk{display:flex;align-items:flex-start;gap:12px;padding:12px 4px;border-bottom:1px solid var(--bd);cursor:pointer;line-height:1.45;color:var(--ink);font-size:15px;}
+.chk input{width:22px;height:22px;flex-shrink:0;margin-top:1px;accent-color:var(--teal-d);}
+.chk.ok span{color:var(--muted);text-decoration:line-through;}
 .btn.sec{background:var(--s0);color:var(--teal-d);border:1px solid var(--bd-d);}
 .btn.danger{background:var(--s0);color:var(--err);border:1px solid var(--err);}
 .err{font-size:13px;color:var(--err);min-height:17px;text-align:center;}
@@ -543,6 +546,11 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
   </section>
 
   <!-- COMMESSA DETTAGLIO -->
+  <section class="screen" id="s-lav-dett">
+    <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title" id="lav-dett-title">Lavoro</div></div>
+    <div class="form" id="lav-dett-body"></div>
+  </section>
+
   <section class="screen" id="s-comm-dett">
     <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title" id="comm-dett-title">Commessa</div></div>
     <div class="form" id="comm-dett-body"></div>
@@ -624,7 +632,7 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
 // ===== CONFIG (progetto di PROVA) =====
 const SB_URL = 'https://pubwwimufjqftikqyjpj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1Ynd3aW11ZmpxZnRpa3F5anBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MzIwOTcsImV4cCI6MjEwNzIwODA5N30.sDCZYxg_jZ685qcEYen-7Xdm_SpYI8kgTpCstIdHlzE';
-const APP_VERSION = '2026.10.24-2';
+const APP_VERSION = '2026.10.24-3';
 const DOMINIO = 'interno.florial.it';
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true, storageKey:'florial_auth' } });
 
@@ -759,6 +767,7 @@ async function salvaCodiceExtra(){
 }
 
 // ===== CALENDARIO / LAVORI =====
+let calCache={};
 async function renderCal(){
   const el=$('cal-list'); el.innerHTML=spinBox();
   const oggi=new Date(); const da=oggi.toISOString().slice(0,10);
@@ -768,7 +777,7 @@ async function renderCal(){
   if(error){ el.innerHTML=emptyBox('Errore di caricamento'); return; }
   if(!data||!data.length){ el.innerHTML=emptyBox('Nessun lavoro in programma'); return; }
   let html='', cur='';
-  data.forEach(x=>{ if(x.data!==cur){ cur=x.data; html+=`<div class="s-lbl" style="margin:12px 2px 2px;">${giornoLabel(x.data)}</div>`; } html+=itemCal(x); });
+  calCache={}; data.forEach(x=>{ calCache[x.intervento_id]=x; if(x.data!==cur){ cur=x.data; html+=`<div class="s-lbl" style="margin:12px 2px 2px;">${giornoLabel(x.data)}</div>`; } html+=itemCal(x); });
   el.innerHTML=html;
 }
 function giornoLabel(d){ const dt=new Date(d+'T00:00:00'); const s=dt.toLocaleDateString('it-IT',{weekday:'long',day:'2-digit',month:'long'}); return s.charAt(0).toUpperCase()+s.slice(1); }
@@ -778,9 +787,82 @@ function itemCal(x){
   const stMap={da_fare:['Da fare','b-mu'],in_corso:['In corso','b-wa'],fatto:['Fatto','b-ok'],sospeso:['Sospeso','b-wa']};
   const st=stMap[x.stato]||[esc(x.stato),'b-mu'];
   const mat = x.materiale ? `<span class="su">Da preparare: ${esc(x.materiale)}</span>` : '';
-  const tel = x.telefono ? `<a href="tel:${esc(x.telefono)}" class="su" style="color:var(--teal-d);font-weight:600;">Chiama ${esc(x.telefono)}</a>` : '';
-  const maps = x.indirizzo ? `<a href="https://maps.google.com/?q=${encodeURIComponent((x.indirizzo||'')+' '+(x.citta||''))}" target="_blank" rel="noopener" class="badge b-mu" style="text-decoration:none;">Mappa</a>` : '';
-  return `<div class="item"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg></span><span class="bd"><span class="ti">${ora?ora+' · ':''}${esc(x.lavorazione)}</span>${luogo?`<span class="su">${luogo}</span>`:''}${mat}${tel}</span><span style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex-shrink:0;">${maps}<span class="badge ${st[1]}">${st[0]}</span></span></div>`;
+  const tel = x.telefono ? `<a href="tel:${esc(x.telefono)}" onclick="event.stopPropagation()" class="su" style="color:var(--teal-d);font-weight:600;">Chiama ${esc(x.telefono)}</a>` : '';
+  const maps = x.indirizzo ? `<a href="https://maps.google.com/?q=${encodeURIComponent((x.indirizzo||'')+' '+(x.citta||''))}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="badge b-mu" style="text-decoration:none;">Mappa</a>` : '';
+  return `<div class="item" role="button" tabindex="0" style="cursor:pointer;" onclick="apriLavoro('${x.intervento_id}')"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg></span><span class="bd"><span class="ti">${ora?ora+' · ':''}${esc(x.lavorazione)}</span>${luogo?`<span class="su">${luogo}</span>`:''}${mat}${tel}</span><span style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex-shrink:0;">${maps}<span class="badge ${st[1]}">${st[0]}</span></span></div>`;
+}
+
+// ===== DETTAGLIO LAVORO: mappa, chiamata, cosa fare (checklist), materiale, stato =====
+function vociDaFare(t){
+  return String(t||'').split(/\r?\n|\s•\s/).map(v=>v.replace(/^\s*(?:[-•*☐]|\d+[\).:-])\s*/,'').trim()).filter(Boolean);
+}
+function chkKey(id){ return 'lav-chk-'+id; }
+function chkLeggi(id){ try{ return JSON.parse(localStorage.getItem(chkKey(id))||'[]'); }catch(e){ return []; } }
+function chkScrivi(id,arr){ try{ localStorage.setItem(chkKey(id), JSON.stringify(arr)); }catch(e){} }
+let lavCorrente=null;
+async function apriLavoro(id){
+  const x=calCache[id]; if(!x) return;
+  showLoader();
+  let det=null;
+  try{ const r=await sb.from('interventi').select('descrizione,materiale,stato').eq('id',id).maybeSingle(); det=r.data; }catch(e){}
+  hideLoader();
+  lavCorrente={ x, det };
+  const stato=(det&&det.stato)||x.stato;
+  const stMap={da_fare:['Da fare','b-mu'],in_corso:['In corso','b-wa'],fatto:['Fatto','b-ok'],sospeso:['Sospeso','b-wa']};
+  const st=stMap[stato]||[esc(stato),'b-mu'];
+  const ora=[(x.ora_inizio||'').slice(0,5),(x.ora_fine||'').slice(0,5)].filter(Boolean).join('–');
+  const dove=[x.indirizzo,x.citta].filter(Boolean).join(', ');
+  $('lav-dett-title').textContent = x.insegna || 'Lavoro';
+  let voci=vociDaFare(det&&det.descrizione);
+  if(!voci.length) voci=[x.lavorazione||'Lavoro'];
+  const fatte=chkLeggi(id);
+  let html='';
+  // azioni rapide
+  html+=`<div style="display:flex;gap:8px;margin-bottom:4px;">`;
+  if(dove) html+=`<a class="btn" style="flex:1;text-decoration:none;" href="https://maps.google.com/?q=${encodeURIComponent(dove)}" target="_blank" rel="noopener"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>Mappa</a>`;
+  if(x.telefono) html+=`<a class="btn sec" style="flex:1;text-decoration:none;" href="tel:${esc(x.telefono)}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"></path></svg>Chiama</a>`;
+  html+=`</div>`;
+  // cosa fare
+  html+=`<div class="sect"><div class="sect-t" style="display:flex;justify-content:space-between;"><span>Cosa fare</span><span id="lav-prog">${fatte.filter(Boolean).length}/${voci.length}</span></div>`;
+  html+=voci.map((v,i)=>`<label class="chk${fatte[i]?' ok':''}"><input type="checkbox" ${fatte[i]?'checked':''} onchange="spuntaVoce('${id}',${i},this,${voci.length})"><span>${esc(v)}</span></label>`).join('');
+  html+=`</div>`;
+  const mat=(det&&det.materiale)||x.materiale;
+  if(mat) html+=`<div class="sect"><div class="sect-t">Materiale da preparare</div><div style="padding:8px 2px;line-height:1.5;white-space:pre-line;">${esc(mat)}</div></div>`;
+  // dove e quando
+  html+=`<div class="sect"><div class="sect-t">Dove e quando</div>`
+    + dettRow('Giorno', giornoLabel(x.data))
+    + (ora?dettRow('Orario', esc(ora)):'')
+    + (dove?dettRow('Indirizzo', esc(dove)):'')
+    + (x.tecnici?dettRow('Squadra', esc(x.tecnici)):'')
+    + `<div style="display:flex;justify-content:space-between;gap:12px;padding:10px 2px;border-bottom:1px solid var(--bd);"><span style="color:var(--muted);font-size:13px;">Stato</span><span class="badge ${st[1]}" id="lav-stato">${st[0]}</span></div></div>`;
+  if(x.note_accesso) html+=`<div class="sect"><div class="sect-t">Note di accesso</div><div style="padding:8px 2px;line-height:1.5;white-space:pre-line;">${esc(x.note_accesso)}</div></div>`;
+  if(x.commessa_titolo && x.commessa_titolo!==x.lavorazione) html+=`<div class="sect"><div class="sect-t">Commessa</div><div style="padding:8px 2px;line-height:1.5;">${esc(x.commessa_titolo)}</div></div>`;
+  // cambio stato
+  html+=`<div style="display:flex;gap:8px;margin-top:8px;">`;
+  if(stato==='da_fare'||stato==='sospeso') html+=`<button class="btn sec" style="flex:1;" onclick="cambiaStatoLavoro('${id}','in_corso')">Inizia lavoro</button>`;
+  if(stato!=='fatto') html+=`<button class="btn" style="flex:1;" onclick="cambiaStatoLavoro('${id}','fatto')">Segna come fatto</button>`;
+  html+=`</div>`;
+  $('lav-dett-body').innerHTML=html;
+  show('s-lav-dett');
+}
+function spuntaVoce(id,i,el,tot){
+  const a=chkLeggi(id); a[i]=el.checked; chkScrivi(id,a);
+  el.parentElement.classList.toggle('ok', el.checked);
+  const n=a.filter(Boolean).length; const p=$('lav-prog'); if(p) p.textContent=n+'/'+tot;
+}
+async function cambiaStatoLavoro(id,stato){
+  if(stato==='fatto'){
+    const tot=document.querySelectorAll('#lav-dett-body .chk').length, ok=document.querySelectorAll('#lav-dett-body .chk.ok').length;
+    if(ok<tot && cambiaStatoLavoro._conf!==id){ cambiaStatoLavoro._conf=id; toast('Mancano '+(tot-ok)+' voci: premi di nuovo per confermare'); setTimeout(()=>{cambiaStatoLavoro._conf=null;},5000); return; }
+    cambiaStatoLavoro._conf=null;
+  }
+  showLoader('Salvataggio…');
+  const { error }=await sb.from('interventi').update({ stato, updated_at:new Date().toISOString() }).eq('id',id);
+  hideLoader();
+  if(error){ toast('Errore: '+error.message); return; }
+  if(calCache[id]) calCache[id].stato=stato;
+  toast(stato==='fatto'?'Lavoro segnato come fatto':'Lavoro iniziato');
+  await apriLavoro(id); renderCal();
 }
 
 // ===== CONTRATTI MANUTENZIONE (admin/ufficio) =====
