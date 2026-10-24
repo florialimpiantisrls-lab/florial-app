@@ -68,7 +68,7 @@ async function syncDeal(dealId: string) {
   const props = [
     "dealname", "dealstage", "pipeline", "amount", "codice_prv", "indirizzo_lavori", "referente_sul_posto",
     "telefono_referente", "note_accesso", "lavorazioni_tecnici", "squadra_assegnata", "data_inizio_lavori",
-    "data_fine_prevista",
+    "data_fine_prevista", "documenti_fic", "scadenza_saldo", "acconto_incassato",
   ].join(",");
   const deal = await hs(`/crm/v3/objects/deals/${dealId}?properties=${props}&associations=companies,contacts`);
   const p = (deal.properties ?? {}) as Dict;
@@ -95,6 +95,9 @@ async function syncDeal(dealId: string) {
     const { error } = await sb.from("commesse_hub").upsert({
       hubspot_id: dealId, nome: s(p.dealname), codice: s(p.codice_prv) || null, fase,
       pipeline: s(p.pipeline) || null, cliente: cliente.nome || null, importo, updated_at: new Date().toISOString(),
+      // solo admin: documenti Fatture in Cloud e scadenze scritti su HubSpot dal workflow Fatture in Cloud → HubSpot
+      documenti_fic: s(p.documenti_fic) || null, scadenza_saldo: s(p.scadenza_saldo) || null,
+      acconto_incassato: s(p.acconto_incassato) === "true" ? true : (s(p.acconto_incassato) === "false" ? false : null),
     }, { onConflict: "hubspot_id" });
     if (error) throw new Error(`commesse_hub: ${error.message}`);
     azioni.push(`commessa aggiornata (fase ${fase})`);

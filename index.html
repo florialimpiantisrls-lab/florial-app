@@ -624,7 +624,7 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
 // ===== CONFIG (progetto di PROVA) =====
 const SB_URL = 'https://pubwwimufjqftikqyjpj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1Ynd3aW11ZmpxZnRpa3F5anBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MzIwOTcsImV4cCI6MjEwNzIwODA5N30.sDCZYxg_jZ685qcEYen-7Xdm_SpYI8kgTpCstIdHlzE';
-const APP_VERSION = '2026.10.24-1';
+const APP_VERSION = '2026.10.24-2';
 const DOMINIO = 'interno.florial.it';
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true, storageKey:'florial_auth' } });
 
@@ -1017,6 +1017,13 @@ async function apriCommessa(hubId){
     + `<div style="display:flex;justify-content:space-between;gap:12px;padding:10px 2px;border-bottom:1px solid var(--bd);"><span style="color:var(--muted);font-size:13px;">Fase</span><span class="badge ${fb[1]}">${fb[0]}</span></div></div>`;
   if(c.nome) html += `<div class="sect"><div class="sect-t">Descrizione</div><div style="padding:8px 2px;color:var(--ink);line-height:1.5;">${esc(c.nome)}</div></div>`;
   if(utente.ruolo==='admin' && c.importo!=null) html += `<div class="sect"><div class="sect-t">Importo · solo admin</div>`+dettRow('Totale commessa', euro(c.importo), true)+`</div>`;
+  if(utente.ruolo==='admin' && (c.documenti_fic || c.scadenza_saldo || c.acconto_incassato!=null)){
+    html += `<div class="sect"><div class="sect-t">Fatture e incassi · solo admin</div>`;
+    if(c.acconto_incassato!=null) html += dettRow('Acconto', c.acconto_incassato ? '<span class="badge b-ok">Incassato</span>' : '<span class="badge b-wa">Da incassare</span>');
+    if(c.scadenza_saldo) html += dettRow('Scadenza saldo', dataIt(c.scadenza_saldo));
+    if(c.documenti_fic) html += `<div style="padding:8px 2px;color:var(--ink);line-height:1.6;white-space:pre-line;font-size:13px;">${esc(c.documenti_fic)}</div>`;
+    html += `</div>`;
+  }
   $('comm-dett-body').innerHTML = html;
   show('s-comm-dett');
 }
