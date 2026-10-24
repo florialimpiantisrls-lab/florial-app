@@ -624,7 +624,7 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
 // ===== CONFIG (progetto di PROVA) =====
 const SB_URL = 'https://pubwwimufjqftikqyjpj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1Ynd3aW11ZmpxZnRpa3F5anBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MzIwOTcsImV4cCI6MjEwNzIwODA5N30.sDCZYxg_jZ685qcEYen-7Xdm_SpYI8kgTpCstIdHlzE';
-const APP_VERSION = '2026.10.22-7';
+const APP_VERSION = '2026.10.24-1';
 const DOMINIO = 'interno.florial.it';
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true, storageKey:'florial_auth' } });
 
@@ -808,25 +808,25 @@ function itemContratto(c){
 function openFatture(){ renderFatture(); show('s-fatture'); }
 async function renderFatture(filter=''){
   const el=$('fatt-list'); el.innerHTML=spinBox();
-  let q=sb.from('fatture').select('fic_id,numero,data,cliente,oggetto,totale,scadenza').order('numero',{ascending:false}).limit(500);
+  let q=sb.from('fatture').select('*').order('numero',{ascending:false}).limit(500);
   if(filter) q=q.ilike('cliente','%'+filter+'%');
   const { data, error }=await q;
   if(error){ el.innerHTML=emptyBox('Errore di caricamento'); $('fatt-tot').textContent=''; return; }
   if(!data||!data.length){ el.innerHTML=emptyBox('Nessuna fattura'); $('fatt-tot').textContent=''; return; }
-  const tot=data.reduce((s,f)=>s+(Number(f.totale)||0),0);
+  const tot=data.filter(f=>f.tipo!=='proforma').reduce((s,f)=>s+(Number(f.totale)||0),0);
   $('fatt-tot').textContent='Totale '+euro(tot)+' · '+data.length+' fatture';
   el.innerHTML=data.map(itemFattura).join('');
 }
 function itemFattura(f){
   const scad=f.scadenza?`<span class="su">Scadenza ${dataIt(f.scadenza)}</span>`:'';
-  return `<button class="item" onclick="apriFattura('${f.fic_id}')"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path><path d="M8 7h8M8 11h8M8 15h5"></path></svg></span><span class="bd"><span class="ti">${esc(f.cliente)||'—'}</span><span class="su">N° ${esc(f.numero)} · ${dataIt(f.data)}</span>${f.oggetto?`<span class="su">${esc(f.oggetto)}</span>`:''}${scad}</span><span class="badge b-mu" style="font-family:'IBM Plex Mono',monospace;white-space:nowrap;">${euro(f.totale)}</span></button>`;
+  return `<button class="item" onclick="apriFattura('${f.fic_id}')"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path><path d="M8 7h8M8 11h8M8 15h5"></path></svg></span><span class="bd"><span class="ti">${esc(f.cliente)||'—'}</span><span class="su">${f.tipo==='proforma'?'Proforma ':(f.tipo==='nota_credito'?'Nota di credito ':'')}N° ${esc(f.numero)} · ${dataIt(f.data)}</span>${f.oggetto?`<span class="su">${esc(f.oggetto)}</span>`:''}${scad}</span><span class="badge b-mu" style="font-family:'IBM Plex Mono',monospace;white-space:nowrap;">${euro(f.totale)}</span></button>`;
 }
 function dettRow(l,v,mono){ return `<div style="display:flex;justify-content:space-between;gap:12px;padding:10px 2px;border-bottom:1px solid var(--bd);"><span style="color:var(--muted);font-size:13px;flex-shrink:0;">${esc(l)}</span><span style="text-align:right;font-weight:600;color:var(--ink);${mono?"font-family:'IBM Plex Mono',monospace;":''}">${v}</span></div>`; }
 async function apriFattura(ficId){
   showLoader();
   const { data:f } = await sb.from('fatture').select('*').eq('fic_id',ficId).single();
   hideLoader(); if(!f) return;
-  $('fatt-dett-title').textContent='Fattura N° '+(f.numero||'');
+  $('fatt-dett-title').textContent=(f.tipo==='proforma'?'Proforma N° ':(f.tipo==='nota_credito'?'Nota di credito N° ':'Fattura N° '))+(f.numero||'');
   $('fatt-dett-body').innerHTML =
     `<div class="sect"><div class="sect-t">Cliente</div>`
     + dettRow('Ragione sociale', esc(f.cliente)||'—')
