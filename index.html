@@ -657,7 +657,7 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
 // ===== CONFIG (progetto di PROVA) =====
 const SB_URL = 'https://pubwwimufjqftikqyjpj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1Ynd3aW11ZmpxZnRpa3F5anBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MzIwOTcsImV4cCI6MjEwNzIwODA5N30.sDCZYxg_jZ685qcEYen-7Xdm_SpYI8kgTpCstIdHlzE';
-const APP_VERSION = '2026.10.26-1';
+const APP_VERSION = '2026.10.26-2';
 const DOMINIO = 'interno.florial.it';
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true, storageKey:'florial_auth' } });
 
@@ -1176,6 +1176,8 @@ function itemPrev(c){
 async function apriCommessa(hubId){
   showLoader();
   const { data:c } = await sb.from('commesse_hub').select('*').eq('hubspot_id',hubId).single();
+  let dett=null;
+  try{ const r=await sb.rpc('commessa_dettaglio',{ p_hub:String(hubId) }); dett=r.data; }catch(e){}
   hideLoader(); if(!c) return;
   const fb=faseBadge(c.fase);
   $('comm-dett-title').textContent = c.codice || 'Commessa';
@@ -1183,8 +1185,16 @@ async function apriCommessa(hubId){
     + dettRow('Cliente', esc(c.cliente)||'—')
     + dettRow('Codice', esc(c.codice)||'—', true)
     + `<div style="display:flex;justify-content:space-between;gap:12px;padding:10px 2px;border-bottom:1px solid var(--bd);"><span style="color:var(--muted);font-size:13px;">Fase</span><span class="badge ${fb[1]}">${fb[0]}</span></div></div>`;
-  if(c.nome) html += `<div class="sect"><div class="sect-t">Descrizione</div><div style="padding:8px 2px;color:var(--ink);line-height:1.5;">${esc(c.nome)}</div></div>`;
-  if(utente.ruolo==='admin' && c.importo!=null) html += `<div class="sect"><div class="sect-t">Importo · solo admin</div>`+dettRow('Totale commessa', euro(c.importo), true)+`</div>`;
+  // Preventivo: oggetto, lavorazioni, importo (solo admin)
+  const lavorazioni = dett && dett.lavorazioni;
+  if(c.nome || lavorazioni || (utente.ruolo==='admin' && c.importo!=null)){
+    html += `<div class="sect"><div class="sect-t">Preventivo</div>`;
+    if(c.codice) html += dettRow('Numero', esc(c.codice), true);
+    if(c.nome) html += dettRow('Oggetto', esc(c.nome));
+    if(lavorazioni) html += `<div style="padding:8px 2px;color:var(--ink);line-height:1.5;white-space:pre-line;"><span style="color:var(--muted);font-size:13px;">Lavorazioni</span><br>${esc(lavorazioni)}</div>`;
+    if(utente.ruolo==='admin' && c.importo!=null) html += dettRow('Importo · solo admin', euro(c.importo), true);
+    html += `</div>`;
+  }
   if(utente.ruolo==='admin' && (c.documenti_fic || c.scadenza_saldo || c.acconto_incassato!=null)){
     html += `<div class="sect"><div class="sect-t">Fatture e incassi · solo admin</div>`;
     if(c.acconto_incassato!=null) html += dettRow('Acconto', c.acconto_incassato ? '<span class="badge b-ok">Incassato</span>' : '<span class="badge b-wa">Da incassare</span>');
@@ -1192,8 +1202,32 @@ async function apriCommessa(hubId){
     if(c.documenti_fic) html += `<div style="padding:8px 2px;color:var(--ink);line-height:1.6;white-space:pre-line;font-size:13px;">${esc(c.documenti_fic)}</div>`;
     html += `</div>`;
   }
+  html += interventiCommessaHtml(dett && dett.interventi);
   $('comm-dett-body').innerHTML = html;
   show('s-comm-dett');
+}
+function interventiCommessaHtml(list){
+  const today=new Date().toISOString().slice(0,10);
+  const stMap={da_fare:['Da fare','b-mu'],in_corso:['In corso','b-wa'],fatto:['Fatto','b-ok'],sospeso:['Sospeso','b-wa']};
+  if(!Array.isArray(list)||!list.length){
+    return `<div class="sect"><div class="sect-t">Interventi</div><div class="s-lbl" style="padding:6px 2px;line-height:1.5;">Nessun intervento collegato. Compaiono qui quando la commessa ha una data e una squadra assegnate.</div></div>`;
+  }
+  const fatti=[], prog=[];
+  list.forEach(i=>{ const passato=(i.data&&i.data<today)||i.stato==='fatto'; (passato?fatti:prog).push(i); });
+  fatti.sort((a,b)=>String(b.data||'').localeCompare(String(a.data||'')));
+  prog.sort((a,b)=>String(a.data||'').localeCompare(String(b.data||'')));
+  const riga=i=>{
+    const st=stMap[i.stato]||[esc(i.stato),'b-mu'];
+    const tit=esc(i.titolo||i.descrizione||'Intervento');
+    const tec=i.tecnici?`<div style="color:var(--muted);font-size:12px;margin-top:2px;">${esc(i.tecnici)}</div>`:'';
+    const d=i.data?giornoLabel(i.data):'Data da definire';
+    return `<div style="padding:9px 2px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;gap:10px;align-items:flex-start;"><div style="min-width:0;"><div style="font-weight:600;">${d}</div><div style="color:var(--ink);font-size:13px;margin-top:1px;">${tit}</div>${tec}</div><span class="badge ${st[1]}" style="white-space:nowrap;flex-shrink:0;">${st[0]}</span></div>`;
+  };
+  let h=`<div class="sect"><div class="sect-t">Interventi</div>`;
+  if(prog.length){ h+=`<div class="s-lbl" style="margin:2px 2px 2px;">In programma</div>`+prog.map(riga).join(''); }
+  if(fatti.length){ h+=`<div class="s-lbl" style="margin:12px 2px 2px;">Fatti</div>`+fatti.map(riga).join(''); }
+  h+=`</div>`;
+  return h;
 }
 async function renderPrev(filter=''){
   const el=$('prev-list'); el.innerHTML=spinBox();
