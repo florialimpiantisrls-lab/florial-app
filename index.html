@@ -48,6 +48,20 @@ a{color:var(--teal-d);}
 .chk{display:flex;align-items:flex-start;gap:12px;padding:12px 4px;border-bottom:1px solid var(--bd);cursor:pointer;line-height:1.45;color:var(--ink);font-size:15px;}
 .chk input{width:22px;height:22px;flex-shrink:0;margin-top:1px;accent-color:var(--teal-d);}
 .chk.ok span{color:var(--muted);text-decoration:line-through;}
+.tia-log{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;}
+.tia-msg{max-width:88%;padding:10px 12px;border-radius:14px;line-height:1.5;font-size:15px;word-wrap:break-word;overflow-wrap:anywhere;}
+.tia-msg.u{align-self:flex-end;background:var(--teal-d);color:#fff;border-bottom-right-radius:4px;white-space:pre-wrap;}
+.tia-msg.a{align-self:flex-start;background:var(--s0);border:1px solid var(--bd);color:var(--ink);border-bottom-left-radius:4px;}
+.tia-msg.a ul{margin:4px 0;padding-left:20px;} .tia-msg.a p{margin:0 0 6px;} .tia-msg.a p:last-child{margin:0;}
+.tia-msg.err{border-color:var(--err);color:var(--err);}
+.tia-sug{display:flex;flex-wrap:wrap;gap:8px;}
+.tia-sug button{background:var(--s0);border:1px solid var(--bd-d);color:var(--teal-d);border-radius:999px;padding:8px 12px;font-size:13px;font-weight:600;}
+.tia-bar{display:flex;gap:8px;align-items:flex-end;padding:10px 12px calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--bd);background:var(--s0);}
+.tia-bar textarea{flex:1;min-width:0;resize:none;border:1px solid var(--bd-d);border-radius:12px;padding:12px;font:inherit;font-size:16px;color:var(--ink);background:var(--s0);max-height:140px;}
+.tia-btn{flex-shrink:0;width:48px;height:48px;border-radius:12px;border:none;background:var(--teal-d);color:#fff;display:flex;align-items:center;justify-content:center;}
+.tia-btn.sec{background:var(--s1);color:var(--teal-d);border:1px solid var(--bd-d);}
+.tia-btn.rec{background:var(--err);color:#fff;border-color:var(--err);}
+#s-tia.active{display:flex;}
 .btn.sec{background:var(--s0);color:var(--teal-d);border:1px solid var(--bd-d);}
 .btn.danger{background:var(--s0);color:var(--err);border:1px solid var(--err);}
 .err{font-size:13px;color:var(--err);min-height:17px;text-align:center;}
@@ -184,6 +198,7 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
           <button class="qa-card" onclick="go('preventivi')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="M9 13h6M9 17h4"></path></svg><span class="t">Commesse</span><span class="s">Stato trattative</span></button>
           <button class="qa-card" onclick="go('clienti')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path></svg><span class="t">Clienti</span><span class="s">Rubrica</span></button>
           <button class="qa-card" onclick="go('profilo')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><span class="t">Profilo</span><span class="s">Il mio codice</span></button>
+          <button class="qa-card" id="qa-tia" style="display:none;border-color:var(--teal);background:var(--s1);" onclick="openTia()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15.5l-1.9-4.6L5.5 9l4.6-1.4z"></path><path d="M19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"></path><path d="M5 17l.6 1.4L7 19l-1.4.6L5 21l-.6-1.4L3 19l1.4-.6z"></path></svg><span class="t">Florial TIA</span><span class="s">Chiedi all'assistente</span></button>
           <button class="qa-card" id="qa-contratti" style="display:none;" onclick="openContratti()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M9 13h6M9 17h6"></path></svg><span class="t">Contratti</span><span class="s">Manutenzione</span></button>
           <button class="qa-card" id="qa-fatture" style="display:none;" onclick="openFatture()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path><path d="M8 7h8M8 11h8M8 15h5"></path></svg><span class="t">Fatture</span><span class="s">Fatture in Cloud</span></button>
           <button class="qa-card" id="qa-import" style="display:none;" onclick="openImport()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg><span class="t">Importa archivio</span><span class="s">Rapportini storici</span></button>
@@ -211,6 +226,16 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
   </section>
 
   <!-- FATTURE (solo admin) -->
+  <section class="screen" id="s-tia">
+    <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title">Florial TIA</div><button class="topbar-back" style="margin-left:auto;" onclick="tiaNuova()" aria-label="Nuova conversazione"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg></button></div>
+    <div id="tia-log" class="tia-log"></div>
+    <div class="tia-bar">
+      <button type="button" id="tia-mic" class="tia-btn sec" onclick="tiaMic()" aria-label="Detta"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10a7 7 0 0 0 14 0M12 17v5"></path></svg></button>
+      <textarea id="tia-in" rows="1" placeholder="Chiedi a TIA… (es. chi lavora domani?)" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,140)+'px'" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();tiaInvia();}"></textarea>
+      <button type="button" id="tia-send" class="tia-btn" onclick="tiaInvia()" aria-label="Invia"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"></path><path d="M22 2l-7 20-4-9-9-4z"></path></svg></button>
+    </div>
+  </section>
+
   <section class="screen" id="s-fatture">
     <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title">Fatture 2026</div></div>
     <div class="search"><input id="q-fatt" placeholder="Cerca cliente…" oninput="renderFatture(this.value)"></div>
@@ -632,7 +657,7 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
 // ===== CONFIG (progetto di PROVA) =====
 const SB_URL = 'https://pubwwimufjqftikqyjpj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1Ynd3aW11ZmpxZnRpa3F5anBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MzIwOTcsImV4cCI6MjEwNzIwODA5N30.sDCZYxg_jZ685qcEYen-7Xdm_SpYI8kgTpCstIdHlzE';
-const APP_VERSION = '2026.10.24-3';
+const APP_VERSION = '2026.10.26-1';
 const DOMINIO = 'interno.florial.it';
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true, storageKey:'florial_auth' } });
 
@@ -704,6 +729,7 @@ async function entra(){
   $('cli-add-btn').style.display = (utente.ruolo==='tecnico') ? 'none' : '';
   $('qa-contratti').style.display = (utente.ruolo==='tecnico') ? 'none' : '';
   $('qa-fatture').style.display = (utente.ruolo==='admin') ? '' : 'none';
+  $('qa-tia').style.display = (utente.ruolo==='admin') ? '' : 'none';
   $('qa-import').style.display = (utente.ruolo==='admin') ? '' : 'none';
   $('qa-moduli').style.display = (utente.ruolo==='admin') ? '' : 'none';
   // admin: gestione accesso squadra
@@ -863,6 +889,66 @@ async function cambiaStatoLavoro(id,stato){
   if(calCache[id]) calCache[id].stato=stato;
   toast(stato==='fatto'?'Lavoro segnato come fatto':'Lavoro iniziato');
   await apriLavoro(id); renderCal();
+}
+
+// ===== FLORIAL TIA (solo admin): assistente che legge i dati dell'app e risponde =====
+let tiaMsgs=[], tiaBusy=false, tiaRec=null;
+function tiaSalva(){ try{ sessionStorage.setItem('tia-msgs', JSON.stringify(tiaMsgs.slice(-30))); }catch(e){} }
+function tiaCarica(){ try{ tiaMsgs=JSON.parse(sessionStorage.getItem('tia-msgs')||'[]')||[]; }catch(e){ tiaMsgs=[]; } }
+function tiaMd(t){
+  const righe=esc(t).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').split('\n');
+  let html='', inList=false;
+  righe.forEach(r=>{
+    const m=r.match(/^\s*(?:[-•*]|\d+[.)])\s+(.*)$/);
+    if(m){ if(!inList){ html+='<ul>'; inList=true; } html+='<li>'+m[1]+'</li>'; }
+    else { if(inList){ html+='</ul>'; inList=false; } if(r.trim()) html+='<p>'+r.replace(/^#+\s*/,'')+'</p>'; }
+  });
+  if(inList) html+='</ul>';
+  return html;
+}
+function tiaRender(){
+  const el=$('tia-log');
+  if(!tiaMsgs.length){
+    const sug=['Chi lavora questa settimana e dove?','Quali acconti sono ancora da incassare?','Cosa manca per chiudere Piccardo?','Commesse in fase 5 e 6','Prossime visite di manutenzione'];
+    el.innerHTML=`<div class="tia-msg a"><p><b>Ciao, sono Florial TIA.</b></p><p>Leggo calendario, commesse, fatture, contratti, rapporti e clienti dell'app e ti rispondo. Per ora sono in sola lettura: non modifico nulla.</p></div><div class="tia-sug">${sug.map(q=>`<button type="button" onclick="tiaChiedi(this.textContent)">${esc(q)}</button>`).join('')}</div>`;
+    return;
+  }
+  el.innerHTML=tiaMsgs.map(m=>m.role==='user'?`<div class="tia-msg u">${esc(m.content)}</div>`:`<div class="tia-msg a${m.err?' err':''}">${tiaMd(m.content)}</div>`).join('')+(tiaBusy?`<div class="tia-msg a" id="tia-wait"><p style="color:var(--muted);">TIA sta guardando i dati…</p></div>`:'');
+  el.scrollTop=el.scrollHeight;
+}
+function openTia(){
+  if(!utente||utente.ruolo!=='admin'){ toast('Riservato all\'amministratore'); return; }
+  tiaCarica(); show('s-tia'); tiaRender();
+  const ok=('webkitSpeechRecognition' in window)||('SpeechRecognition' in window);
+  $('tia-mic').style.display=ok?'':'none';
+}
+function tiaNuova(){ tiaMsgs=[]; tiaSalva(); tiaRender(); }
+function tiaChiedi(q){ $('tia-in').value=q; tiaInvia(); }
+async function tiaInvia(){
+  const inp=$('tia-in'); const q=inp.value.trim(); if(!q||tiaBusy) return;
+  if(tiaRec){ try{ tiaRec.stop(); }catch(e){} }
+  inp.value=''; inp.style.height='auto';
+  tiaMsgs.push({ role:'user', content:q }); tiaBusy=true; tiaRender();
+  let risposta='', err=false;
+  try{
+    const hist=tiaMsgs.filter(m=>!m.err).map(m=>({ role:m.role, content:m.content })).slice(-16);
+    const { data, error } = await sb.functions.invoke('florial-tia', { body:{ messages:hist } });
+    if(error){ err=true; risposta='Non riesco a raggiungere TIA: '+(error.message||'errore di rete')+'.'; }
+    else if(!data||!data.ok){ err=true; risposta=(data&&data.errore)||'Risposta non valida.'; }
+    else risposta=data.risposta;
+  }catch(e){ err=true; risposta='Errore: '+(e.message||e); }
+  tiaBusy=false; tiaMsgs.push({ role:'assistant', content:risposta, err }); tiaSalva(); tiaRender();
+}
+function tiaMic(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR) return;
+  const btn=$('tia-mic'), inp=$('tia-in');
+  if(tiaRec){ try{ tiaRec.stop(); }catch(e){} return; }
+  const base=inp.value?inp.value.trim()+' ':'';
+  const r=new SR(); r.lang='it-IT'; r.interimResults=true; r.continuous=false;
+  r.onresult=e=>{ let t=''; for(const res of e.results) t+=res[0].transcript; inp.value=base+t; inp.dispatchEvent(new Event('input')); };
+  r.onend=()=>{ tiaRec=null; btn.classList.remove('rec'); };
+  r.onerror=e=>{ tiaRec=null; btn.classList.remove('rec'); if(e.error==='not-allowed') toast('Consenti il microfono per dettare'); };
+  tiaRec=r; btn.classList.add('rec'); try{ r.start(); }catch(e){ tiaRec=null; btn.classList.remove('rec'); }
 }
 
 // ===== CONTRATTI MANUTENZIONE (admin/ufficio) =====
