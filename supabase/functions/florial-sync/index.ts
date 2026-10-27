@@ -9,7 +9,13 @@
 // Corpo accettato (JSON):
 //   { "hubspot_deal_id": "530614499550" }
 //   { "fic_document_id": 562220749 }
+//   { "fic_cliente_piva": "01234567890" }   ← solo admin (login dell'app): rilegge tutte le fatture,
+//                                            proforma e note di credito del cliente (pulsante nella scheda cliente)
 // Risposta: { ok, azioni: [...], avvisi: [...] }
+//
+// 27/10/2026: salva anche gli incassi (rate di Fatture in Cloud) nelle colonne fatture.incassato, da_incassare,
+// rate, pagamenti_agg (script SQL 20261027_scheda_cliente.sql; senza quelle colonne salva come prima).
+// Risponde anche all'app (CORS). Il nome del locale (insegna) non viene più sovrascritto col nome della società.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
 
@@ -25,6 +31,14 @@ const sb = createClient(
 
 type Dict = Record<string, unknown>;
 const s = (v: unknown) => (v === null || v === undefined ? "" : String(v)).trim();
+
+const CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
+const risposta = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), { status, headers: { ...CORS, "Content-Type": "application/json" } });
 
 async function hs(path: string): Promise<Dict> {
   const token = Deno.env.get("HUBSPOT_TOKEN");
@@ -137,10 +151,15 @@ async function syncDeal(dealId: string) {
       referente: s(p.referente_sul_posto) || null, telefono: s(p.telefono_referente) || null,
       note_accesso: s(p.note_accesso) || null,
     };
-    const q = await sb.from("locali").select("id").eq("cliente_id", clienteId).eq("indirizzo", via).limit(1);
-    if (q.data?.length) {
-      localeId = q.data[0].id;
-      await sb.from("locali").update(loc).eq("id", localeId);
+    // stesso indirizzo anche con apostrofi, accenti o spazi diversi ("Via dell'Oriuolo" / "Via dell’Oriuolo")
+    const normInd = (x: string) => x.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const q = await sb.from("locali").select("id,indirizzo").eq("cliente_id", clienteId);
+    const esistente = (q.data ?? []).find((l) => normInd(s(l.indirizzo)) === normInd(via));
+    if (esistente) {
+      localeId = esistente.id;
+      // non si sovrascrivono l'insegna del locale (es. il nome del bar) né i campi lasciati vuoti in HubSpot
+      const aggiorna = Object.fromEntries(Object.entries(loc).filter(([k, v]) => k !== "insegna" && v !== null && v !== ""));
+      await sb.from("locali").update(aggiorna).eq("id", localeId);
     } else {
       const ins = await sb.from("locali").insert(loc).select("id").single();
       if (ins.error) throw new Error(`locali: ${ins.error.message}`);
@@ -219,34 +238,104 @@ async function syncDeal(dealId: string) {
   return { azioni, avvisi };
 }
 
-async function syncFic(docId: number) {
-  const r = await fic(`/issued_documents/${docId}?fieldset=detailed`);
-  const d = (r.data ?? {}) as Dict;
+// Riga della tabella fatture da un documento di Fatture in Cloud (fieldset detailed)
+function rigaFattura(d: Dict, docId?: number) {
   const e = (d.entity ?? {}) as Dict;
   const tipo = s(d.type);
-  if (!["invoice", "proforma", "credit_note"].includes(tipo)) return { azioni: [`documento ${tipo} ignorato`], avvisi: [] };
-  const row = {
-    fic_id: docId, numero: d.number ?? null, data: s(d.date) || null, cliente: s(e.name) || null,
+  return {
+    fic_id: docId ?? Number(d.id), numero: d.number ?? null, data: s(d.date) || null, cliente: s(e.name) || null,
     p_iva: s(e.vat_number) || s(e.tax_code) || null, oggetto: s(d.visible_subject) || null,
     imponibile: d.amount_net ?? null, iva: d.amount_vat ?? null, totale: d.amount_gross ?? null,
     scadenza: s(d.next_due_date) || null,
     tipo: tipo === "invoice" ? "fattura" : tipo === "proforma" ? "proforma" : "nota_credito",
   };
+}
+
+// Incassi dalle rate (payments_list): pagato, ancora da incassare e scadenze rata per rata
+function incassi(d: Dict) {
+  const lista = Array.isArray(d.payments_list) ? (d.payments_list as Dict[]) : [];
+  if (!lista.length || s(d.type) === "credit_note") return { incassato: null, da_incassare: null, rate: null };
+  let pagato = 0, residuo = 0; // in centesimi, per non accumulare errori di arrotondamento
+  const rate = lista.map((p) => {
+    const cent = Math.round((Number(p.amount) || 0) * 100);
+    const pagata = s(p.status) === "paid";
+    if (pagata) pagato += cent; else residuo += cent;
+    return { scadenza: s(p.due_date) || null, importo: cent / 100, pagata, pagata_il: s(p.paid_date) || null };
+  });
+  return { incassato: pagato / 100, da_incassare: residuo / 100, rate };
+}
+
+let colonneIncassi = true; // diventa false (per la richiesta in corso) se il database non ha ancora le colonne degli incassi
+const AVVISO_INCASSI = "Incassi non salvati: su Supabase va eseguito lo script SQL 20261027_scheda_cliente.sql";
+
+async function salvaFattura(d: Dict, docId?: number) {
+  const row = rigaFattura(d, docId);
+  if (colonneIncassi) {
+    const { error } = await sb.from("fatture")
+      .upsert({ ...row, ...incassi(d), pagamenti_agg: new Date().toISOString() }, { onConflict: "fic_id" });
+    if (!error) return row;
+    if (!/incassato|da_incassare|rate|pagamenti_agg/.test(error.message)) throw new Error(`fatture: ${error.message}`);
+    colonneIncassi = false; // colonne mancanti: si salva come prima, senza incassi
+  }
   const { error } = await sb.from("fatture").upsert(row, { onConflict: "fic_id" });
   if (error) throw new Error(`fatture: ${error.message}`);
-  return { azioni: [`${row.tipo} n. ${row.numero} aggiornata`], avvisi: [] };
+  return row;
+}
+
+async function syncFic(docId: number) {
+  const r = await fic(`/issued_documents/${docId}?fieldset=detailed`);
+  const d = (r.data ?? {}) as Dict;
+  const tipo = s(d.type);
+  if (!["invoice", "proforma", "credit_note"].includes(tipo)) return { azioni: [`documento ${tipo} ignorato`], avvisi: [] };
+  const row = await salvaFattura(d, docId);
+  return { azioni: [`${row.tipo} n. ${row.numero} aggiornata`], avvisi: colonneIncassi ? [] : [AVVISO_INCASSI] };
+}
+
+// Rilegge da Fatture in Cloud fatture, proforma e note di credito di un cliente (per P.IVA)
+async function syncClienteFic(pivaGrezza: string) {
+  const piva = pivaGrezza.toUpperCase().replace(/^\s*IT/, "").replace(/\D/g, "");
+  if (piva.length < 8) throw new Error("P.IVA non valida");
+  const azioni: string[] = [];
+  for (const type of ["invoice", "proforma", "credit_note"]) {
+    for (let page = 1; page <= 20; page++) {
+      const q = encodeURIComponent(`entity.vat_number = '${piva}'`);
+      const r = await fic(`/issued_documents?type=${type}&q=${q}&fieldset=detailed&per_page=50&page=${page}`);
+      const lista = (Array.isArray(r.data) ? r.data : []) as Dict[];
+      for (const d of lista) {
+        const row = await salvaFattura(d);
+        azioni.push(`${row.tipo} n. ${row.numero}`);
+      }
+      if (!lista.length || page >= (Number(r.last_page) || 1)) break;
+    }
+  }
+  return { azioni, avvisi: colonneIncassi ? [] : [AVVISO_INCASSI] };
+}
+
+// Solo l'amministratore dell'app (token di login nella richiesta) può chiedere la rilettura di un cliente
+async function eAdmin(req: Request) {
+  const jwt = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "");
+  if (!jwt) return false;
+  const { data } = await sb.auth.getUser(jwt);
+  if (!data?.user) return false;
+  const { data: me } = await sb.from("utenti").select("ruolo,attivo").eq("auth_user_id", data.user.id).maybeSingle();
+  return !!me && me.ruolo === "admin" && me.attivo !== false;
 }
 
 Deno.serve(async (req) => {
-  if (req.method !== "POST") return new Response("Solo POST", { status: 405 });
+  if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
+  if (req.method !== "POST") return risposta({ ok: false, errore: "Solo POST" }, 405);
   try {
+    colonneIncassi = true;
     const body = await req.json().catch(() => ({})) as Dict;
     let esito;
     if (body.hubspot_deal_id) esito = await syncDeal(s(body.hubspot_deal_id).replace(/\D/g, ""));
     else if (body.fic_document_id) esito = await syncFic(Number(body.fic_document_id));
-    else return Response.json({ ok: false, errore: "Serve hubspot_deal_id oppure fic_document_id" }, { status: 400 });
-    return Response.json({ ok: true, ...esito });
+    else if (body.fic_cliente_piva) {
+      if (!(await eAdmin(req))) return risposta({ ok: false, errore: "Aggiornamento riservato all'amministratore" }, 403);
+      esito = await syncClienteFic(s(body.fic_cliente_piva));
+    } else return risposta({ ok: false, errore: "Serve hubspot_deal_id, fic_document_id oppure fic_cliente_piva" }, 400);
+    return risposta({ ok: true, ...esito });
   } catch (err) {
-    return Response.json({ ok: false, errore: (err as Error).message }, { status: 500 });
+    return risposta({ ok: false, errore: (err as Error).message }, 500);
   }
 });

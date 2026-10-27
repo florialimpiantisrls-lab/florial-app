@@ -65,7 +65,7 @@ a{color:var(--teal-d);}
 .btn.sec{background:var(--s0);color:var(--teal-d);border:1px solid var(--bd-d);}
 .btn.danger{background:var(--s0);color:var(--err);border:1px solid var(--err);}
 .err{font-size:13px;color:var(--err);min-height:17px;text-align:center;}
-.hdr{background:var(--teal-d);padding:calc(var(--safe-top)+20px) 20px 22px;flex-shrink:0;}
+.hdr{background:var(--teal-d);padding:calc(var(--safe-top) + 20px) 20px 22px;flex-shrink:0;}
 .hdr .eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--teal-l);text-transform:uppercase;}
 .hdr h1{font-family:'Playfair Display',Georgia,serif;font-size:28px;font-weight:700;color:#fff;margin-top:6px;}
 .hdr .who{font-size:13px;color:var(--on-navy);margin-top:4px;opacity:.85;}
@@ -122,7 +122,7 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
 .addrow{margin-top:6px;border:1px dashed var(--bd-d);border-radius:8px;background:none;color:var(--muted);padding:9px;width:100%;font-size:13px;font-weight:600;}
 .tot{background:var(--teal-d);color:#fff;border-radius:8px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;margin-top:8px;}
 .tot .v{font-family:'IBM Plex Mono',monospace;font-size:19px;font-weight:600;}
-.actionbar{display:flex;gap:10px;padding:14px 16px calc(var(--safe-bot)+14px);background:var(--s0);border-top:1px solid var(--bd);flex-shrink:0;}
+.actionbar{display:flex;gap:10px;padding:14px 16px calc(var(--safe-bot) + 14px);background:var(--s0);border-top:1px solid var(--bd);flex-shrink:0;}
 .actionbar .btn{min-height:50px;}
 .profilo{padding:22px 16px;display:flex;flex-direction:column;gap:16px;}
 .avatar{width:72px;height:72px;border-radius:20px;background:var(--navy);color:var(--teal-l);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:28px;font-weight:700;margin:0 auto;}
@@ -137,11 +137,39 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
 .spin{width:36px;height:36px;border:3px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;}
 @keyframes sp{to{transform:rotate(360deg);}}
 .loader .t{color:#fff;font-size:14px;}
-.toast{position:fixed;left:50%;bottom:calc(var(--safe-bot)+86px);transform:translateX(-50%) translateY(18px);background:var(--ink);color:#fff;padding:11px 20px;border-radius:999px;font-size:13px;font-weight:500;opacity:0;transition:.3s;z-index:500;pointer-events:none;max-width:90%;text-align:center;}
+.toast{position:fixed;left:50%;bottom:calc(var(--safe-bot) + 86px);transform:translateX(-50%) translateY(18px);background:var(--ink);color:#fff;padding:11px 20px;border-radius:999px;font-size:13px;font-weight:500;opacity:0;transition:.3s;z-index:500;pointer-events:none;max-width:90%;text-align:center;}
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
-.update{position:fixed;left:0;right:0;top:0;z-index:600;background:var(--navy);color:#fff;padding:calc(var(--safe-top)+10px) 16px 10px;display:none;align-items:center;gap:12px;font-size:13px;}
+.update{position:fixed;left:0;right:0;top:0;z-index:600;background:var(--navy);color:#fff;padding:calc(var(--safe-top) + 10px) 16px 10px;display:none;align-items:center;gap:12px;font-size:13px;}
 .update.on{display:flex;}
 .update button{margin-left:auto;background:#fff;color:var(--navy);border:none;border-radius:7px;padding:7px 14px;font-weight:700;font-size:13px;}
+/* Righe delle liste: titolo e sottotitoli uno sotto l'altro (prima finivano sulla stessa riga, tagliati) */
+.item .ti,.item .su{display:block;}
+/* Scheda cliente */
+.item.tap{cursor:pointer;}
+.cli-nome{font-family:'Playfair Display',Georgia,serif;font-size:21px;font-weight:700;line-height:1.25;color:var(--ink);overflow-wrap:anywhere;}
+.cli-meta{font-size:13px;color:var(--muted);line-height:1.55;overflow-wrap:anywhere;}
+.cli-loc{border-top:1px solid var(--bd);padding-top:10px;display:flex;flex-direction:column;gap:2px;}
+.cli-loc .t{font-weight:600;font-size:14px;}
+.cli-links{display:flex;flex-wrap:wrap;gap:8px;}
+.pill{border:1px solid var(--bd-d);border-radius:999px;padding:7px 12px;font-size:13px;font-weight:600;color:var(--teal-d);background:var(--s0);text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+.stat.money{padding:12px 6px;}
+.stat.money .n{font-size:15px;}
+.stat.money.er .n{color:var(--err);}
+.nota{font-size:13px;line-height:1.5;color:var(--muted);}
+.nota.er{color:var(--err);font-weight:600;}
+.tl-mese{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin:12px 2px 0;}
+.item.tl .ti{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.35;}
+.item .tl-d{width:34px;flex-shrink:0;text-align:center;line-height:1.15;color:var(--teal-d);}
+.item .tl-d b{display:block;font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:600;}
+.item .tl-d small{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);}
+.item .tl-r{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;max-width:46%;}
+.amt{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;}
+.sosp{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;padding:10px 2px;border:none;border-bottom:1px solid var(--bd);width:100%;background:none;text-align:left;color:var(--ink);}
+.sosp .ti{font-size:14px;font-weight:600;}
+.sosp .su{font-size:12px;color:var(--muted);margin-top:2px;}
+.doc-tit{font-size:17px;font-weight:700;line-height:1.35;color:var(--ink);overflow-wrap:anywhere;}
+.doc-txt{padding:8px 2px;color:var(--ink);line-height:1.55;white-space:pre-line;font-size:14px;overflow-wrap:anywhere;}
+a.btn{text-decoration:none;}
 @media(max-width:400px){.fg2,.esiti{grid-template-columns:1fr;}.foto-grid{grid-template-columns:1fr 1fr;}}
 </style>
 </head>
@@ -606,6 +634,50 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
     <div class="actionbar"><button class="btn" onclick="salvaCli()">Salva cliente</button></div>
   </section>
 
+  <!-- SCHEDA CLIENTE: locali, commesse, contratti, fatture, storia -->
+  <section class="screen" id="s-cli-dett">
+    <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title" id="cli-dett-title">Cliente</div></div>
+    <div class="form" id="cli-dett-body"></div>
+  </section>
+
+  <!-- DOCUMENTO DELLA STORIA (admin/ufficio) -->
+  <section class="screen" id="s-doc-dett">
+    <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title" id="doc-dett-title">Documento</div></div>
+    <div class="form" id="doc-dett-body"></div>
+    <input type="file" id="doc-allega" accept="application/pdf,image/*" hidden onchange="docAllega(this)">
+  </section>
+
+  <!-- DOCUMENTO: NUOVO / MODIFICA (admin/ufficio) -->
+  <section class="screen" id="s-doc-form">
+    <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title" id="doc-form-title">Nuovo documento</div></div>
+    <div class="form">
+      <div class="s-lbl" id="d-cliente" style="margin:0;"></div>
+      <div class="fg2">
+        <div class="fg"><span class="lbl">Tipo</span><select class="in" id="d-tipo"></select></div>
+        <div class="fg"><span class="lbl">Data</span><input class="in" id="d-data" type="date"></div>
+      </div>
+      <div class="fg"><span class="lbl">Titolo</span><input class="in" id="d-tit" placeholder="Es. Contratto di manutenzione – proposta"></div>
+      <div class="fg2">
+        <div class="fg"><span class="lbl">Numero / codice</span><input class="in" id="d-cod" placeholder="Es. PRV-050/2026"></div>
+        <div class="fg"><span class="lbl">Stato</span><select class="in" id="d-stato"></select></div>
+      </div>
+      <div class="fg2">
+        <div class="fg" id="d-imp-wrap"><span class="lbl">Importo € · solo admin</span><input class="in" id="d-imp" type="text" inputmode="decimal" autocomplete="off" placeholder="Es. 1.265,00"></div>
+        <div class="fg"><span class="lbl">Scadenza / risposta entro</span><input class="in" id="d-scad" type="date"></div>
+      </div>
+      <div class="fg"><span class="lbl">Note</span><textarea class="in" id="d-desc" placeholder="Cosa contiene, cosa manca, cosa si aspetta"></textarea></div>
+      <div class="fg"><span class="lbl">Link (Drive, Fatture in Cloud…)</span><input class="in" id="d-url" type="url" inputmode="url" placeholder="https://"></div>
+      <div class="fg"><span class="lbl">File PDF o foto</span>
+        <button type="button" class="foto-drop" id="d-file-btn" onclick="document.getElementById('d-file').click()">Tocca per scegliere il file</button>
+        <input type="file" id="d-file" accept="application/pdf,image/*" hidden onchange="docFileScelto(this)">
+      </div>
+    </div>
+    <div class="actionbar">
+      <button class="btn" onclick="salvaDoc()">Salva</button>
+      <button class="btn danger" id="d-del" style="display:none;flex:0 0 52px;" onclick="elimDoc()" aria-label="Elimina"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+    </div>
+  </section>
+
   <!-- PROFILO -->
   <section class="screen" id="s-profilo">
     <div class="topbar"><div class="topbar-title">Profilo</div></div>
@@ -657,7 +729,7 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
 // ===== CONFIG (progetto di PROVA) =====
 const SB_URL = 'https://pubwwimufjqftikqyjpj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1Ynd3aW11ZmpxZnRpa3F5anBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MzIwOTcsImV4cCI6MjEwNzIwODA5N30.sDCZYxg_jZ685qcEYen-7Xdm_SpYI8kgTpCstIdHlzE';
-const APP_VERSION = '2026.10.26-2';
+const APP_VERSION = '2026.10.27-1';
 const DOMINIO = 'interno.florial.it';
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true, storageKey:'florial_auth' } });
 
@@ -681,7 +753,7 @@ function codiceValido(c){
   if(c.slice(0,4)===c.slice(4)) return 'Le due metà non possono essere uguali.';
   return null;
 }
-function euro(n){ return '€ ' + (Number(n)||0).toFixed(2).replace('.',','); }
+function euro(n){ const v=Number(n)||0; const p=Math.abs(v).toFixed(2).split('.'); return '€ '+(v<0?'-':'')+p[0].replace(/\B(?=(\d{3})+(?!\d))/g,'.')+','+p[1]; }
 
 // ===== LOGIN =====
 async function doLogin(){
@@ -956,7 +1028,7 @@ function openContratti(){ renderContratti(); show('s-contratti'); }
 async function renderContratti(){
   const el=$('contr-list'); el.innerHTML=spinBox();
   const { data, error } = await sb.from('contratti_manutenzione')
-    .select('codice,canone,stato,prossima_visita,reverse_charge,clienti(ragione_sociale),locali(insegna,citta)')
+    .select('*,clienti(ragione_sociale),locali(insegna,citta)')
     .eq('archiviata',false).order('codice');
   if(error){ el.innerHTML=emptyBox('Errore di caricamento'); return; }
   if(!data||!data.length){ el.innerHTML=emptyBox('Nessun contratto'); return; }
@@ -966,7 +1038,8 @@ function itemContratto(c){
   const loc=c.locali||{}, cli=c.clienti||{};
   const stMap={attivo:['Attivo','b-ok'],proposto:['Proposto','b-mu'],in_rinnovo:['In rinnovo','b-wa'],rinnovato:['Rinnovato','b-ok'],disdetto:['Disdetto','b-wa']};
   const st=stMap[c.stato]||[esc(c.stato),'b-mu'];
-  const canone=(c.canone!=null)? euro(c.canone)+'/trim' : '';
+  const per={mese:'/mese',mensile:'/mese',anno:'/anno',annuale:'/anno',trimestre:'/trim',trimestrale:'/trim'}[String(c.canone_periodo||'').toLowerCase()]||'/trim';
+  const canone=(c.canone!=null)? euro(c.canone)+per : '';
   const pros=c.prossima_visita? dataIt(c.prossima_visita):'—';
   const titolo=esc(loc.insegna)||esc(cli.ragione_sociale)||'—';
   return `<div class="item"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></span><span class="bd"><span class="ti">${titolo}</span><span class="su">${esc(c.codice)}${cli.ragione_sociale?' · '+esc(cli.ragione_sociale):''}</span><span class="su">Prossima visita: ${pros}${canone?' · '+canone:''}</span></span><span class="badge ${st[1]}">${st[0]}</span></div>`;
@@ -1009,7 +1082,8 @@ async function apriFattura(ficId){
     + dettRow('Imponibile', euro(f.imponibile), true)
     + dettRow('IVA', euro(f.iva), true)
     + dettRow('Totale', euro(f.totale), true)
-    + `</div>`;
+    + `</div>`
+    + pagamentiFatturaHtml(f);
   show('s-fatt-dett');
 }
 
@@ -1243,19 +1317,406 @@ async function renderPrev(filter=''){
 // ===== CLIENTI =====
 // Cerca per INSEGNA (nome del locale), società, P.IVA o indirizzo -> locale + società + P.IVA.
 // Usa la funzione cerca_locale su Supabase (rispetta i ruoli; non mostra margini né costi).
+// Toccando una riga si apre la scheda del cliente (storia, commesse, contratti, fatture).
+// Compaiono anche i clienti senza un locale registrato (es. appena arrivati da HubSpot).
+let cliRows = [];
+let cliSeq = 0;
 async function renderCli(filter=''){
   const el=$('cli-list'); el.innerHTML=spinBox();
-  const { data, error } = await sb.rpc('cerca_locale',{ termine: filter||'' });
-  if(error){ el.innerHTML=emptyBox('Errore di ricerca'); return; }
-  if(!data||!data.length){ el.innerHTML=emptyBox(filter?'Nessun risultato':'Nessun locale'); return; }
+  const seq=++cliSeq;
   const tec = utente && utente.ruolo==='tecnico';
-  el.innerHTML=data.map(r=>{
+  const [res, resLoc] = await Promise.all([
+    sb.rpc('cerca_locale',{ termine: filter||'' }),
+    tec ? Promise.resolve({data:null,error:true}) : qs(sb.from('locali').select('cliente_id').limit(10000)),
+  ]);
+  const { data, error } = res;
+  if(seq!==cliSeq) return; // è già partita una ricerca più recente
+  if(error){ el.innerHTML=emptyBox('Errore di ricerca'); return; }
+  const rows=(data||[]).slice();
+  // clienti che hanno almeno un locale: gli altri si aggiungono in fondo come «senza locale»
+  const conLocale = resLoc.error ? null : new Set((resLoc.data||[]).map(x=>String(x.cliente_id)));
+  const visti=new Set(); rows.forEach(r=>{ if(r.cliente_id!=null) visti.add('id:'+r.cliente_id); visti.add('n:'+normNome(r.ragione_sociale)); });
+  const f=normNome(filter), fp=pivaNorm(filter);
+  if(conLocale) (clienti||[]).forEach(c=>{
+    if(!c || conLocale.has(String(c.id)) || visti.has('id:'+c.id) || visti.has('n:'+normNome(c.ragione_sociale))) return;
+    const testo=normNome([c.ragione_sociale,c.indirizzo,c.citta].filter(Boolean).join(' '));
+    if(filter && !(f && testo.includes(f)) && !(fp.length>=4 && pivaNorm(c.p_iva).includes(fp))) return;
+    rows.push({ cliente_id:c.id, insegna:c.ragione_sociale, ragione_sociale:c.ragione_sociale, p_iva:c.p_iva, indirizzo:c.indirizzo, citta:c.citta, referente:c.referente, telefono:c.telefono, senza_locale:true });
+  });
+  cliRows=rows;
+  if(!rows.length){ el.innerHTML=emptyBox(filter?'Nessun risultato':'Nessun locale'); return; }
+  el.innerHTML=rows.map((r,i)=>{
     const soc=[esc(r.ragione_sociale)||'—', r.p_iva?('P.IVA '+esc(r.p_iva)):''].filter(Boolean).join(' · ');
-    const loc=[r.tipo_locale,r.indirizzo,r.citta].filter(Boolean).map(esc).join(' · ');
-    const ref=(!tec&&(r.referente||r.telefono))?`<span class="su">${[r.referente?esc(r.referente):'', r.telefono?`<a href="tel:${esc(r.telefono)}" style="color:var(--teal-d);font-weight:600;">${esc(r.telefono)}</a>`:''].filter(Boolean).join(' · ')}</span>`:'';
+    const loc=r.senza_locale ? 'Nessun locale registrato' : [r.tipo_locale,r.indirizzo,r.citta].filter(Boolean).map(esc).join(' · ');
+    const ref=(!tec&&(r.referente||r.telefono))?`<span class="su">${[r.referente?esc(r.referente):'', r.telefono?`<a href="tel:${esc(r.telefono)}" onclick="event.stopPropagation()" style="color:var(--teal-d);font-weight:600;">${esc(r.telefono)}</a>`:''].filter(Boolean).join(' · ')}</span>`:'';
     const badge=r.cliente_a_contratto?`<span class="badge b-ok">a contratto</span>`:'';
-    return `<div class="item"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18z"></path><path d="M10 6h4M10 10h4M10 14h4"></path></svg></span><span class="bd"><span class="ti">${esc(r.insegna)}</span><span class="su">${soc}</span>${loc?`<span class="su">${loc}</span>`:''}${ref}</span>${badge}</div>`;
+    return `<div class="item tap" role="button" tabindex="0" onclick="apriCliente(${i})" onkeydown="if(event.key==='Enter')apriCliente(${i})"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18z"></path><path d="M10 6h4M10 10h4M10 14h4"></path></svg></span><span class="bd"><span class="ti">${esc(r.insegna||r.ragione_sociale)}</span><span class="su">${soc}</span>${loc?`<span class="su">${loc}</span>`:''}${ref}</span>${badge}</div>`;
   }).join('');
+}
+
+// ===== SCHEDA CLIENTE =====
+// Raccoglie tutto quello che l'app sa del cliente: locali, commesse (HubSpot), contratti di manutenzione,
+// fatture e incassi (solo admin), documenti della storia (admin e ufficio) e rapporti d'intervento.
+// I tecnici vedono solo locali, commesse e rapporti, senza telefoni, note di accesso né importi.
+const FORME_SOC=new Set(['srl','srls','spa','snc','sas','sapa','scarl','scrl','soc','coop','unipersonale','ss']);
+function normNome(s){ return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/\./g,'').replace(/[^a-z0-9]+/g,' ').trim().split(' ').filter(w=>w && !FORME_SOC.has(w)).join(' '); }
+function pivaNorm(s){ return String(s||'').toUpperCase().replace(/^\s*IT/,'').replace(/\D/g,''); }
+function stessoNome(a,b){ const x=normNome(a), y=normNome(b); if(!x||!y) return false; if(x===y) return true; const tx=x.split(' '), ty=' '+y+' '; return x.length>=4 && tx.every(w=>ty.includes(' '+w+' ')); }
+function oggiISO(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function giornoISO(d){ return d? String(d).slice(0,10) : ''; }
+function dataBreve(d){ const x=giornoISO(d); return x? x.slice(8,10)+'/'+x.slice(5,7)+'/'+x.slice(0,4) : ''; }
+async function qs(p){ try{ const r=await p; return r||{data:null,error:null}; }catch(e){ return {data:null,error:e}; } }
+// importo scritto all'italiana: «1.265,00», «12,5», «€ 720» → numero; vuoto → null; non valido → NaN
+function numIt(v){ v=String(v||'').trim().replace(/[€\s]/g,''); if(!v) return null; if(v.includes(',') || /^\d{1,3}(\.\d{3})+$/.test(v)) v=v.replace(/\./g,'').replace(',','.'); const n=Number(v); return isFinite(n)? n : NaN; }
+
+const DOC_TIPI={preventivo:'Preventivo',addizionale:'Preventivo addizionale',contratto:'Contratto',dico:'Dichiarazione di conformità',verifica:'Verifiche',progetto:'Progetto / schemi',lettera:'Lettera / comunicazione',sopralluogo:'Sopralluogo',ordine:'Ordine di lavoro / cantiere',fornitore:'Fornitore / materiale',intervento:'Intervento',nota:'Nota interna',cartella:'Cartella Drive',altro:'Altro'};
+const DOC_STATI={bozza:['Bozza','b-mu'],da_inviare:['Da inviare','b-wa'],inviato:['Inviato','b-mu'],in_attesa:['In attesa','b-wa'],proposto:['Proposto','b-wa'],accettato:['Accettato','b-ok'],firmato:['Firmato','b-ok'],rifiutato:['Rifiutato','b-er'],sostituito:['Sostituito','b-mu'],annullato:['Annullato','b-mu'],consegnato:['Consegnato','b-ok'],da_aggiornare:['Da aggiornare','b-wa'],da_fatturare:['Da fatturare','b-er'],da_chiarire:['Da chiarire','b-wa'],programmato:['In programma','b-wa'],fatto:['Fatto','b-ok'],positivo:['Esito positivo','b-ok'],archiviato:['Archiviato','b-mu']};
+// stati che finiscono in «In sospeso», con l'ordine di urgenza
+const DOC_APERTI={da_fatturare:1,programmato:2,da_inviare:3,da_aggiornare:4,in_attesa:6,proposto:6,da_chiarire:7,bozza:8};
+
+let schedaCli=null, schedaFiltro='tutto', schedaSeq=0, docCorr=null, docEdit=null, docFile=null;
+
+async function apriCliente(i){
+  const r=cliRows[i]; if(!r) return;
+  $('cli-dett-title').textContent=r.insegna||r.ragione_sociale||'Cliente';
+  $('cli-dett-body').innerHTML=spinBox();
+  schedaFiltro='tutto';
+  show('s-cli-dett');
+  await caricaScheda(r);
+}
+
+async function caricaScheda(r){
+  const seq=++schedaSeq;
+  const ruolo=(utente&&utente.ruolo)||'tecnico';
+  const admin=ruolo==='admin', tec=ruolo==='tecnico';
+  // 1) il cliente in anagrafica (per id, P.IVA o nome)
+  let cli=null;
+  if(r.cliente_id!=null) cli=(clienti||[]).find(c=>String(c.id)===String(r.cliente_id))||null;
+  if(!cli && r.cliente_id!=null){ const x=await qs(sb.from('clienti').select('*').eq('id',r.cliente_id).maybeSingle()); cli=x.data||null; }
+  const pivaR=pivaNorm(r.p_iva);
+  if(!cli && pivaR.length>=8) cli=(clienti||[]).find(c=>pivaNorm(c.p_iva)===pivaR)||null;
+  if(!cli) cli=(clienti||[]).find(c=>normNome(c.ragione_sociale)===normNome(r.ragione_sociale))||null;
+  const rag=(cli&&cli.ragione_sociale)||r.ragione_sociale||r.insegna||'';
+  const piva=pivaNorm((cli&&cli.p_iva)||r.p_iva);
+  const nome=normNome(rag);
+  const like=n=>'%'+n.split(' ').join('%')+'%';
+  const vuoto=Promise.resolve({data:[]});
+  // 2) tutto in parallelo: se una tabella non risponde, la scheda mostra il resto
+  const filtriFatt=[piva.length>=8?`p_iva.ilike.%${piva}%`:null, nome?`cliente.ilike.${like(nome)}`:null].filter(Boolean);
+  const [rLoc,rComm,rHub,rFatt,rContr,rDoc]=await Promise.all([
+    cli? qs(sb.from('locali').select('*').eq('cliente_id',cli.id)) : vuoto,
+    cli? qs(sb.from('commesse').select('hubspot_deal_id').eq('cliente_id',cli.id)) : vuoto,
+    nome? qs(sb.from('commesse_hub').select('*').ilike('cliente',like(nome)).limit(100)) : vuoto,
+    (admin&&filtriFatt.length)? qs(sb.from('fatture').select('*').or(filtriFatt.join(',')).order('data',{ascending:false}).limit(300)) : vuoto,
+    (!tec&&cli)? qs(sb.from('contratti_manutenzione').select('*,locali(insegna,citta)').eq('cliente_id',cli.id).eq('archiviata',false).order('codice')) : vuoto,
+    (!tec&&cli)? qs(sb.from('documenti').select('*').eq('cliente_id',cli.id).order('data',{ascending:false}).limit(500)) : vuoto,
+  ]);
+  const locali=rLoc.data||[];
+  const nomiRap=[nome].concat(locali.map(l=>normNome(l.insegna))).filter((x,k,a)=>x && x.length>=3 && a.indexOf(x)===k);
+  const idsHub=(rComm.data||[]).map(c=>c.hubspot_deal_id).filter(Boolean).map(String);
+  const giaHub=new Set((rHub.data||[]).map(h=>String(h.hubspot_id)));
+  const mancano=idsHub.filter(id=>!giaHub.has(id));
+  const [rRap,rHub2]=await Promise.all([
+    nomiRap.length? qs(sb.from('rapporti').select('id,numero,data,ragione_sociale,esito,origine,created_at').or(nomiRap.map(n=>`ragione_sociale.ilike.${like(n)}`).join(',')).order('data',{ascending:false}).limit(100)) : vuoto,
+    mancano.length? qs(sb.from('commesse_hub').select('*').in('hubspot_id',mancano)) : vuoto,
+  ]);
+  // 3) solo ciò che è davvero di questo cliente
+  const hub=[...(rHub.data||[]).filter(h=>idsHub.includes(String(h.hubspot_id)) || normNome(h.cliente)===nome), ...(rHub2.data||[])];
+  hub.sort((a,b)=>((parseInt(b.fase)||0)-(parseInt(a.fase)||0))||String(b.codice||'').localeCompare(String(a.codice||'')));
+  const fatture=(rFatt.data||[]).filter(f=>(piva.length>=8 && pivaNorm(f.p_iva)===piva) || normNome(f.cliente)===nome);
+  const rapporti=(rRap.data||[]).filter(x=>nomiRap.some(n=>stessoNome(n,x.ragione_sociale)));
+  const documenti=rDoc.data||[];
+  const docMancano=!!(rDoc.error && /documenti|relation|schema|42P01|PGRST/i.test(String(rDoc.error.message||'')+String(rDoc.error.code||'')));
+  if(seq!==schedaSeq) return; // nel frattempo è stato aperto un altro cliente
+  schedaCli={ r, cli, rag, piva, locali, hub, fatture, contratti:rContr.data||[], documenti, rapporti, docMancano, ruolo };
+  if($('s-cli-dett').classList.contains('active') || $('s-doc-dett').classList.contains('active') || $('s-doc-form').classList.contains('active')) renderScheda();
+}
+
+// Stato di una fattura: dalle rate di Fatture in Cloud se ci sono, altrimenti dalla prossima scadenza
+// (in Fatture in Cloud la prossima scadenza è vuota quando la fattura è tutta pagata).
+function statoFattura(f){
+  const oggi=oggiISO(), tot=Number(f.totale)||0;
+  if(f.tipo==='nota_credito') return { lab:'Nota di credito', cls:'b-mu', residuo:0, scaduto:0, prima:null };
+  if(f.tipo==='proforma') return { lab:'Proforma', cls:'b-mu', residuo:0, scaduto:0, prima:null };
+  const scad=giornoISO(f.scadenza)||null;
+  const rate=Array.isArray(f.rate)? f.rate : null;
+  if(f.da_incassare!=null && !(scad==null && Number(f.da_incassare)>0)){
+    const residuo=Math.max(0,Number(f.da_incassare)||0);
+    if(residuo<0.005) return { lab:'Saldata', cls:'b-ok', residuo:0, scaduto:0, prima:null };
+    let scaduto=0, prima=null;
+    (rate||[]).forEach(x=>{ if(x && !x.pagata){ const d=giornoISO(x.scadenza); if(d && (!prima||d<prima)) prima=d; if(d && d<oggi) scaduto+=Number(x.importo)||0; } });
+    if(!rate && scad && scad<oggi) scaduto=residuo;
+    prima=prima||scad;
+    return scaduto>0.005 ? { lab:'Scaduta', cls:'b-er', residuo, scaduto, prima } : { lab:'Da incassare', cls:'b-wa', residuo, scaduto:0, prima };
+  }
+  if(!scad) return { lab:'Saldata', cls:'b-ok', residuo:0, scaduto:0, prima:null };
+  return scad<oggi ? { lab:'Scaduta', cls:'b-er', residuo:tot, scaduto:tot, prima:scad, stima:true } : { lab:'Da incassare', cls:'b-wa', residuo:tot, scaduto:0, prima:scad, stima:true };
+}
+function pagamentiFatturaHtml(f){
+  if(f.tipo==='proforma' || f.tipo==='nota_credito') return '';
+  const st=statoFattura(f);
+  let h=`<div class="sect"><div class="sect-t">Pagamenti</div>`
+    + dettRow('Stato', `<span class="badge ${st.cls}">${st.lab}</span>`)
+    + dettRow('Da incassare', euro(st.residuo), true);
+  if(st.scaduto>0.005) h+=dettRow('Di cui scaduto', `<span style="color:var(--err);">${euro(st.scaduto)}</span>`, true);
+  if(Array.isArray(f.rate) && f.rate.length){
+    h+=f.rate.map(x=>dettRow('Rata '+(dataBreve(x.scadenza)||'—'), euro(x.importo)+' · '+(x.pagata?('<span class="badge b-ok">pagata'+(x.pagata_il?' il '+dataBreve(x.pagata_il):'')+'</span>'):(giornoISO(x.scadenza)&&giornoISO(x.scadenza)<oggiISO()?'<span class="badge b-er">scaduta</span>':'<span class="badge b-wa">da pagare</span>')))).join('');
+  }
+  if(f.pagamenti_agg) h+=`<div class="s-lbl" style="padding:6px 2px 0;letter-spacing:.02em;text-transform:none;font-weight:500;">Pagamenti aggiornati al ${dataBreve(f.pagamenti_agg)}</div>`;
+  else if(st.stima) h+=`<div class="s-lbl" style="padding:6px 2px 0;letter-spacing:.02em;text-transform:none;font-weight:500;">Stato ricavato dalla scadenza di Fatture in Cloud</div>`;
+  return h+`</div>`;
+}
+
+function renderScheda(){
+  const S=schedaCli; if(!S) return;
+  const admin=S.ruolo==='admin', tec=S.ruolo==='tecnico';
+  const cli=S.cli||{}, r=S.r;
+  let h='';
+  // --- intestazione
+  const contrAtt=S.contratti.some(c=>['attivo','rinnovato','in_rinnovo'].includes(c.stato)) || r.cliente_a_contratto;
+  const contrProp=S.contratti.some(c=>c.stato==='proposto') || S.documenti.some(d=>d.tipo==='contratto' && d.stato==='proposto');
+  const badge=contrAtt?'<span class="badge b-ok">a contratto</span>':(contrProp?'<span class="badge b-wa">contratto proposto</span>':'');
+  const sede=[cli.indirizzo||(r.senza_locale?r.indirizzo:''), cli.citta||(r.senza_locale?r.citta:'')].filter(Boolean).map(esc).join(' · ');
+  const contatti=tec?'':[cli.email?`<a href="mailto:${esc(cli.email)}">${esc(cli.email)}</a>`:'', cli.referente?esc(cli.referente):'', cli.telefono?`<a href="tel:${esc(cli.telefono)}">${esc(cli.telefono)}</a>`:''].filter(Boolean).join(' · ');
+  h+=`<div class="p-card"><div style="display:flex;gap:10px;align-items:flex-start;"><div style="flex:1;min-width:0;"><div class="cli-nome">${esc(S.rag)||'—'}</div>`
+    + `<div class="cli-meta">${[S.piva?'P.IVA '+esc(cli.p_iva||r.p_iva):'', sede].filter(Boolean).join(' · ')||'&nbsp;'}</div>`
+    + (contatti?`<div class="cli-meta">${contatti}</div>`:'')
+    + `</div>${badge}</div>`;
+  S.locali.forEach(l=>{
+    const ind=[l.indirizzo,l.citta].filter(Boolean).join(', ');
+    const ref=tec?'':[l.referente?esc(l.referente):'', l.telefono?`<a href="tel:${esc(l.telefono)}">${esc(l.telefono)}</a>`:''].filter(Boolean).join(' · ');
+    h+=`<div class="cli-loc"><div class="t">${esc(l.insegna)||'Locale'}${l.tipo_locale?` <span class="cli-meta">· ${esc(l.tipo_locale)}</span>`:''}</div>`
+      + (ind?`<div class="cli-meta">${esc(ind)} · <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ind)}" target="_blank" rel="noopener">Mappa</a></div>`:'')
+      + (ref?`<div class="cli-meta">Referente: ${ref}</div>`:'')
+      + (!tec&&l.note_accesso?`<div class="cli-meta">${esc(l.note_accesso)}</div>`:'')
+      + `</div>`;
+  });
+  const cartelle=S.documenti.filter(d=>d.tipo==='cartella' && d.url);
+  if(cartelle.length) h+=`<div class="cli-links">${cartelle.map(d=>`<a class="pill" href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.titolo||'Cartella Drive')}</a>`).join('')}</div>`;
+  h+=`</div>`;
+
+  // --- situazione economica (solo admin)
+  let stFatt=[];
+  if(admin){
+    stFatt=S.fatture.map(f=>({f, st:statoFattura(f)}));
+    const fatt=stFatt.filter(x=>x.f.tipo!=='proforma');
+    const fatturato=fatt.reduce((s,x)=>s+(x.f.tipo==='nota_credito'?-1:1)*(Number(x.f.totale)||0),0);
+    const daInc=fatt.reduce((s,x)=>s+x.st.residuo,0);
+    const incassato=fatt.filter(x=>x.f.tipo!=='nota_credito').reduce((s,x)=>s+Math.max(0,(Number(x.f.totale)||0)-x.st.residuo),0);
+    const scadPrec=fatt.filter(x=>!x.st.stima).reduce((s,x)=>s+x.st.scaduto,0);
+    const scadStima=fatt.filter(x=>x.st.stima && x.st.scaduto>0).length;
+    const primaScad=fatt.filter(x=>x.st.scaduto>0 && x.st.prima).map(x=>x.st.prima).sort()[0];
+    h+=`<div class="sect"><div class="sect-t">Situazione · solo admin</div>`;
+    if(fatt.length){
+      h+=`<div class="stats"><div class="stat money"><div class="n">${euro(fatturato)}</div><div class="l">Fatturato</div></div><div class="stat money"><div class="n">${euro(incassato)}</div><div class="l">Incassato</div></div><div class="stat money${daInc>0.005?' er':''}"><div class="n">${euro(daInc)}</div><div class="l">Da incassare</div></div></div>`;
+      if(scadPrec>0.005) h+=`<div class="nota er">Di cui scaduti ${euro(scadPrec)}${primaScad?' (dal '+dataBreve(primaScad)+')':''}</div>`;
+      if(scadStima) h+=`<div class="nota er">${scadStima===1?'1 fattura':scadStima+' fatture'} con scadenza superata</div>`;
+    } else {
+      h+=`<div class="nota">Nessuna fattura di questo cliente nell'app.</div>`;
+    }
+    if(S.piva.length>=8) h+=`<div class="cli-links"><button class="pill" onclick="aggiornaFicCliente()">Aggiorna da Fatture in Cloud</button></div>`;
+    h+=`</div>`;
+  }
+
+  // --- in sospeso: incassi e documenti aperti (admin e ufficio)
+  if(!tec){
+    const voci=[];
+    stFatt.forEach(x=>{ if(x.st.residuo>0.005){ voci.push({ w:x.st.scaduto>0.005?0:5, d:x.st.prima||giornoISO(x.f.data), html:`<button class="sosp" onclick="apriFattura('${esc(x.f.fic_id)}')"><span style="min-width:0;"><span class="ti">Fattura n. ${esc(x.f.numero)} del ${dataBreve(x.f.data)}</span><div class="su">Da incassare ${euro(x.st.residuo)}${x.st.scaduto>0.005?(x.st.stima?' · scadenza '+dataBreve(x.st.prima)+' superata':' · scaduti '+euro(x.st.scaduto)+' dal '+dataBreve(x.st.prima)):(x.st.prima?' · prossima scadenza '+dataBreve(x.st.prima):'')}</div></span><span class="badge ${x.st.cls}">${x.st.lab}</span></button>` }); } });
+    S.documenti.forEach(d=>{ const w=DOC_APERTI[d.stato]; if(w==null || d.tipo==='cartella') return; const st=DOC_STATI[d.stato]||[esc(d.stato),'b-mu'];
+      const extra=[d.codice?esc(d.codice):'', d.scadenza?(d.stato==='programmato'?'fino al ':'entro il ')+dataBreve(d.scadenza):'', admin&&d.importo!=null?euro(d.importo):''].filter(Boolean).join(' · ');
+      voci.push({ w, d:giornoISO(d.scadenza)||giornoISO(d.data), html:`<button class="sosp" onclick="apriDoc('${esc(d.id)}')"><span style="min-width:0;"><span class="ti">${esc(d.titolo)}</span>${extra?`<div class="su">${extra}</div>`:''}</span><span class="badge ${st[1]}" style="white-space:nowrap;">${st[0]}</span></button>` }); });
+    voci.sort((a,b)=>(a.w-b.w)||String(a.d||'9').localeCompare(String(b.d||'9')));
+    if(voci.length) h+=`<div class="sect"><div class="sect-t">In sospeso</div><div>${voci.map(v=>v.html).join('')}</div></div>`;
+  }
+
+  // --- commesse (HubSpot)
+  h+=`<div class="sect"><div class="sect-t">Commesse</div>`;
+  h+= S.hub.length ? `<div style="display:flex;flex-direction:column;gap:8px;">${S.hub.map(itemCommCli).join('')}</div>` : `<div class="nota">Nessuna commessa collegata.</div>`;
+  h+=`</div>`;
+
+  // --- contratti di manutenzione
+  if(!tec && S.contratti.length) h+=`<div class="sect"><div class="sect-t">Contratti di manutenzione</div><div style="display:flex;flex-direction:column;gap:8px;">${S.contratti.map(c=>itemContratto({...c, clienti:{ragione_sociale:S.rag}})).join('')}</div></div>`;
+
+  // --- storia
+  h+=`<div class="sect" id="cli-storia">${storiaHtml()}</div>`;
+  if(!tec && S.docMancano && admin) h+=`<div class="nota">La storia dei documenti non è ancora attiva: esegui su Supabase lo script SQL «Scheda cliente» (20261027_scheda_cliente.sql).</div>`;
+  $('cli-dett-title').textContent=S.rag||'Cliente';
+  $('cli-dett-body').innerHTML=h;
+}
+function itemCommCli(c){
+  const fb=faseBadge(c.fase);
+  const tit=esc(c.codice)||esc(c.nome)||'Commessa';
+  const nome=String(c.nome||'').replace(c.codice||'\u0000','').replace(/^\s*[–-]\s*/,'').trim();
+  const sub=[(utente&&utente.ruolo==='admin'&&c.importo!=null)?euro(c.importo):'', c.codice?esc(nome):'', !c.codice&&!nome?esc(c.fase||''):''].filter(Boolean).join(' · ');
+  return `<button class="item" onclick="apriCommessa('${esc(c.hubspot_id)}')"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="M9 13h6M9 17h4"></path></svg></span><span class="bd"><span class="ti" style="font-family:'IBM Plex Mono',monospace;">${tit}</span><span class="su">${sub}</span></span><span class="badge ${fb[1]}" style="white-space:nowrap;">${fb[0]}</span></button>`;
+}
+function storiaHtml(){
+  const S=schedaCli; if(!S) return '';
+  const admin=S.ruolo==='admin', tec=S.ruolo==='tecnico';
+  const voci=[];
+  if(!tec) S.documenti.forEach(d=>{ if(d.tipo==='cartella') return; const st=d.stato?(DOC_STATI[d.stato]||[esc(d.stato),'b-mu']):null;
+    voci.push({ k:'doc', d:giornoISO(d.data), click:`apriDoc('${esc(d.id)}')`, ti:esc(d.titolo), su:[esc(d.codice), esc(DOC_TIPI[d.tipo]||d.tipo), (d.file_path||d.url)?'📎':''].filter(Boolean).join(' · '), amt:(admin&&d.importo!=null)?euro(d.importo):'', badge:st }); });
+  if(admin) S.fatture.forEach(f=>{ const st=statoFattura(f); const nome=f.tipo==='proforma'?'Proforma':(f.tipo==='nota_credito'?'Nota di credito':'Fattura');
+    voci.push({ k:'fatt', d:giornoISO(f.data), click:`apriFattura('${esc(f.fic_id)}')`, ti:`${nome} n. ${esc(f.numero)}`, su:esc(f.oggetto||''), amt:euro(f.totale), badge:[st.lab, st.cls] }); });
+  S.rapporti.forEach(x=>{ const ok=(x.esito||'').toLowerCase().includes('complet');
+    voci.push({ k:'rap', d:giornoISO(x.data||x.created_at), click:`apriRap('${esc(x.id)}')`, ti:'Rapporto d\'intervento'+(x.numero?' n. '+esc(x.numero):''), su:[esc(x.ragione_sociale), x.origine==='storico'?'storico':''].filter(Boolean).join(' · '), amt:'', badge:x.esito?[esc(x.esito), ok?'b-ok':'b-wa']:null }); });
+  const conta={doc:0,fatt:0,rap:0}; voci.forEach(v=>conta[v.k]++);
+  if(!(schedaFiltro==='tutto' || conta[schedaFiltro])) schedaFiltro='tutto';
+  const sel=voci.filter(v=>schedaFiltro==='tutto'||v.k===schedaFiltro).sort((a,b)=>String(b.d||'').localeCompare(String(a.d||'')));
+  const aggiungi=(!tec && S.cli && !S.docMancano)?`<button type="button" class="pill" onclick="docNew()">+ Aggiungi documento</button>`:'';
+  let h=`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;"><div class="sect-t">Storia</div>${aggiungi}</div>`;
+  const chips=[['tutto','Tutto',voci.length],['doc','Documenti',conta.doc],['fatt','Fatture',conta.fatt],['rap','Interventi',conta.rap]].filter(c=>c[0]==='tutto'||c[2]);
+  if(chips.length>2) h+=`<div class="chips">${chips.map(c=>`<button type="button" class="chip${schedaFiltro===c[0]?' on':''}" onclick="filtraStoria('${c[0]}')">${c[1]} · ${c[2]}</button>`).join('')}</div>`;
+  if(!sel.length) return h+`<div class="nota">${tec?'Nessun rapporto d\'intervento per questo cliente.':'Nessun documento, fattura o rapporto per questo cliente.'}</div>`;
+  const mesi=['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'];
+  let mese='';
+  h+=`<div style="display:flex;flex-direction:column;gap:8px;">`;
+  sel.forEach(v=>{
+    const m=(v.d||'').slice(0,7);
+    if(m!==mese){ mese=m; const lab=m? new Date(m+'-01T12:00:00').toLocaleDateString('it-IT',{month:'long',year:'numeric'}) : 'Senza data'; h+=`<div class="tl-mese">${esc(lab)}</div>`; }
+    const gg=v.d? v.d.slice(8,10) : '—', mm=v.d? mesi[parseInt(v.d.slice(5,7),10)-1]||'' : '';
+    const dx=(v.amt||v.badge)?`<span class="tl-r">${v.amt?`<span class="amt">${v.amt}</span>`:''}${v.badge?`<span class="badge ${v.badge[1]}" style="white-space:nowrap;">${v.badge[0]}</span>`:''}</span>`:'';
+    h+=`<button class="item tl" onclick="${v.click}"><span class="tl-d"><b>${gg}</b><small>${mm}</small></span><span class="bd"><span class="ti">${v.ti}</span>${v.su?`<span class="su">${v.su}</span>`:''}</span>${dx}</button>`;
+  });
+  return h+`</div>`;
+}
+function filtraStoria(k){ schedaFiltro=k; const el=$('cli-storia'); if(el) el.innerHTML=storiaHtml(); }
+
+async function aggiornaFicCliente(){
+  const S=schedaCli; if(!S||S.piva.length<8){ toast('Serve la P.IVA del cliente'); return; }
+  showLoader('Leggo Fatture in Cloud…');
+  let out=null, err=null;
+  try{ const res=await sb.functions.invoke('florial-sync',{ body:{ fic_cliente_piva:S.piva } }); out=res.data; err=res.error; }catch(e){ err=e; }
+  hideLoader();
+  if(err || !out || out.ok!==true){ toast((out&&out.errore)||'Non riuscito: su Supabase va pubblicata la nuova versione di florial-sync'); return; }
+  toast(((out.azioni||[]).length||'Nessun')+' documenti letti da Fatture in Cloud'+((out.avvisi||[]).length?' · '+out.avvisi[0]:''));
+  await caricaScheda(S.r);
+}
+
+// --- documento della storia: dettaglio, allegato, modifica
+async function apriDoc(id){
+  const S=schedaCli; const d=S && S.documenti.find(x=>String(x.id)===String(id)); if(!d) return;
+  docCorr=d;
+  renderDocDett();
+  show('s-doc-dett');
+}
+async function renderDocDett(){
+  const d=docCorr; if(!d) return;
+  const S=schedaCli||{}, admin=utente&&utente.ruolo==='admin';
+  const st=d.stato?(DOC_STATI[d.stato]||[esc(d.stato),'b-mu']):null;
+  $('doc-dett-title').textContent=DOC_TIPI[d.tipo]||'Documento';
+  const loc=(S.locali||[]).find(l=>String(l.id)===String(d.locale_id));
+  const comm=d.commessa_hub_id? (S.hub||[]).find(c=>String(c.hubspot_id)===String(d.commessa_hub_id)) : null;
+  let h=`<div class="doc-tit">${esc(d.titolo)}</div><div class="sect"><div class="sect-t">Documento</div>`
+    + dettRow('Cliente', esc(S.rag)||'—')
+    + (loc?dettRow('Locale', esc(loc.insegna||'')):'')
+    + dettRow('Data', dataBreve(d.data)||'—')
+    + (d.codice?dettRow('Numero', esc(d.codice), true):'')
+    + (st?dettRow('Stato', `<span class="badge ${st[1]}">${st[0]}</span>`):'')
+    + (d.scadenza?dettRow(d.stato==='programmato'?'Fino al':'Entro il', dataBreve(d.scadenza)):'')
+    + (admin&&d.importo!=null?dettRow('Importo · solo admin', euro(d.importo), true):'')
+    + `</div>`;
+  if(d.descrizione) h+=`<div class="sect"><div class="sect-t">Note</div><div class="doc-txt">${esc(d.descrizione)}</div></div>`;
+  h+=`<div class="sect"><div class="sect-t">File e link</div>`;
+  if(d.file_path) h+=`<a class="btn" id="doc-apri" href="#" target="_blank" rel="noopener" onclick="if(this.getAttribute('href')==='#'){event.preventDefault();toast('Preparo il file…');}">Apri il file</a>${d.file_nome?`<div class="nota" style="text-align:center;overflow-wrap:anywhere;">${esc(d.file_nome)}</div>`:''}`;
+  if(d.url) h+=`<a class="btn sec" href="${esc(d.url)}" target="_blank" rel="noopener">Apri il link</a>`;
+  if(!d.file_path && !d.url) h+=`<div class="nota">Nessun file allegato.</div>`;
+  h+=`<button class="btn sec" onclick="document.getElementById('doc-allega').click()">${d.file_path?'Sostituisci il file':'Allega PDF o foto'}</button>`;
+  if(comm) h+=`<button class="btn sec" onclick="apriCommessa('${esc(comm.hubspot_id)}')">Apri la commessa ${esc(comm.codice||'')}</button>`;
+  h+=`<button class="btn sec" onclick="docModifica()">Modifica</button></div>`;
+  $('doc-dett-body').innerHTML=h;
+  if(d.file_path){
+    const res=await qs(sb.storage.from('documenti').createSignedUrl(d.file_path, 3600));
+    const a=$('doc-apri');
+    if(a && docCorr===d){ if(res.data&&res.data.signedUrl) a.setAttribute('href',res.data.signedUrl); else a.outerHTML=`<div class="nota er">File non raggiungibile: ${esc((res.error&&res.error.message)||'riprova')}</div>`; }
+  }
+}
+async function caricaFileDoc(cliId, file){
+  if(file.size>25*1024*1024) throw new Error('File troppo grande (massimo 25 MB)');
+  const pulito=String(file.name||'file').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9._-]+/g,'_').slice(-80);
+  const path=`${cliId}/${oggiISO()}_${Date.now().toString(36)}_${pulito}`;
+  const { error } = await sb.storage.from('documenti').upload(path, file, { contentType:file.type||'application/octet-stream', upsert:false });
+  if(error) throw error;
+  return path;
+}
+async function docAllega(input){
+  const file=input.files&&input.files[0]; input.value='';
+  const d=docCorr, S=schedaCli; if(!file||!d||!S||!S.cli) return;
+  showLoader('Carico il file…');
+  try{
+    const vecchio=d.file_path;
+    const path=await caricaFileDoc(S.cli.id, file);
+    const { data, error } = await sb.from('documenti').update({ file_path:path, file_nome:file.name, updated_at:new Date().toISOString() }).eq('id',d.id).select().single();
+    if(error) throw error;
+    if(vecchio && vecchio!==path && utente.ruolo==='admin') qs(sb.storage.from('documenti').remove([vecchio]));
+    Object.assign(d, data||{ file_path:path, file_nome:file.name });
+  }catch(e){ hideLoader(); toast('Errore: '+(e.message||e)); return; }
+  hideLoader(); toast('File allegato');
+  renderDocDett(); renderScheda();
+}
+function docOpzioni(){
+  $('d-tipo').innerHTML=Object.entries(DOC_TIPI).map(([k,v])=>`<option value="${k}">${esc(v)}</option>`).join('');
+  $('d-stato').innerHTML='<option value="">—</option>'+Object.entries(DOC_STATI).map(([k,v])=>`<option value="${k}">${esc(v[0])}</option>`).join('');
+}
+function docForm(d){
+  docOpzioni(); docFile=null; docEdit=d||null;
+  const S=schedaCli||{};
+  $('doc-form-title').textContent=d?'Modifica documento':'Nuovo documento';
+  $('d-cliente').textContent=S.rag||'';
+  $('d-tipo').value=(d&&d.tipo)||'preventivo';
+  $('d-data').value=giornoISO(d&&d.data)||oggiISO();
+  $('d-tit').value=(d&&d.titolo)||'';
+  $('d-cod').value=(d&&d.codice)||'';
+  $('d-stato').value=(d&&d.stato)||'';
+  $('d-imp').value=(d&&d.importo!=null)?String(d.importo).replace('.',','):'';
+  $('d-scad').value=giornoISO(d&&d.scadenza);
+  $('d-desc').value=(d&&d.descrizione)||'';
+  $('d-url').value=(d&&d.url)||'';
+  $('d-file-btn').textContent=(d&&d.file_path)?('Allegato: '+(d.file_nome||'file')+' — tocca per sostituirlo'):'Tocca per scegliere il file';
+  $('d-imp-wrap').style.display=(utente&&utente.ruolo==='admin')?'':'none';
+  $('d-del').style.display=(d&&utente&&utente.ruolo==='admin')?'':'none';
+  show('s-doc-form');
+}
+function docNew(){ docForm(null); }
+function docModifica(){ if(docCorr) docForm(docCorr); }
+function docFileScelto(input){ docFile=(input.files&&input.files[0])||null; input.value=''; if(docFile) $('d-file-btn').textContent='Scelto: '+docFile.name; }
+async function salvaDoc(){
+  const S=schedaCli; if(!S||!S.cli){ toast('Cliente non trovato in anagrafica'); return; }
+  const titolo=$('d-tit').value.trim(); if(!titolo){ toast('Scrivi il titolo'); return; }
+  const data=$('d-data').value; if(!data){ toast('Metti la data'); return; }
+  const url=$('d-url').value.trim();
+  if(url && !/^https?:\/\//i.test(url)){ toast('Il link deve iniziare con https://'); return; }
+  const row={ tipo:$('d-tipo').value||'altro', data, titolo, codice:$('d-cod').value.trim()||null, stato:$('d-stato').value||null, scadenza:$('d-scad').value||null, descrizione:$('d-desc').value.trim()||null, url:url||null, updated_at:new Date().toISOString() };
+  if(utente.ruolo==='admin'){ row.importo=numIt($('d-imp').value); if(Number.isNaN(row.importo)){ toast('Importo non valido'); return; } }
+  showLoader('Salvataggio…');
+  let salvato=null;
+  try{
+    if(docFile){ row.file_path=await caricaFileDoc(S.cli.id, docFile); row.file_nome=docFile.name; }
+    const res = docEdit
+      ? await sb.from('documenti').update(row).eq('id',docEdit.id).select().single()
+      : await sb.from('documenti').insert({ ...row, cliente_id:S.cli.id, locale_id:S.locali.length===1?S.locali[0].id:null, creato_da:modChi() }).select().single();
+    if(res.error) throw res.error;
+    salvato=res.data;
+  }catch(e){ hideLoader(); toast('Errore: '+(e.message||e)); return; }
+  hideLoader(); toast('Documento salvato');
+  const eraModifica=!!docEdit; docFile=null; docEdit=null;
+  if(salvato){ const k=S.documenti.findIndex(x=>String(x.id)===String(salvato.id)); if(k>=0) S.documenti[k]=salvato; else S.documenti.unshift(salvato); S.documenti.sort((a,b)=>String(giornoISO(b.data)).localeCompare(String(giornoISO(a.data)))); }
+  if(eraModifica && salvato){ docCorr=salvato; back(); renderDocDett(); renderScheda(); }
+  else { back(); renderScheda(); }
+}
+async function elimDoc(){
+  const d=docEdit; if(!d || utente.ruolo!=='admin') return;
+  if(!confirm('Eliminare questo documento dalla storia?')) return;
+  showLoader();
+  const { error } = await sb.from('documenti').delete().eq('id',d.id);
+  if(!error && d.file_path) await qs(sb.storage.from('documenti').remove([d.file_path]));
+  hideLoader();
+  if(error){ toast('Errore: '+error.message); return; }
+  toast('Eliminato');
+  const S=schedaCli; if(S) S.documenti=S.documenti.filter(x=>String(x.id)!==String(d.id));
+  docEdit=null; docCorr=null;
+  navStack=navStack.filter(x=>x!=='s-doc-dett');
+  back(); renderScheda();
 }
 function cliNew(){ ['c-rag','c-ref','c-tel','c-email','c-ind','c-cit','c-note'].forEach(i=>$(i).value=''); show('s-cli-form'); }
 async function salvaCli(){
@@ -1429,11 +1890,19 @@ function openReg(){ modClear(['reg-tit','reg-loc','reg-ind','reg-ctr','reg-dico'
 function salvaReg(){ const t=$('reg-tit').value.trim(); if(!t){ toast('Scrivi il titolare / ragione sociale'); return; } modSave('registri',{ titolare:t, locale:$('reg-loc').value||null, indirizzo:$('reg-ind').value||null, ctr:$('reg-ctr').value||null, dico:$('reg-dico').value||null, quadri:$('reg-quadri').value||null, sistema:modChipOne('reg-sistema'), registro:rowsVal('regRig'), compilato_da:modChi(), updated_at:new Date().toISOString() },'Registro controlli'); }
 
 // ===== NAV =====
-function show(id){ const cur=document.querySelector('.screen.active'); if(cur)prevScreen=cur.id; document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); $(id).scrollTop=0; }
-function back(){ show(prevScreen); }
+// Storico delle schermate: «Indietro» torna davvero alla schermata precedente anche con più livelli
+// (es. Clienti → Scheda cliente → Commessa → Indietro → Scheda cliente → Indietro → Clienti).
+let navStack = [];
+function show(id, opt){
+  const cur=document.querySelector('.screen.active');
+  if(cur && cur.id!==id){ prevScreen=cur.id; if(!(opt&&opt.noPush)){ navStack.push(cur.id); if(navStack.length>40) navStack.shift(); } }
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); $(id).scrollTop=0;
+}
+function back(){ show(navStack.pop()||'s-home', {noPush:true}); }
 function go(tab){
   const map={home:'s-home',lavori:'s-calendario',rapporti:'s-rapporti',preventivi:'s-preventivi',clienti:'s-clienti',profilo:'s-profilo'};
-  show(map[tab]);
+  navStack=[];
+  show(map[tab], {noPush:true});
   document.querySelectorAll('.bnav').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
   if(tab==='lavori')renderCal(); if(tab==='rapporti')renderRap(); if(tab==='preventivi')renderPrev(); if(tab==='clienti')renderCli();
 }
