@@ -729,7 +729,7 @@ a.btn{text-decoration:none;}
 // ===== CONFIG (progetto di PROVA) =====
 const SB_URL = 'https://pubwwimufjqftikqyjpj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1Ynd3aW11ZmpxZnRpa3F5anBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MzIwOTcsImV4cCI6MjEwNzIwODA5N30.sDCZYxg_jZ685qcEYen-7Xdm_SpYI8kgTpCstIdHlzE';
-const APP_VERSION = '2026.10.27-1';
+const APP_VERSION = '2026.10.27-2';
 const DOMINIO = 'interno.florial.it';
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true, storageKey:'florial_auth' } });
 
@@ -1184,7 +1184,9 @@ async function renderRap(filter=''){
 function rapNew(){
   editRap=null; foto=[]; $('rap-title').textContent='Nuovo rapporto'; $('r-del').style.display='none';
   resetRap(); $('r-data').valueAsDate=new Date();
-  sb.rpc('next_numero',{seq_id:'rapporti_'+new Date().getFullYear()}).then(({data})=>{ $('r-num').value = String(data||1).padStart(3,'0')+'/'+new Date().getFullYear(); });
+  const yr=new Date().getFullYear();
+  $('r-num').value='…/'+yr;
+  sb.rpc('prossimo_numero',{seq_id:'rapporti_'+yr}).then(({data})=>{ if(data!=null) $('r-num').value = String(data).padStart(3,'0')+'/'+yr; });
   show('s-rap-form'); requestAnimationFrame(sizeFirme);
 }
 function resetRap(){
@@ -1213,9 +1215,16 @@ async function apriRap(id){
 async function salvaRap(){
   const rag=$('r-rag').value.trim(); if(!rag){ toast('Scrivi il cliente'); return; }
   showLoader('Salvataggio…');
+  // Numero assegnato (e consumato) solo al salvataggio di un nuovo rapporto, così la numerazione è in fila senza buchi
+  let numero=$('r-num').value;
+  if(!editRap){
+    const yr=new Date().getFullYear();
+    const { data:nn } = await sb.rpc('next_numero',{seq_id:'rapporti_'+yr});
+    if(nn!=null){ numero=String(nn).padStart(3,'0')+'/'+yr; $('r-num').value=numero; }
+  }
   const tipi=[...document.querySelectorAll('#r-tipi .chip.on')].map(c=>c.textContent);
   const esito=document.querySelector('#r-esiti .esito.on');
-  const row={ numero:$('r-num').value, data:$('r-data').value||null, ticket:$('r-ticket').value||null,
+  const row={ numero, data:$('r-data').value||null, ticket:$('r-ticket').value||null,
     ragione_sociale:rag, referente:$('r-ref').value||null, telefono:$('r-tel').value||null,
     indirizzo:$('r-ind').value||null, citta:$('r-cit').value||null, tipi, descrizione:$('r-descr').value||null,
     lavori:$('r-lavori').value||null, ore:parseFloat($('r-ore').value)||null, km:parseFloat($('r-km').value)||null,
