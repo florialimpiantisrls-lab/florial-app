@@ -587,6 +587,7 @@ a.btn{text-decoration:none;}
     </div>
     <div class="actionbar">
       <button class="btn" onclick="salvaRap()">Salva</button>
+      <button class="btn sec" id="r-invia" style="display:none;" onclick="inviaRapCliente()">Invia al cliente</button>
       <button class="btn danger" id="r-del" style="display:none;flex:0 0 52px;" onclick="elimRap()" aria-label="Elimina"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
     </div>
   </section>
@@ -729,7 +730,7 @@ a.btn{text-decoration:none;}
 // ===== CONFIG (progetto di PROVA) =====
 const SB_URL = 'https://pubwwimufjqftikqyjpj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1Ynd3aW11ZmpxZnRpa3F5anBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MzIwOTcsImV4cCI6MjEwNzIwODA5N30.sDCZYxg_jZ685qcEYen-7Xdm_SpYI8kgTpCstIdHlzE';
-const APP_VERSION = '2026.10.27-3';
+const APP_VERSION = '2026.10.27-4';
 const DOMINIO = 'interno.florial.it';
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true, storageKey:'florial_auth' } });
 
@@ -1195,6 +1196,7 @@ function resetRap(){
   document.querySelectorAll('#r-esiti .esito').forEach(c=>c.classList.remove('on'));
   foto=[]; $('r-foto-grid').innerHTML=''; clearCnv('c-tec','hh-tec'); clearCnv('c-cli','hh-cli');
   { const sc=$('r-scan-btn'); if(sc) sc.style.display='none'; }
+  { const iv=$('r-invia'); if(iv) iv.style.display='none'; }
 }
 async function apriRap(id){
   showLoader();
@@ -1210,6 +1212,7 @@ async function apriRap(id){
   document.querySelectorAll('#r-esiti .esito').forEach(c=>{ if(c.textContent===r.esito) c.classList.add('on'); });
   foto = Array.isArray(r.foto)? r.foto : []; renderFoto();
   { const sc=$('r-scan-btn'); if(sc){ if(r.scansione_url){ sc.href=r.scansione_url; sc.style.display='flex'; } else { sc.style.display='none'; } } }
+  if($('r-invia'))$('r-invia').style.display='';
   show('s-rap-form'); requestAnimationFrame(()=>{ sizeFirme(); loadFirma('c-tec','hh-tec',r.firma_tecnico); loadFirma('c-cli','hh-cli',r.firma_cliente); });
 }
 async function salvaRap(){
@@ -1231,11 +1234,33 @@ async function salvaRap(){
     esito:esito?esito.textContent:null, note:$('r-note').value||null, foto,
     firma_tecnico:getFirma('c-tec'), firma_cliente:getFirma('c-cli'),
     tecnico_nome:[utente.nome,utente.cognome].filter(Boolean).join(' '), updated_at:new Date().toISOString() };
-  const { error } = editRap ? await sb.from('rapporti').update(row).eq('id',editRap) : await sb.from('rapporti').insert(row);
-  if(error){ hideLoader(); toast('Errore: '+error.message); return; }
+  const res = editRap ? await sb.from('rapporti').update(row).eq('id',editRap).select('id').single() : await sb.from('rapporti').insert(row).select('id').single();
+  if(res.error){ hideLoader(); toast('Errore: '+res.error.message); return; }
+  if(res.data && res.data.id) editRap=res.data.id;
   await autoCliente(rag,$('r-ref').value,$('r-tel').value,'',$('r-ind').value,$('r-cit').value);
-  await Promise.all([caricaStats(),caricaRecenti()]); hideLoader(); toast('Rapporto salvato');
-  go('rapporti'); renderRap();
+  await Promise.all([caricaStats(),caricaRecenti()]); hideLoader();
+  $('rap-title').textContent='Rapporto N° '+(numero||''); if($('r-del'))$('r-del').style.display=(utente.ruolo==='admin')?'flex':'none';
+  if($('r-invia'))$('r-invia').style.display='';
+  toast('Rapporto salvato — ora puoi inviarlo al cliente');
+}
+async function inviaRapCliente(){
+  if(!editRap){ toast('Salva prima il rapporto'); return; }
+  let email='';
+  const rag=$('r-rag').value.trim().toLowerCase();
+  const c=(clienti||[]).find(x=>x.ragione_sociale && x.ragione_sociale.toLowerCase()===rag);
+  if(c) email=(c.email||'').trim();
+  if(!email){ email=(prompt('Email del cliente a cui inviare la scheda:')||'').trim(); if(!email) return; }
+  if(!confirm('Inviare la scheda a '+email+'?\nCon foto e firma, in copia a te.')) return;
+  showLoader('Invio in corso…');
+  let data=null, error=null;
+  try{ const r=await sb.functions.invoke('invia-rapporto',{ body:{ rapporto_id:editRap, email } }); data=r.data; error=r.error; }catch(e){ error=e; }
+  hideLoader();
+  if(error || !data || data.ok===false){
+    const msg=((data&&data.errore)||(error&&error.message)||'')+'';
+    toast(/not found|404|non pubblicat|Failed to send a request/i.test(msg) ? 'Il motore email non è ancora pubblicato/configurato.' : ('Invio non riuscito: '+msg));
+    return;
+  }
+  toast('Scheda inviata a '+(data.inviata_a||email));
 }
 async function elimRap(){
   if(!editRap || !confirm('Eliminare questo rapporto?')) return;
