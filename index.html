@@ -729,7 +729,7 @@ a.btn{text-decoration:none;}
 // ===== CONFIG (progetto di PROVA) =====
 const SB_URL = 'https://pubwwimufjqftikqyjpj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1Ynd3aW11ZmpxZnRpa3F5anBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MzIwOTcsImV4cCI6MjEwNzIwODA5N30.sDCZYxg_jZ685qcEYen-7Xdm_SpYI8kgTpCstIdHlzE';
-const APP_VERSION = '2026.10.27-2';
+const APP_VERSION = '2026.10.27-3';
 const DOMINIO = 'interno.florial.it';
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true, storageKey:'florial_auth' } });
 
@@ -1256,18 +1256,23 @@ function itemPrev(c){
   const desc=(c.nome&&c.cliente)?`<span class="su">${esc(c.nome)}</span>`:'';
   return `<button class="item" onclick="apriCommessa('${c.hubspot_id}')"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="M9 13h6M9 17h4"></path></svg></span><span class="bd"><span class="ti">${titolo}</span><span class="su">${cod}${esc(c.fase)||''}</span>${desc}</span><span class="badge ${fb[1]}" style="white-space:nowrap;">${fb[0]}</span></button>`;
 }
+let commCorrente=null, modCtx=null;
 async function apriCommessa(hubId){
   showLoader();
   const { data:c } = await sb.from('commesse_hub').select('*').eq('hubspot_id',hubId).single();
   let dett=null;
   try{ const r=await sb.rpc('commessa_dettaglio',{ p_hub:String(hubId) }); dett=r.data; }catch(e){}
   hideLoader(); if(!c) return;
+  commCorrente=c;
   const fb=faseBadge(c.fase);
   $('comm-dett-title').textContent = c.codice || 'Commessa';
   let html = `<div class="sect"><div class="sect-t">Commessa</div>`
     + dettRow('Cliente', esc(c.cliente)||'—')
     + dettRow('Codice', esc(c.codice)||'—', true)
     + `<div style="display:flex;justify-content:space-between;gap:12px;padding:10px 2px;border-bottom:1px solid var(--bd);"><span style="color:var(--muted);font-size:13px;">Fase</span><span class="badge ${fb[1]}">${fb[0]}</span></div></div>`;
+  if(dett && dett.indirizzo){
+    html += `<div class="sect"><div class="sect-t">Dove</div><div style="padding:8px 2px;line-height:1.5;">${esc(dett.indirizzo)}</div><a class="btn sec" style="text-decoration:none;margin-top:4px;" href="https://maps.google.com/?q=${encodeURIComponent(dett.indirizzo)}" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>Mappa</a></div>`;
+  }
   // Preventivo: oggetto, lavorazioni, importo (solo admin)
   const lavorazioni = dett && dett.lavorazioni;
   if(c.nome || lavorazioni || (utente.ruolo==='admin' && c.importo!=null)){
@@ -1286,8 +1291,27 @@ async function apriCommessa(hubId){
     html += `</div>`;
   }
   html += interventiCommessaHtml(dett && dett.interventi);
+  html += moduliCommessaHtml(dett && dett.moduli);
   $('comm-dett-body').innerHTML = html;
   show('s-comm-dett');
+}
+function moduliCommessaHtml(list){
+  const tipi=[['sop','Sopralluogo'],['dis','Distinta materiali'],['col16','Rapporto di prova'],['reg','Registro controlli'],['var','Lavori extra'],['prl','Prelievi magazzino']];
+  let h=`<div class="sect"><div class="sect-t">Moduli operativi</div><div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;">`
+    + tipi.map(t=>`<button class="btn sec" style="flex:1 1 46%;min-width:0;padding:10px 8px;" onclick="nuovoModuloComm('${t[0]}')">+ ${t[1]}</button>`).join('')
+    + `</div>`;
+  if(Array.isArray(list)&&list.length){
+    h+=`<div class="s-lbl" style="margin:8px 2px 2px;">Già fatti su questa commessa</div>`;
+    h+=list.map(m=>`<div style="padding:8px 2px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;gap:10px;"><div style="min-width:0;"><div style="font-weight:600;">${esc(m.tipo)}</div>${m.label?`<div style="color:var(--muted);font-size:12px;">${esc(m.label)}</div>`:''}</div><span class="s-lbl" style="white-space:nowrap;">${m.created_at?dataIt(String(m.created_at).slice(0,10)):''}</span></div>`).join('');
+  } else {
+    h+=`<div class="s-lbl" style="padding:6px 2px;line-height:1.5;">Nessun modulo ancora. Tocca un pulsante per crearne uno già collegato a questa commessa.</div>`;
+  }
+  return h+`</div>`;
+}
+function nuovoModuloComm(tipo){
+  modCtx = commCorrente ? { hub:String(commCorrente.hubspot_id), cliente:commCorrente.cliente||'' } : null;
+  const fn={ sop:openSop, dis:openDis, prl:openPrl, var:openVar, reg:openReg, col16:openCol16 }[tipo];
+  if(fn) fn();
 }
 function interventiCommessaHtml(list){
   const today=new Date().toISOString().slice(0,10);
@@ -1822,6 +1846,7 @@ function openCol16(){
   document.querySelectorAll('#s-col16 .chip.on, #s-col16 .esito.on').forEach(c=>c.classList.remove('on'));
   colCirc=[]; colRenderCirc();
   if($('col-data')) $('col-data').valueAsDate=new Date();
+  if(modCtx&&modCtx.cliente)$('col-cliente').value=modCtx.cliente;
   show('s-col16');
   requestAnimationFrame(()=>{ initSig('c-col-tec','w-col-tec','hh-col-tec'); initSig('c-col-resp','w-col-resp','hh-col-resp'); sizeSig('c-col-tec'); sizeSig('c-col-resp'); clearCnv('c-col-tec','hh-col-tec'); clearCnv('c-col-resp','hh-col-resp'); });
 }
@@ -1849,12 +1874,12 @@ async function salvaCol16(){
     misure_generali:colChips('col-gen'), circuiti:colCirc, prove_funzionali:colChips('col-prove'),
     esito:esitoEl?esitoEl.textContent:null, note:$('col-note').value||null,
     firma_tecnico:getFirma('c-col-tec'), firma_responsabile:getFirma('c-col-resp'),
-    compilato_da:[utente.nome,utente.cognome].filter(Boolean).join(' '), updated_at:new Date().toISOString() };
+    compilato_da:[utente.nome,utente.cognome].filter(Boolean).join(' '), commessa_ref:(modCtx&&modCtx.hub)||null, updated_at:new Date().toISOString() };
   showLoader('Salvataggio…');
   const { error } = await sb.from('verifiche').insert(row);
   hideLoader();
   if(error){ if(/verifiche|exist|relation|schema|42p01/i.test((error.message||'')+(error.code||''))){ toast('Schermata pronta: per salvare serve attivare la tabella (sblocco).'); } else { toast('Errore: '+error.message); } return; }
-  toast('Rapporto di prova salvato'); go('home');
+  toast('Rapporto di prova salvato'); const h=modCtx&&modCtx.hub; modCtx=null; if(h){ apriCommessa(h); } else { go('home'); }
 }
 
 // ===== Moduli operativi: righe dinamiche generiche =====
@@ -1875,28 +1900,28 @@ rowsInit('prlRig','prl-list',[{k:'data',ph:'Data'},{k:'pr',ph:'P (prelievo) / R 
 rowsInit('varLav','var-lav-list',[{k:'descr',ph:'Descrizione lavorazione / fornitura'},{k:'qta',ph:'Q.tà'},{k:'note',ph:'Note'}]);
 rowsInit('regRig','reg-list',[{k:'data',ph:'Data'},{k:'tipo',ph:'Tipo (M/G/L/V)'},{k:'descr',ph:'Controllo / intervento ed esito'},{k:'rif',ph:'Rif. RSC/PRV/CTR'},{k:'tecnico',ph:'Tecnico'}]);
 
-function openModuli(){ show('s-moduli'); }
+function openModuli(){ modCtx=null; show('s-moduli'); }
 function modChips(id){ return [...document.querySelectorAll('#'+id+' .chip.on')].map(c=>c.textContent); }
 function modChipOne(id){ const e=document.querySelector('#'+id+' .chip.on'); return e?e.textContent:null; }
 function modClear(ids){ ids.forEach(i=>{ const e=$(i); if(e)e.value=''; }); }
 function modClearChips(screenId){ document.querySelectorAll('#'+screenId+' .chip.on, #'+screenId+' .esito.on').forEach(c=>c.classList.remove('on')); }
-async function modSave(table,row,label){ showLoader('Salvataggio…'); const {error}=await sb.from(table).insert(row); hideLoader(); if(error){ if(/exist|relation|schema|42p01/i.test((error.message||'')+(error.code||''))){ toast('Schermata pronta: per salvare serve attivare la tabella (sblocco).'); } else { toast('Errore: '+error.message); } return; } toast(label+' salvato'); go('home'); }
+async function modSave(table,row,label){ showLoader('Salvataggio…'); const {error}=await sb.from(table).insert(row); hideLoader(); if(error){ if(/exist|relation|schema|42p01/i.test((error.message||'')+(error.code||''))){ toast('Schermata pronta: per salvare serve attivare la tabella (sblocco).'); } else { toast('Errore: '+error.message); } return; } toast(label+' salvato'); const h=modCtx&&modCtx.hub; modCtx=null; if(h){ apriCommessa(h); } else { go('home'); } }
 function modChi(){ return [utente.nome,utente.cognome].filter(Boolean).join(' '); }
 
-function openSop(){ modClear(['sop-rag','sop-piva','sop-ref','sop-tel','sop-sdi','sop-tipo','sop-mq','sop-piani','sop-ind','sop-orari','sop-chiavi','sop-ingresso','sop-richiesta','sop-entro','sop-budget','sop-stato','sop-esclusi','sop-accordi','sop-verif','sop-note']); modClearChips('s-sop'); rowsClear('sopCrit'); rowsClear('sopLav'); show('s-sop'); }
-function salvaSop(){ const rag=$('sop-rag').value.trim(); if(!rag){ toast('Scrivi il cliente'); return; } modSave('sopralluoghi',{ ragione_sociale:rag, piva:$('sop-piva').value||null, referente:$('sop-ref').value||null, tel:$('sop-tel').value||null, sdi_pec:$('sop-sdi').value||null, tipo_locale:$('sop-tipo').value||null, mq:$('sop-mq').value||null, piani:$('sop-piani').value||null, indirizzo:$('sop-ind').value||null, orari:$('sop-orari').value||null, chiavi:$('sop-chiavi').value||null, ingresso:$('sop-ingresso').value||null, richiesta:$('sop-richiesta').value||null, entro:$('sop-entro').value||null, budget:$('sop-budget').value||null, stato_fatto:$('sop-stato').value||null, criticita:rowsVal('sopCrit'), lavori:rowsVal('sopLav'), esclusi:$('sop-esclusi').value||null, accordi:$('sop-accordi').value||null, da_verificare:$('sop-verif').value||null, note:$('sop-note').value||null, compilato_da:modChi(), updated_at:new Date().toISOString() },'Sopralluogo'); }
+function openSop(){ modClear(['sop-rag','sop-piva','sop-ref','sop-tel','sop-sdi','sop-tipo','sop-mq','sop-piani','sop-ind','sop-orari','sop-chiavi','sop-ingresso','sop-richiesta','sop-entro','sop-budget','sop-stato','sop-esclusi','sop-accordi','sop-verif','sop-note']); modClearChips('s-sop'); rowsClear('sopCrit'); rowsClear('sopLav'); if(modCtx&&modCtx.cliente)$('sop-rag').value=modCtx.cliente; show('s-sop'); }
+function salvaSop(){ const rag=$('sop-rag').value.trim(); if(!rag){ toast('Scrivi il cliente'); return; } modSave('sopralluoghi',{ ragione_sociale:rag, piva:$('sop-piva').value||null, referente:$('sop-ref').value||null, tel:$('sop-tel').value||null, sdi_pec:$('sop-sdi').value||null, tipo_locale:$('sop-tipo').value||null, mq:$('sop-mq').value||null, piani:$('sop-piani').value||null, indirizzo:$('sop-ind').value||null, orari:$('sop-orari').value||null, chiavi:$('sop-chiavi').value||null, ingresso:$('sop-ingresso').value||null, richiesta:$('sop-richiesta').value||null, entro:$('sop-entro').value||null, budget:$('sop-budget').value||null, stato_fatto:$('sop-stato').value||null, criticita:rowsVal('sopCrit'), lavori:rowsVal('sopLav'), esclusi:$('sop-esclusi').value||null, accordi:$('sop-accordi').value||null, da_verificare:$('sop-verif').value||null, note:$('sop-note').value||null, compilato_da:modChi(), commessa_ref:(modCtx&&modCtx.hub)||null, updated_at:new Date().toISOString() },'Sopralluogo'); }
 
-function openDis(){ modClear(['dis-cli','dis-cant','dis-inizio','dis-capo','dis-comp','dis-note']); modClearChips('s-dis'); rowsClear('disMat'); show('s-dis'); }
-function salvaDis(){ const cli=$('dis-cli').value.trim(); if(!cli){ toast('Scrivi il cliente'); return; } modSave('distinte',{ cliente:cli, cantiere:$('dis-cant').value||null, inizio_lavori:$('dis-inizio').value||null, capo_squadra:$('dis-capo').value||null, compilata_da:$('dis-comp').value||null, materiali:rowsVal('disMat'), controlli:modChips('dis-controlli'), note:$('dis-note').value||null, compilato_da:modChi(), updated_at:new Date().toISOString() },'Distinta'); }
+function openDis(){ modClear(['dis-cli','dis-cant','dis-inizio','dis-capo','dis-comp','dis-note']); modClearChips('s-dis'); rowsClear('disMat'); if(modCtx&&modCtx.cliente)$('dis-cli').value=modCtx.cliente; show('s-dis'); }
+function salvaDis(){ const cli=$('dis-cli').value.trim(); if(!cli){ toast('Scrivi il cliente'); return; } modSave('distinte',{ cliente:cli, cantiere:$('dis-cant').value||null, inizio_lavori:$('dis-inizio').value||null, capo_squadra:$('dis-capo').value||null, compilata_da:$('dis-comp').value||null, materiali:rowsVal('disMat'), controlli:modChips('dis-controlli'), note:$('dis-note').value||null, compilato_da:modChi(), commessa_ref:(modCtx&&modCtx.hub)||null, updated_at:new Date().toISOString() },'Distinta'); }
 
 function openPrl(){ modClear(['prl-tec','prl-da','prl-al']); rowsClear('prlRig'); show('s-prl'); }
-function salvaPrl(){ const t=$('prl-tec').value.trim(); if(!t){ toast('Scrivi il tecnico'); return; } modSave('prelievi',{ tecnico:t, settimana_da:$('prl-da').value||null, settimana_al:$('prl-al').value||null, righe:rowsVal('prlRig'), compilato_da:modChi(), updated_at:new Date().toISOString() },'Foglio prelievi'); }
+function salvaPrl(){ const t=$('prl-tec').value.trim(); if(!t){ toast('Scrivi il tecnico'); return; } modSave('prelievi',{ tecnico:t, settimana_da:$('prl-da').value||null, settimana_al:$('prl-al').value||null, righe:rowsVal('prlRig'), compilato_da:modChi(), commessa_ref:(modCtx&&modCtx.hub)||null, updated_at:new Date().toISOString() },'Foglio prelievi'); }
 
-function openVar(){ modClear(['var-data','var-comm','var-cant','var-contr','var-rich','var-tel','var-importo','var-note']); modClearChips('s-var'); rowsClear('varLav'); if($('var-data'))$('var-data').valueAsDate=new Date(); show('s-var'); requestAnimationFrame(()=>{ initSig('c-var-comm','w-var-comm','hh-var-comm'); initSig('c-var-capo','w-var-capo','hh-var-capo'); sizeSig('c-var-comm'); sizeSig('c-var-capo'); clearCnv('c-var-comm','hh-var-comm'); clearCnv('c-var-capo','hh-var-capo'); }); }
-function salvaVar(){ const c=$('var-comm').value.trim(); if(!c){ toast('Scrivi il committente'); return; } modSave('varianti',{ data:$('var-data').value||null, committente:c, cantiere:$('var-cant').value||null, contratto:$('var-contr').value||null, richiesto_da:$('var-rich').value||null, tel:$('var-tel').value||null, lavori:rowsVal('varLav'), addebito:modChipOne('var-addebito'), importo:parseFloat($('var-importo').value)||null, esecuzione:modChips('var-esec'), firma_committente:getFirma('c-var-comm'), firma_caposquadra:getFirma('c-var-capo'), note:$('var-note').value||null, compilato_da:modChi(), updated_at:new Date().toISOString() },'Ordine lavori extra'); }
+function openVar(){ modClear(['var-data','var-comm','var-cant','var-contr','var-rich','var-tel','var-importo','var-note']); modClearChips('s-var'); rowsClear('varLav'); if(modCtx&&modCtx.cliente)$('var-comm').value=modCtx.cliente; if($('var-data'))$('var-data').valueAsDate=new Date(); show('s-var'); requestAnimationFrame(()=>{ initSig('c-var-comm','w-var-comm','hh-var-comm'); initSig('c-var-capo','w-var-capo','hh-var-capo'); sizeSig('c-var-comm'); sizeSig('c-var-capo'); clearCnv('c-var-comm','hh-var-comm'); clearCnv('c-var-capo','hh-var-capo'); }); }
+function salvaVar(){ const c=$('var-comm').value.trim(); if(!c){ toast('Scrivi il committente'); return; } modSave('varianti',{ data:$('var-data').value||null, committente:c, cantiere:$('var-cant').value||null, contratto:$('var-contr').value||null, richiesto_da:$('var-rich').value||null, tel:$('var-tel').value||null, lavori:rowsVal('varLav'), addebito:modChipOne('var-addebito'), importo:parseFloat($('var-importo').value)||null, esecuzione:modChips('var-esec'), firma_committente:getFirma('c-var-comm'), firma_caposquadra:getFirma('c-var-capo'), note:$('var-note').value||null, compilato_da:modChi(), commessa_ref:(modCtx&&modCtx.hub)||null, updated_at:new Date().toISOString() },'Ordine lavori extra'); }
 
-function openReg(){ modClear(['reg-tit','reg-loc','reg-ind','reg-ctr','reg-dico','reg-quadri']); modClearChips('s-reg'); rowsClear('regRig'); show('s-reg'); }
-function salvaReg(){ const t=$('reg-tit').value.trim(); if(!t){ toast('Scrivi il titolare / ragione sociale'); return; } modSave('registri',{ titolare:t, locale:$('reg-loc').value||null, indirizzo:$('reg-ind').value||null, ctr:$('reg-ctr').value||null, dico:$('reg-dico').value||null, quadri:$('reg-quadri').value||null, sistema:modChipOne('reg-sistema'), registro:rowsVal('regRig'), compilato_da:modChi(), updated_at:new Date().toISOString() },'Registro controlli'); }
+function openReg(){ modClear(['reg-tit','reg-loc','reg-ind','reg-ctr','reg-dico','reg-quadri']); modClearChips('s-reg'); rowsClear('regRig'); if(modCtx&&modCtx.cliente)$('reg-tit').value=modCtx.cliente; show('s-reg'); }
+function salvaReg(){ const t=$('reg-tit').value.trim(); if(!t){ toast('Scrivi il titolare / ragione sociale'); return; } modSave('registri',{ titolare:t, locale:$('reg-loc').value||null, indirizzo:$('reg-ind').value||null, ctr:$('reg-ctr').value||null, dico:$('reg-dico').value||null, quadri:$('reg-quadri').value||null, sistema:modChipOne('reg-sistema'), registro:rowsVal('regRig'), compilato_da:modChi(), commessa_ref:(modCtx&&modCtx.hub)||null, updated_at:new Date().toISOString() },'Registro controlli'); }
 
 // ===== NAV =====
 // Storico delle schermate: «Indietro» torna davvero alla schermata precedente anche con più livelli
