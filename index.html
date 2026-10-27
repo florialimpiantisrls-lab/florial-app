@@ -730,7 +730,7 @@ a.btn{text-decoration:none;}
 // ===== CONFIG (progetto di PROVA) =====
 const SB_URL = 'https://pubwwimufjqftikqyjpj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1Ynd3aW11ZmpxZnRpa3F5anBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MzIwOTcsImV4cCI6MjEwNzIwODA5N30.sDCZYxg_jZ685qcEYen-7Xdm_SpYI8kgTpCstIdHlzE';
-const APP_VERSION = '2026.10.27-4';
+const APP_VERSION = '2026.10.27-5';
 const DOMINIO = 'interno.florial.it';
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true, storageKey:'florial_auth' } });
 
@@ -1137,7 +1137,7 @@ async function impJson(){
   let arr; try{ arr=JSON.parse($('imp-json').value); }catch(e){ toast('Dati non validi'); return; }
   if(!Array.isArray(arr)||!arr.length){ toast('Niente da caricare'); return; }
   showLoader('Carico '+arr.length+'…');
-  const rows=arr.map(it=>({ data:it.data||null, ragione_sociale:(it.cliente||'—'), tipi:[it.tipo||'Manutenzione'], descrizione:(it.descrizione||null), lavori:(it.lavori||null), esito:(it.esito||'Intervento completato'), note:(it.note||'Rapportino storico importato'), origine:'storico', foto:(it.foto?[it.foto]:[]), scansione_url:(it.scansione_url||null), tecnico_nome:(it.tecnico||null), updated_at:new Date().toISOString() }));
+  const rows=arr.map(it=>({ numero:(it.numero||null), data:it.data||null, ragione_sociale:(it.cliente||'—'), referente:(it.referente||null), indirizzo:(it.indirizzo||null), citta:(it.citta||null), tipi:(Array.isArray(it.tipi)?it.tipi:[it.tipo||'Manutenzione']), descrizione:(it.descrizione||null), lavori:(it.lavori||null), ore:((it.ore===0||it.ore)?it.ore:null), km:((it.km===0||it.km)?it.km:null), esito:(it.esito||'Intervento completato'), note:(it.note||'Rapportino storico importato'), origine:'storico', foto:(it.foto?(Array.isArray(it.foto)?it.foto:[it.foto]):[]), tecnico_nome:(it.tecnico||null), updated_at:new Date().toISOString() }));
   const { error }=await sb.from('rapporti').insert(rows);
   hideLoader();
   if(error){ toast('Errore: '+error.message); return; }
