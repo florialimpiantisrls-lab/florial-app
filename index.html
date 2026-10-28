@@ -730,7 +730,7 @@ a.btn{text-decoration:none;}
 // ===== CONFIG (progetto di PROVA) =====
 const SB_URL = 'https://pubwwimufjqftikqyjpj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1Ynd3aW11ZmpxZnRpa3F5anBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MzIwOTcsImV4cCI6MjEwNzIwODA5N30.sDCZYxg_jZ685qcEYen-7Xdm_SpYI8kgTpCstIdHlzE';
-const APP_VERSION = '2026.10.28-2';
+const APP_VERSION = '2026.10.28-3';
 const DOMINIO = 'interno.florial.it';
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true, storageKey:'florial_auth' } });
 
@@ -1298,6 +1298,9 @@ async function apriCommessa(hubId){
     + `<div style="display:flex;justify-content:space-between;gap:12px;padding:10px 2px;border-bottom:1px solid var(--bd);"><span style="color:var(--muted);font-size:13px;">Fase</span><span class="badge ${fb[1]}">${fb[0]}</span></div></div>`;
   if(dett && dett.indirizzo){
     html += `<div class="sect"><div class="sect-t">Dove</div><div style="padding:8px 2px;line-height:1.5;">${esc(dett.indirizzo)}</div><a class="btn sec" style="text-decoration:none;margin-top:4px;" href="https://maps.google.com/?q=${encodeURIComponent(dett.indirizzo)}" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>Mappa</a></div>`;
+  }
+  if(dett && dett.note_accesso){
+    html += `<div class="sect"><div class="sect-t">Note di accesso</div><div style="padding:8px 2px;line-height:1.5;white-space:pre-line;">${esc(dett.note_accesso)}</div></div>`;
   }
   // Preventivo: oggetto, lavorazioni, importo (solo admin)
   const lavorazioni = dett && dett.lavorazioni;
