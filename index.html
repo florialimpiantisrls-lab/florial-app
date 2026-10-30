@@ -522,7 +522,7 @@ a.btn{text-decoration:none;}
 
   <!-- RAPPORTO FORM -->
   <section class="screen" id="s-rap-form">
-    <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title" id="rap-title">Nuovo rapporto</div></div>
+    <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title" id="rap-title">Nuovo rapporto</div><button class="topbar-action" id="r-scarica" onclick="copiaRapporto()" style="display:none;">Scarica</button></div>
     <div class="form">
       <a class="btn" id="r-scan-btn" href="#" target="_blank" rel="noopener" style="display:none;text-decoration:none;align-items:center;justify-content:center;gap:8px;margin-bottom:4px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>Apri scansione originale</a>
       <div class="sect">
@@ -606,7 +606,7 @@ a.btn{text-decoration:none;}
   </section>
 
   <section class="screen" id="s-comm-dett">
-    <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title" id="comm-dett-title">Commessa</div></div>
+    <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title" id="comm-dett-title">Commessa</div><button class="topbar-action" onclick="copiaCommessa()">Scarica</button></div>
     <div class="form" id="comm-dett-body"></div>
   </section>
 
@@ -730,7 +730,7 @@ a.btn{text-decoration:none;}
 // ===== CONFIG (progetto di PROVA) =====
 const SB_URL = 'https://pubwwimufjqftikqyjpj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1Ynd3aW11ZmpxZnRpa3F5anBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MzIwOTcsImV4cCI6MjEwNzIwODA5N30.sDCZYxg_jZ685qcEYen-7Xdm_SpYI8kgTpCstIdHlzE';
-const APP_VERSION = '2026.10.28-3';
+const APP_VERSION = '2026.10.30-1';
 const DOMINIO = 'interno.florial.it';
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true, storageKey:'florial_auth' } });
 
@@ -1184,7 +1184,7 @@ async function renderRap(filter=''){
   el.innerHTML = data.map(itemRap).join('');
 }
 function rapNew(){
-  editRap=null; foto=[]; $('rap-title').textContent='Nuovo rapporto'; $('r-del').style.display='none';
+  editRap=null; foto=[]; $('rap-title').textContent='Nuovo rapporto'; $('r-del').style.display='none'; { const b=$('r-scarica'); if(b) b.style.display='none'; }
   resetRap(); $('r-data').valueAsDate=new Date();
   const yr=new Date().getFullYear();
   $('r-num').value='…/'+yr;
@@ -1203,7 +1203,7 @@ async function apriRap(id){
   showLoader();
   const { data:r } = await sb.from('rapporti').select('*').eq('id',id).single();
   hideLoader(); if(!r) return;
-  editRap=id; $('rap-title').textContent='Rapporto N° '+(r.numero||''); $('r-del').style.display = utente.ruolo==='admin'?'flex':'none';
+  editRap=id; $('rap-title').textContent='Rapporto N° '+(r.numero||''); $('r-del').style.display = utente.ruolo==='admin'?'flex':'none'; { const b=$('r-scarica'); if(b) b.style.display='flex'; }
   resetRap();
   $('r-num').value=r.numero||''; $('r-data').value=r.data||''; $('r-ticket').value=r.ticket||'';
   $('r-rag').value=r.ragione_sociale||''; $('r-ref').value=r.referente||''; $('r-tel').value=r.telefono||'';
@@ -2091,6 +2091,91 @@ window.addEventListener('load', async ()=>{
     if(first){try{localStorage.setItem('fg-start',String(Date.now()));}catch(e){}}
     if(showIt)setTimeout(window.fgStart,500);
   }catch(e){}};
+})();
+</script>
+
+<!-- ===== SCARICA COPIA (rapporto d'intervento + commessa) ===== -->
+<script>
+(function(){
+  var DATI={nome:'FLORIAL IMPIANTI S.r.l.s.',riga1:'Impianti elettrici · Domotica · Illuminazione — Settore HoReCa',riga2:'Via Benedetto Marcello 25/R – 50144 Firenze · P.IVA 06884320489 · REA FI-663713',riga3:'D.M. 37/08 Lett. A e B · Tel. 055 760 1226 · info@florial.it · www.florial.it'};
+  function escp(s){ return (s==null?'':String(s)).replace(/[&<>"]/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch];}); }
+  function para(t){ return t?'<div class="para">'+escp(t)+'</div>':''; }
+  function kv(pairs){ var r=pairs.filter(function(p){return p[1]!=null&&p[1]!=='';}).map(function(p){return '<tr><th>'+escp(p[0])+'</th><td>'+p[1]+'</td></tr>';}).join(''); return r?'<table class="kv">'+r+'</table>':''; }
+  function sect(t,inner){ return inner?'<h2>'+escp(t)+'</h2>'+inner:''; }
+  function imgTag(src){ if(!src) return ''; var s=String(src); return (s.indexOf('data:')===0||s.indexOf('http')===0)?'<img src="'+s.replace(/"/g,'&quot;')+'">':''; }
+  function dIt(d){ try{ return (typeof dataIt==='function')?dataIt(d):(d||''); }catch(e){ return d||''; } }
+
+  window.stampaCopiaDoc=function(titolo,bodyHtml){
+    var css='@page{size:A4;margin:15mm 13mm;}*{box-sizing:border-box;}body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#0b2326;font-size:12px;line-height:1.5;margin:0;}'
+      +'.ll{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;border-bottom:2px solid #00726d;padding-bottom:8px;margin-bottom:12px;}'
+      +'.ll .n{font-weight:700;color:#00726d;font-size:15px;}.ll .s{color:#4a6669;font-size:9.5px;}.ll .r{text-align:right;color:#4a6669;font-size:9.5px;line-height:1.45;}'
+      +'h1{font-size:16px;color:#00726d;margin:0 0 2px;}.sub{color:#4a6669;font-size:10.5px;margin:0 0 10px;}'
+      +'h2{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#00726d;border-bottom:1px solid #a8ccc8;padding-bottom:3px;margin:13px 0 6px;}'
+      +'table.kv{width:100%;border-collapse:collapse;}table.kv th{text-align:left;color:#4a6669;font-weight:600;width:34%;vertical-align:top;padding:3px 8px 3px 0;}table.kv td{padding:3px 0;vertical-align:top;}'
+      +'table.gr{width:100%;border-collapse:collapse;margin:2px 0;}table.gr th,table.gr td{border:1px solid #a8ccc8;padding:4px 6px;text-align:left;font-size:11px;vertical-align:top;}table.gr th{background:#f3faf9;color:#00726d;font-weight:600;}'
+      +'.para{white-space:pre-line;padding:1px 0;}.firme{display:flex;gap:22px;margin-top:6px;}.firme .f{flex:1;}.firme img{max-height:70px;max-width:100%;border:1px solid #dceeec;border-radius:4px;}.firme .l{color:#4a6669;font-size:10px;margin-top:4px;}'
+      +'.foto{display:flex;flex-wrap:wrap;gap:6px;}.foto img{height:115px;width:auto;border:1px solid #dceeec;border-radius:4px;}'
+      +'.foot{margin-top:16px;border-top:1px solid #a8ccc8;padding-top:6px;color:#4a6669;font-size:9px;}';
+    var intest='<div class="ll"><div><div class="n">'+escp(DATI.nome)+'</div><div class="s">'+escp(DATI.riga1)+'</div></div><div class="r">'+escp(DATI.riga2)+'<br>'+escp(DATI.riga3)+'</div></div>';
+    var foot='<div class="foot">'+escp(DATI.nome)+' · '+escp(DATI.riga2)+' — copia generata il '+new Date().toLocaleDateString('it-IT')+'</div>';
+    var full='<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+escp(titolo)+'</title><style>'+css+'</style></head><body>'+intest+bodyHtml+foot+'</body></html>';
+    var ifr=document.createElement('iframe'); ifr.setAttribute('aria-hidden','true'); ifr.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0;opacity:0;';
+    document.body.appendChild(ifr);
+    var w=ifr.contentWindow, d=w.document; d.open(); d.write(full); d.close();
+    function go(){ try{ w.focus(); w.print(); }catch(e){} setTimeout(function(){ try{ifr.remove();}catch(e){} },2000); }
+    var imgs=d.images||[], n=imgs.length, done=0, fired=false;
+    function fin(){ done++; if(!fired&&done>=n){ fired=true; go(); } }
+    if(!n){ setTimeout(go,350); }
+    else { for(var i=0;i<n;i++){ if(imgs[i].complete) fin(); else { imgs[i].onload=fin; imgs[i].onerror=fin; } } setTimeout(function(){ if(!fired){ fired=true; go(); } },3000); }
+  };
+
+  window.copiaRapporto=async function(){
+    var id=(typeof editRap!=='undefined')?editRap:null; if(!id){ try{toast('Apri prima un rapporto');}catch(e){} return; }
+    try{ showLoader('Preparo la copia…'); }catch(e){}
+    var r=null; try{ var res=await sb.from('rapporti').select('*').eq('id',id).single(); r=res.data; }catch(e){}
+    try{ hideLoader(); }catch(e){}
+    if(!r){ try{toast('Rapporto non trovato');}catch(e){} return; }
+    var tipi=Array.isArray(r.tipi)?r.tipi.join(', '):(r.tipi||'');
+    var dd=dIt(r.data);
+    var body='<h1>Rapporto d\'intervento'+(r.numero?' N° '+escp(r.numero):'')+'</h1><div class="sub">'+escp(dd)+'</div>';
+    body+=sect('Riferimenti', kv([['Data',escp(dd)],['N° rapporto',escp(r.numero)],['Riferimento',escp(r.ticket)]]));
+    body+=sect('Cliente', kv([['Ragione sociale',escp(r.ragione_sociale)],['Referente',escp(r.referente)],['Telefono',escp(r.telefono)],['Indirizzo',escp([r.indirizzo,r.citta].filter(Boolean).join(' – '))]]));
+    body+=sect('Tipo intervento', para(tipi));
+    body+=sect('Problema riscontrato', para(r.descrizione));
+    body+=sect('Lavori eseguiti', para(r.lavori));
+    body+=sect('Tempi', kv([['Ore di lavoro',(r.ore!=null&&r.ore!=='')?escp(r.ore)+' h':''],['Km',(r.km!=null&&r.km!=='')?escp(r.km):'']]));
+    body+=sect('Esito', para(r.esito));
+    body+=sect('Note', para(r.note));
+    body+=sect('Tecnico', para(Array.isArray(r.tecnico_nome)?r.tecnico_nome.join(', '):r.tecnico_nome));
+    var ft=imgTag(r.firma_tecnico), fc=imgTag(r.firma_cliente);
+    if(ft||fc){ body+='<h2>Firme</h2><div class="firme"><div class="f">'+(ft||'<div class="para">—</div>')+'<div class="l">Il tecnico</div></div><div class="f">'+(fc||'<div class="para">—</div>')+'<div class="l">Il cliente</div></div></div>'; }
+    var foto=Array.isArray(r.foto)?r.foto.map(imgTag).filter(Boolean):[];
+    if(foto.length){ body+='<h2>Foto</h2><div class="foto">'+foto.join('')+'</div>'; }
+    else if(Array.isArray(r.foto)&&r.foto.length){ body+=sect('Foto', para(r.foto.length+' foto allegate (visibili nell\'app)')); }
+    stampaCopiaDoc('Rapporto '+(r.numero||'')+' '+(r.ragione_sociale||''), body);
+  };
+
+  window.copiaCommessa=async function(){
+    var c=(typeof commCorrente!=='undefined')?commCorrente:null; if(!c){ try{toast('Apri prima una commessa');}catch(e){} return; }
+    try{ showLoader('Preparo la copia…'); }catch(e){}
+    var dett=null; try{ var r=await sb.rpc('commessa_dettaglio',{p_hub:String(c.hubspot_id)}); dett=r.data; }catch(e){}
+    try{ hideLoader(); }catch(e){}
+    var admin=(typeof utente!=='undefined'&&utente&&utente.ruolo==='admin');
+    var body='<h1>Commessa'+(c.codice?' '+escp(c.codice):'')+'</h1><div class="sub">'+escp(c.cliente||'')+'</div>';
+    body+=sect('Commessa', kv([['Cliente',escp(c.cliente)],['Codice',escp(c.codice)],['Fase',escp(c.fase)]]));
+    if(dett&&dett.indirizzo) body+=sect('Dove', para(dett.indirizzo));
+    if(dett&&dett.note_accesso) body+=sect('Note di accesso', para(dett.note_accesso));
+    var prevRows=[['Numero',escp(c.codice)],['Oggetto',escp(c.nome)]];
+    if(admin&&c.importo!=null){ var im; try{ im=(typeof euro==='function')?euro(c.importo):String(c.importo); }catch(e){ im=String(c.importo); } prevRows.push(['Importo',escp(im)]); }
+    var prevHtml=kv(prevRows)+((dett&&dett.lavorazioni)?('<div class="para" style="color:#4a6669;font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-top:4px;">Lavorazioni</div>'+para(dett.lavorazioni)):'');
+    body+=sect('Preventivo', prevHtml);
+    var inter=(dett&&Array.isArray(dett.interventi))?dett.interventi:[];
+    if(inter.length){
+      var rows=inter.map(function(i){ var ora=[i.ora_inizio,i.ora_fine].filter(Boolean).join('–'); return '<tr><td>'+escp(dIt(i.data))+(ora?' '+escp(ora):'')+'</td><td>'+escp(i.titolo||i.tipo||'')+'</td><td>'+escp(i.tecnici||'')+'</td><td>'+escp(i.stato||'')+'</td></tr>'; }).join('');
+      body+='<h2>Interventi</h2><table class="gr"><tr><th>Data</th><th>Lavoro</th><th>Tecnici</th><th>Stato</th></tr>'+rows+'</table>';
+    }
+    stampaCopiaDoc('Commessa '+(c.codice||'')+' '+(c.cliente||''), body);
+  };
 })();
 </script>
 </body>
