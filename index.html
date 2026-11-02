@@ -229,7 +229,7 @@ a.btn{text-decoration:none;}
           <button class="qa-card" id="qa-tia" style="display:none;border-color:var(--teal);background:var(--s1);" onclick="openTia()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15.5l-1.9-4.6L5.5 9l4.6-1.4z"></path><path d="M19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"></path><path d="M5 17l.6 1.4L7 19l-1.4.6L5 21l-.6-1.4L3 19l1.4-.6z"></path></svg><span class="t">Florial TIA</span><span class="s">Chiedi all'assistente</span></button>
           <button class="qa-card" id="qa-contratti" style="display:none;" onclick="openContratti()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M9 13h6M9 17h6"></path></svg><span class="t">Contratti</span><span class="s">Manutenzione</span></button>
           <button class="qa-card" id="qa-fatture" style="display:none;" onclick="openFatture()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path><path d="M8 7h8M8 11h8M8 15h5"></path></svg><span class="t">Fatture</span><span class="s">Fatture in Cloud</span></button>
-          <button class="qa-card" id="qa-import" style="display:none;" onclick="openImport()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg><span class="t">Importa archivio</span><span class="s">Rapportini storici</span></button>
+          <button class="qa-card" id="qa-import" style="display:none;" onclick="openImport()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg><span class="t">Importa archivio</span><span class="s">Rapportini e documenti</span></button>
           <button class="qa-card" id="qa-moduli" style="display:none;" onclick="openModuli()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect></svg><span class="t">Moduli operativi</span><span class="s">Schede digitali</span></button>
         </div>
       </div>
@@ -281,6 +281,16 @@ a.btn{text-decoration:none;}
   <section class="screen" id="s-import">
     <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title">Importa archivio</div></div>
     <div class="form">
+      <div class="sect" id="arc-sect">
+        <div class="sect-t">Archivio documenti per cliente</div>
+        <div class="nota">Da computer: scegli la cartella dell'archivio (es. «Archivio Greenhaus», quella con dentro «00 IMPORT APP»). Controlla cliente e locale di ogni scheda: i documenti, le foto e la cronologia finiscono nella Storia del cliente. Si può ripetere: quello già caricato viene saltato.</div>
+        <button type="button" class="foto-drop" onclick="document.getElementById('arc-inp').click()">Tocca per scegliere la cartella dell'archivio</button>
+        <input type="file" id="arc-inp" webkitdirectory directory multiple hidden onchange="arcScelta(this)">
+        <div class="s-lbl" id="arc-info" style="padding:8px 2px 0;"></div>
+        <div id="arc-list"></div>
+        <button type="button" class="btn" id="arc-btn" onclick="arcImporta()" style="display:none;">Carica nella storia dei clienti</button>
+        <div class="nota" id="arc-log" style="display:none;white-space:pre-line;"></div>
+      </div>
       <div class="sect">
         <div class="sect-t">Rapportini storici — scansioni</div>
         <button type="button" class="foto-drop" onclick="document.getElementById('imp-inp').click()">Tocca per scegliere le scansioni (foto o immagini)</button>
@@ -1146,6 +1156,168 @@ async function impJson(){
   await Promise.all([caricaStats(),caricaRecenti()]);
 }
 
+// ===== IMPORTA ARCHIVIO DOCUMENTI PER CLIENTE (solo admin) =====
+// Legge una cartella preparata con «00 IMPORT APP/manifest.json» (es. Archivio Greenhaus): per ogni scheda propone
+// cliente e locale dall'anagrafica, poi carica i file nella cartella privata «documenti» e li aggiunge alla storia del
+// cliente (tabella documenti, stato «archiviato»). Il codice di ogni voce (es. GH-R0057) evita i doppioni se si ripete.
+const ARC_MAX = 50*1024*1024;
+let arc = null;
+// confronto di indirizzi e insegne: «Borgo S. Lorenzo 31/R» = «borgo san lorenzo 31 r»; l'indizio deve comparire intero e di seguito
+function arcN(s){ return ' '+normNome(s).replace(/(\d)([a-z])/g,'$1 $2').replace(/\bbgo\b/g,'borgo').replace(/\bs\b/g,'san').replace(/\bp\s?z{1,2}a\b/g,'piazza').replace(/\bvle\b/g,'viale')+' '; }
+function arcContiene(testo, indizio){ const h=arcN(indizio); return h.trim().length>0 && arcN(testo).includes(h); }
+function arcLocaliDi(cliId){ return arc? arc.locali.filter(l=>String(l.cliente_id)===String(cliId)) : []; }
+function arcTestoLoc(l){ return [l.insegna,l.indirizzo].filter(Boolean).join(' '); }
+function arcLocaleDa(indizi, lista){
+  for(const ind of (indizi||[])){ const c=lista.filter(l=>arcContiene(arcTestoLoc(l), ind)); if(c.length===1) return c[0]; }
+  return null;
+}
+function arcProponi(s){
+  let cli=null, loc=null;
+  // 1) un locale riconosciuto da insegna o indirizzo porta con sé anche il cliente
+  const l0=arcLocaleDa(s.locale, arc.locali);
+  if(l0){ cli=(clienti||[]).find(c=>String(c.id)===String(l0.cliente_id))||null; if(cli) loc=l0; }
+  // 2) altrimenti il cliente per nome (ragione sociale)
+  if(!cli) for(const n of (s.ragione||[])){
+    const c=(clienti||[]).find(x=>normNome(x.ragione_sociale)===normNome(n)) || (clienti||[]).find(x=>stessoNome(n,x.ragione_sociale));
+    if(c){ cli=c; break; }
+  }
+  // 3) il locale tra quelli del cliente (se ne ha uno solo, quello)
+  if(cli && !loc){ const ll=arcLocaliDi(cli.id); loc=arcLocaleDa(s.locale, ll) || (ll.length===1? ll[0] : null); }
+  return { s, on: s.importa!==false && (s.ragione||[]).length>0, nome: cli? cli.ragione_sociale : ((s.ragione||[])[0]||''),
+    cliId: cli? cli.id : null, locId: loc? String(loc.id) : '', trovate: (s.voci||[]).filter(v=>arc.mappa.has(v.file)).length, esito:null };
+}
+async function arcScelta(input){
+  const files=[...(input.files||[])]; input.value='';
+  if(!files.length) return;
+  const perc=f=>String(f.webkitRelativePath||f.name).replace(/\\/g,'/');
+  const mf=files.find(f=>/(^|\/)00 IMPORT APP\/manifest\.json$/.test(perc(f)));
+  if(!mf){ toast('In questa cartella manca «00 IMPORT APP/manifest.json»'); return; }
+  const base=perc(mf).replace(/00 IMPORT APP\/manifest\.json$/,'');
+  let man=null; try{ man=JSON.parse(await mf.text()); }catch(e){}
+  if(!man || !Array.isArray(man.schede)){ toast('manifest.json non valido'); return; }
+  const mappa=new Map();
+  files.forEach(f=>{ const p=perc(f); if(p.startsWith(base)) mappa.set(p.slice(base.length), f); });
+  showLoader('Leggo clienti e locali…');
+  await caricaClienti();
+  const rl=await qs(sb.from('locali').select('*'));
+  hideLoader();
+  arc={ man, mappa, locali: rl.data||[], schede: [] };
+  arc.schede=man.schede.map(arcProponi);
+  $('arc-log').style.display='none';
+  arcRender();
+}
+function arcConta(voci){
+  const c={}; voci.forEach(v=>{ const g=v.genere||'documento'; c[g]=(c[g]||0)+1; });
+  return [c.cronologia?'cronologia':'', c.documento?c.documento+(c.documento===1?' documento':' documenti'):'', c.foto?c.foto+(c.foto===1?' album foto':' album foto'):'',
+    c.video?c.video+' video':'', c.vocale?c.vocale+(c.vocale===1?' vocale':' vocali'):'', c.contatto?c.contatto+(c.contatto===1?' contatto':' contatti'):''].filter(Boolean).join(' · ');
+}
+function arcRender(){
+  const A=arc; if(!A) return;
+  const sel=A.schede.filter(r=>r.on);
+  const voci=sel.reduce((t,r)=>t+r.trovate,0);
+  $('arc-info').textContent=`${A.man.nome||'Archivio'} · ${A.schede.length} schede · ${sel.length} da caricare (${voci} voci)`;
+  $('arc-btn').style.display=sel.length?'':'none';
+  $('arc-list').innerHTML=A.schede.map((r,i)=>{
+    const s=r.s, manc=(s.voci||[]).length-r.trovate, ll=r.cliId? arcLocaliDi(r.cliId) : [];
+    const stato=!r.on? ['Non caricare','b-mu'] : (r.cliId? ['In anagrafica','b-ok'] : (r.nome.trim()? ['Cliente nuovo','b-wa'] : ['Scegli il cliente','b-er']));
+    const es=r.esito? `<div class="nota">Caricate ${r.esito.fatti} · già presenti ${r.esito.saltati}${r.esito.mancanti?' · file non trovati '+r.esito.mancanti:''}${r.esito.grandi?' · troppo grandi '+r.esito.grandi:''}${r.esito.errori?' · <b style="color:var(--err)">errori '+r.esito.errori+'</b>':''}</div>` : '';
+    return `<div style="padding:10px 12px;margin-top:10px;border:1px solid var(--bd);border-radius:10px;background:var(--s0);">
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <input type="checkbox" ${r.on?'checked':''} onchange="arcSet(${i},'on',this.checked)" style="margin-top:2px;width:20px;height:20px;flex-shrink:0;" aria-label="Carica questa scheda">
+        <div style="flex:1;min-width:0;"><div style="font-weight:600;font-size:14px;">${s.num?esc(s.num)+' · ':''}${esc(s.titolo)}</div>
+          ${s.sub?`<div class="nota">${esc(s.sub)}</div>`:''}
+          <div class="nota">${arcConta(s.voci||[])}${manc?` · <span style="color:var(--err);">${manc} file non trovati nella cartella</span>`:''}</div></div>
+        <span class="badge ${stato[1]}" style="white-space:nowrap;">${stato[0]}</span>
+      </div>
+      <div class="fg" style="margin-top:8px;"><input class="in" list="dl-cli" placeholder="Cliente in anagrafica, o nome del cliente nuovo" value="${esc(r.nome)}" onchange="arcCliente(${i},this.value)"></div>
+      ${ll.length?`<div class="fg" style="margin-top:6px;"><select class="in" onchange="arcSet(${i},'locId',this.value)"><option value="">Nessun locale in particolare</option>${ll.map(l=>`<option value="${esc(l.id)}"${String(l.id)===r.locId?' selected':''}>${esc(l.insegna||'Locale')}${l.indirizzo?' · '+esc(l.indirizzo):''}</option>`).join('')}</select></div>`:''}
+      ${es}
+    </div>`;
+  }).join('');
+}
+function arcSet(i,k,v){ const r=arc&&arc.schede[i]; if(!r) return; r[k]=v; arcRender(); }
+function arcCliente(i,val){
+  const r=arc&&arc.schede[i]; if(!r) return;
+  const v=String(val||'').trim();
+  const c=v? ((clienti||[]).find(x=>normNome(x.ragione_sociale)===normNome(v))||null) : null;
+  r.nome=c? c.ragione_sociale : v; r.cliId=c? c.id : null; r.locId='';
+  if(c){ const ll=arcLocaliDi(c.id); const l=arcLocaleDa(r.s.locale, ll) || (ll.length===1? ll[0] : null); if(l) r.locId=String(l.id); }
+  if(v) r.on=true;
+  arcRender();
+}
+async function arcCarica(r, v, f, chi, titolo){
+  const ext=(String(v.file).match(/\.[A-Za-z0-9]{1,5}$/)||[''])[0].toLowerCase();
+  const path=`${r.cliId}/archivio/${String(v.codice).replace(/[^A-Za-z0-9._-]+/g,'_')}${ext}`;
+  const up=await sb.storage.from('documenti').upload(path, f, { contentType:v.mime||f.type||'application/octet-stream', upsert:true });
+  if(up.error) throw up.error;
+  const loc=r.locId? arc.locali.find(l=>String(l.id)===r.locId) : null;
+  const ins=await sb.from('documenti').insert({ cliente_id:r.cliId, locale_id:loc? loc.id : null, data:v.data||oggiISO(), tipo:v.tipo||'altro',
+    codice:v.codice, titolo:titolo||v.titolo||v.codice, descrizione:v.descrizione||null, stato:'archiviato', file_path:path, file_nome:v.nome||f.name, creato_da:chi });
+  if(ins.error){ qs(sb.storage.from('documenti').remove([path])); throw ins.error; }
+}
+async function arcImporta(){
+  const A=arc; if(!A) return;
+  const sel=A.schede.filter(r=>r.on && r.nome.trim());
+  if(!sel.length){ toast('Scegli almeno un cliente'); return; }
+  const nuovi=[...new Set(sel.filter(r=>!r.cliId).map(r=>r.nome.trim()))];
+  const nCli=new Set(sel.map(r=>r.cliId!=null? 'id:'+r.cliId : 'n:'+normNome(r.nome))).size;
+  const nVoci=sel.reduce((t,r)=>t+r.trovate,0);
+  if(!confirm(`Carico fino a ${nVoci} voci nella storia di ${nCli} clienti (quelle già caricate vengono saltate).`+(nuovi.length?`\n\nClienti nuovi da creare in anagrafica (${nuovi.length}):\n– ${nuovi.join('\n– ')}`:'')+'\n\nProcedo?')) return;
+  const chi=modChi()+' · import '+(A.man.nome||'archivio'), pref=A.man.prefisso||'GH-';
+  const log=[], tot={fatti:0,saltati:0,mancanti:0,grandi:0,errori:0};
+  // 1) clienti nuovi: uno per nome, anche se più schede vanno allo stesso cliente
+  const creati={};
+  for(const r of sel){
+    if(r.cliId!=null) continue;
+    const k=normNome(r.nome);
+    if(creati[k]==null){
+      showLoader('Creo il cliente '+r.nome.trim()+'…');
+      const res=await qs(sb.from('clienti').insert({ ragione_sociale:r.nome.trim(), indirizzo:r.s.indirizzo||null, citta:r.s.citta||null,
+        note:'Creato dall\'import «'+(A.man.nome||'archivio')+'» del '+dataBreve(oggiISO()) }).select().single());
+      if(res.error||!res.data){ log.push(`✗ ${r.s.titolo}: cliente non creato (${(res.error&&res.error.message)||'errore'})`); creati[k]=false; continue; }
+      creati[k]=res.data.id; clienti.push(res.data);
+    }
+    if(creati[k]!==false) r.cliId=creati[k];
+  }
+  // 2) le voci da caricare, saltando quelle già nella storia del cliente (stesso codice).
+  //    Se più schede vanno allo stesso cliente (es. i locali di un gruppo), il titolo dice di quale scheda è.
+  const coda=[], gia={}, perCli={};
+  sel.forEach(r=>{ if(r.cliId!=null) perCli[String(r.cliId)]=(perCli[String(r.cliId)]||0)+1; });
+  for(const r of sel){
+    r.esito={fatti:0,saltati:0,mancanti:0,grandi:0,errori:0};
+    if(r.cliId==null){ r.esito.errori++; tot.errori++; continue; }
+    const k=String(r.cliId);
+    if(!gia[k]){
+      showLoader('Controllo la storia di '+r.nome.trim()+'…');
+      const g=await qs(sb.from('documenti').select('codice').eq('cliente_id',r.cliId).like('codice',pref+'%').limit(5000));
+      if(g.error){ log.push(`✗ ${r.s.titolo}: storia non leggibile (${g.error.message})`); r.esito.errori++; tot.errori++; continue; }
+      gia[k]=new Set((g.data||[]).map(x=>x.codice));
+    }
+    for(const v of (r.s.voci||[])){
+      if(gia[k].has(v.codice)){ r.esito.saltati++; tot.saltati++; continue; }
+      const f=A.mappa.get(v.file);
+      if(!f){ r.esito.mancanti++; tot.mancanti++; continue; }
+      if(f.size>ARC_MAX){ r.esito.grandi++; tot.grandi++; log.push(`– ${r.s.titolo} · ${v.titolo}: oltre 50 MB, resta solo nell'archivio`); continue; }
+      const et=perCli[k]>1? (r.s.etichetta||r.s.titolo||'') : '';
+      gia[k].add(v.codice); coda.push({r, v, f, titolo:(v.titolo||v.codice)+(et?' · '+et:'')});
+    }
+  }
+  // 3) caricamento, tre file alla volta
+  let i=0, n=coda.length, finiti=0;
+  const lavora=async()=>{ while(i<coda.length){ const t=coda[i++];
+    showLoader(`Carico ${finiti+1} di ${n}…`);
+    try{ await arcCarica(t.r, t.v, t.f, chi, t.titolo); t.r.esito.fatti++; tot.fatti++; }
+    catch(e){ t.r.esito.errori++; tot.errori++; log.push(`✗ ${t.r.s.titolo} · ${t.v.titolo}: ${(e&&e.message)||e}`); }
+    finiti++; } };
+  await Promise.all([lavora(),lavora(),lavora()]);
+  hideLoader();
+  const riga=`Caricate ${tot.fatti} voci · già presenti ${tot.saltati}`+(tot.mancanti?` · file non trovati ${tot.mancanti}`:'')+(tot.grandi?` · troppo grandi ${tot.grandi}`:'')+(tot.errori?` · errori ${tot.errori}`:'');
+  const el=$('arc-log'); el.style.display=''; el.textContent=riga+(log.length?'\n\n'+log.slice(0,200).join('\n'):'');
+  toast(tot.errori? 'Finito con qualche errore: guarda il riepilogo' : 'Archivio caricato nella storia dei clienti');
+  arcRender();
+  await caricaClienti(); caricaStats();
+}
+
 // ===== DATI =====
 async function caricaClienti(){
   const { data } = await sb.from('clienti').select('*').order('ragione_sociale');
@@ -1431,7 +1603,7 @@ async function qs(p){ try{ const r=await p; return r||{data:null,error:null}; }c
 // importo scritto all'italiana: «1.265,00», «12,5», «€ 720» → numero; vuoto → null; non valido → NaN
 function numIt(v){ v=String(v||'').trim().replace(/[€\s]/g,''); if(!v) return null; if(v.includes(',') || /^\d{1,3}(\.\d{3})+$/.test(v)) v=v.replace(/\./g,'').replace(',','.'); const n=Number(v); return isFinite(n)? n : NaN; }
 
-const DOC_TIPI={preventivo:'Preventivo',addizionale:'Preventivo addizionale',contratto:'Contratto',dico:'Dichiarazione di conformità',verifica:'Verifiche',progetto:'Progetto / schemi',lettera:'Lettera / comunicazione',sopralluogo:'Sopralluogo',ordine:'Ordine di lavoro / cantiere',fornitore:'Fornitore / materiale',intervento:'Intervento',nota:'Nota interna',cartella:'Cartella Drive',altro:'Altro'};
+const DOC_TIPI={preventivo:'Preventivo',addizionale:'Preventivo addizionale',contratto:'Contratto',dico:'Dichiarazione di conformità',verifica:'Verifiche',progetto:'Progetto / schemi',lettera:'Lettera / comunicazione',sopralluogo:'Sopralluogo',ordine:'Ordine di lavoro / cantiere',fornitore:'Fornitore / materiale',intervento:'Intervento',foto:'Foto',video:'Video',vocale:'Vocale',nota:'Nota interna',cartella:'Cartella Drive',altro:'Altro'};
 const DOC_STATI={bozza:['Bozza','b-mu'],da_inviare:['Da inviare','b-wa'],inviato:['Inviato','b-mu'],in_attesa:['In attesa','b-wa'],proposto:['Proposto','b-wa'],accettato:['Accettato','b-ok'],firmato:['Firmato','b-ok'],rifiutato:['Rifiutato','b-er'],sostituito:['Sostituito','b-mu'],annullato:['Annullato','b-mu'],consegnato:['Consegnato','b-ok'],da_aggiornare:['Da aggiornare','b-wa'],da_fatturare:['Da fatturare','b-er'],da_chiarire:['Da chiarire','b-wa'],programmato:['In programma','b-wa'],fatto:['Fatto','b-ok'],positivo:['Esito positivo','b-ok'],archiviato:['Archiviato','b-mu']};
 // stati che finiscono in «In sospeso», con l'ordine di urgenza
 const DOC_APERTI={da_fatturare:1,programmato:2,da_inviare:3,da_aggiornare:4,in_attesa:6,proposto:6,da_chiarire:7,bozza:8};
