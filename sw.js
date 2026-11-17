@@ -19,6 +19,7 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(req.url);
   if (url.origin !== location.origin) return;            // Supabase e CDN: sempre rete
   if (url.pathname.endsWith('version.json')) return;     // versione: sempre fresca
+  if (/\.(mp4|mov|webm)$/i.test(url.pathname)) return;  // video: sempre rete, niente copia (pesano)
   e.respondWith((async () => {
     try {
       const net = await fetch(req);
