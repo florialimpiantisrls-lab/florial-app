@@ -915,6 +915,7 @@ async function apriLavoro(id){
   showLoader();
   let det=null;
   try{ const r=await sb.from('interventi').select('descrizione,materiale,stato').eq('id',id).maybeSingle(); det=r.data; }catch(e){}
+  const istRef=await istRefIntervento(id);
   hideLoader();
   lavCorrente={ x, det };
   const stato=(det&&det.stato)||x.stato;
@@ -938,6 +939,7 @@ async function apriLavoro(id){
   html+=`</div>`;
   const mat=(det&&det.materiale)||x.materiale;
   if(mat) html+=`<div class="sect"><div class="sect-t">Materiale da preparare</div><div style="padding:8px 2px;line-height:1.5;white-space:pre-line;">${esc(mat)}</div></div>`;
+  if(istRef) html+=istruzioniSezione('l', istRef, null);
   // dove e quando
   html+=`<div class="sect"><div class="sect-t">Dove e quando</div>`
     + dettRow('Giorno', giornoLabel(x.data))
@@ -954,6 +956,7 @@ async function apriLavoro(id){
   html+=`</div>`;
   $('lav-dett-body').innerHTML=html;
   show('s-lav-dett');
+  if(istRef) istruzioniCarica('l');
 }
 function spuntaVoce(id,i,el,tot){
   const a=chkLeggi(id); a[i]=el.checked; chkScrivi(id,a);
@@ -1484,6 +1487,7 @@ async function apriCommessa(hubId){
     if(utente.ruolo==='admin' && c.importo!=null) html += dettRow('Importo · solo admin', euro(c.importo), true);
     html += `</div>`;
   }
+  html += istruzioniSezione('c', String(hubId), c.codice);
   if(utente.ruolo==='admin' && (c.documenti_fic || c.scadenza_saldo || c.acconto_incassato!=null)){
     html += `<div class="sect"><div class="sect-t">Fatture e incassi · solo admin</div>`;
     if(c.acconto_incassato!=null) html += dettRow('Acconto', c.acconto_incassato ? '<span class="badge b-ok">Incassato</span>' : '<span class="badge b-wa">Da incassare</span>');
@@ -1495,6 +1499,7 @@ async function apriCommessa(hubId){
   html += moduliCommessaHtml(dett && dett.moduli);
   $('comm-dett-body').innerHTML = html;
   show('s-comm-dett');
+  istruzioniCarica('c');
 }
 function moduliCommessaHtml(list){
   const tipi=[['sop','Sopralluogo'],['dis','Distinta materiali'],['col16','Rapporto di prova'],['reg','Registro controlli'],['var','Lavori extra'],['prl','Prelievi magazzino']];
@@ -1514,6 +1519,146 @@ function nuovoModuloComm(tipo){
   const fn={ sop:openSop, dis:openDis, prl:openPrl, var:openVar, reg:openReg, col16:openCol16 }[tipo];
   if(fn) fn();
 }
+// ===== ISTRUZIONI E VIDEO DELLA COMMESSA =====
+// Video, checklist e schemi per i ragazzi, dentro la commessa e nel dettaglio del lavoro.
+// Tutti gli utenti dell'app li vedono; admin e ufficio li caricano; solo l'admin li cancella.
+// File nella cartella privata «istruzioni» di Supabase: si aprono con un link temporaneo di un'ora.
+const IST_BUCKET='istruzioni', IST_MAX=50*1024*1024;
+let istCtx={}, istCache={};
+(function(){
+  const st=document.createElement('style');
+  st.textContent='.ist-row{display:flex;gap:8px;align-items:center;}.ist-row .item{flex:1;min-width:0;cursor:pointer;}'
+    +'.ist-del{width:44px;min-height:44px;flex:0 0 44px;padding:0;font-size:16px;}'
+    +'.ist-ov{position:fixed;inset:0;z-index:450;background:#000;display:none;flex-direction:column;}.ist-ov.on{display:flex;}'
+    +'.ist-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:calc(var(--safe-top, 0px) + 10px) 14px 10px;color:#fff;font-weight:600;font-size:15px;}'
+    +'.ist-top span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}'
+    +'.ist-top button{background:rgba(255,255,255,.18);border:none;color:#fff;width:42px;height:42px;border-radius:50%;font-size:18px;flex-shrink:0;}'
+    +'.ist-ov video{flex:1;width:100%;min-height:0;background:#000;object-fit:contain;}';
+  document.head.appendChild(st);
+})();
+function istPuoCaricare(){ return !!(utente && (utente.ruolo==='admin' || utente.ruolo==='ufficio')); }
+async function istRefIntervento(id){
+  // commessa dell'intervento: id trattativa HubSpot (come «commessa_ref» dei moduli operativi)
+  const r=await qs(sb.from('interventi').select('origine,commessa_id').eq('id',id).maybeSingle());
+  const d=r&&r.data; if(!d) return null;
+  if(d.origine && /^hubspot:/.test(d.origine)) return d.origine.slice(8);
+  if(d.commessa_id){ const c=await qs(sb.from('commesse').select('hubspot_deal_id').eq('id',d.commessa_id).maybeSingle()); if(c&&c.data&&c.data.hubspot_deal_id) return String(c.data.hubspot_deal_id); }
+  return null;
+}
+function istruzioniSezione(pref, ref, codice){
+  istCtx[pref]={ ref:String(ref), codice:codice||null };
+  const add=istPuoCaricare()
+    ? `<button type="button" class="btn sec" onclick="document.getElementById('ist-file-${pref}').click()">+ Aggiungi video, checklist o schemi</button>`
+      +`<input type="file" id="ist-file-${pref}" accept="video/*,application/pdf,image/*" multiple hidden onchange="istCarica(this,'${pref}')">`
+    : '';
+  return `<div class="sect"><div class="sect-t">Istruzioni e video</div><div id="ist-list-${pref}" style="display:flex;flex-direction:column;gap:8px;"><div class="s-lbl" style="padding:6px 2px;">Caricamento…</div></div>${add}</div>`;
+}
+function istIcona(tipo){
+  const p={ video:'<polygon points="6 4 20 12 6 20 6 4"></polygon>',
+            pdf:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="13" y2="17"></line>',
+            foto:'<rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline>',
+            link:'<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"></path><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"></path>' }[tipo] || '<circle cx="12" cy="12" r="9"></circle>';
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+}
+function istSotto(it){ return ({ video:'Video · tocca per guardarlo', pdf:'PDF · tocca per aprirlo', foto:'Foto · tocca per aprirla', link:'Link · tocca per aprirlo' }[it.tipo]) || 'File · tocca per aprirlo'; }
+async function istruzioniCarica(pref){
+  const ctx=istCtx[pref], box=$('ist-list-'+pref); if(!ctx||!box) return;
+  const r=await qs(sb.from('istruzioni_commessa').select('*').eq('commessa_ref',ctx.ref).order('ordine',{ascending:true}).order('created_at',{ascending:true}));
+  if(r.error){
+    const manca=/istruzioni_commessa|does not exist|schema cache/i.test(String(r.error.message||''));
+    box.innerHTML=`<div class="s-lbl" style="padding:6px 2px;line-height:1.5;">${manca&&istPuoCaricare()?'Da attivare: esegui su Supabase lo script «istruzioni_commessa».':'Istruzioni non disponibili in questo momento.'}</div>`;
+    return;
+  }
+  const list=r.data||[]; istCache[ctx.ref]=list;
+  if(!list.length){
+    box.innerHTML=`<div class="s-lbl" style="padding:6px 2px;line-height:1.5;">${istPuoCaricare()?'Nessun file ancora: aggiungi i video, la checklist e gli schemi per i ragazzi.':'Nessuna istruzione per questa commessa.'}</div>`;
+    return;
+  }
+  const admin=utente&&utente.ruolo==='admin';
+  box.innerHTML=list.map(it=>`<div class="ist-row"><button type="button" class="item" onclick="istApri('${pref}','${esc(String(it.id))}')"><span class="ico">${istIcona(it.tipo)}</span><span class="bd"><span class="ti">${esc(it.titolo)}</span><span class="su">${esc(istSotto(it))}</span></span></button>`
+    +(admin?`<button type="button" class="btn danger ist-del" title="Elimina" aria-label="Elimina" onclick="istElimina('${pref}','${esc(String(it.id))}')">✕</button>`:'')+`</div>`).join('');
+}
+async function istApri(pref,id){
+  const ctx=istCtx[pref]; const it=ctx&&(istCache[ctx.ref]||[]).find(x=>String(x.id)===String(id)); if(!it) return;
+  let url=it.url||null;
+  if(it.file_path){
+    showLoader('Apertura…');
+    const r=await qs(sb.storage.from(IST_BUCKET).createSignedUrl(it.file_path, 3600));
+    hideLoader();
+    if(r.error||!r.data||!r.data.signedUrl){ toast('File non disponibile'); return; }
+    url=r.data.signedUrl;
+  }
+  if(!url){ toast('Nessun file collegato'); return; }
+  if(it.tipo==='video'){ istVideo(it.titolo, url); return; }
+  window.open(url, '_blank', 'noopener');
+}
+function istVideo(titolo,url){
+  let ov=$('ist-ov');
+  if(!ov){
+    ov=document.createElement('div'); ov.id='ist-ov'; ov.className='ist-ov';
+    ov.innerHTML='<div class="ist-top"><span id="ist-ov-t"></span><button type="button" onclick="istChiudi()" aria-label="Chiudi">✕</button></div><video id="ist-ov-v" controls playsinline preload="metadata"></video>';
+    document.body.appendChild(ov);
+  }
+  $('ist-ov-t').textContent=titolo||'Video';
+  const v=$('ist-ov-v'); v.src=url; ov.classList.add('on');
+  const pp=v.play(); if(pp&&pp.catch) pp.catch(()=>{});
+}
+function istChiudi(){
+  const ov=$('ist-ov'); if(!ov) return;
+  const v=$('ist-ov-v'); try{ v.pause(); }catch(e){} v.removeAttribute('src'); try{ v.load(); }catch(e){}
+  ov.classList.remove('on');
+}
+function istTipo(f){
+  const t=String(f.type||'').toLowerCase(), n=String(f.name||'').toLowerCase();
+  if(t.startsWith('video/')||/\.(mp4|mov|m4v|webm)$/.test(n)) return 'video';
+  if(t==='application/pdf'||/\.pdf$/.test(n)) return 'pdf';
+  if(t.startsWith('image/')||/\.(jpe?g|png|webp|heic)$/.test(n)) return 'foto';
+  return 'altro';
+}
+function istTitolo(nome){
+  // «PRV-069_Video1_Il-lavoro-in-breve.mp4» → «Video 1 · Il lavoro in breve»
+  const base=String(nome||'').replace(/\.[^.]+$/,'');
+  const parti=base.split('_').filter(Boolean)
+    .filter((x,i)=>!/^PRV(-ADD)?-?\d+/i.test(x) && !/^\d{4}$/.test(x) && !(i<=1 && /^[A-Z][A-Z0-9]{2,}$/.test(x)))
+    .map(x=>x.replace(/^(Video|Foglio|Parte)(\d+)$/i,'$1 $2').replace(/-/g,' ').trim()).filter(Boolean);
+  const t=parti.join(' · ')||base||'File';
+  return t.charAt(0).toUpperCase()+t.slice(1);
+}
+function istNomeSicuro(n){ return String(n||'file').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9._-]+/g,'-').replace(/-+/g,'-').slice(-90); }
+async function istCarica(inp,pref){
+  const files=[...(inp.files||[])]; inp.value=''; if(!files.length) return;
+  const ctx=istCtx[pref]; if(!ctx||!ctx.ref){ toast('Commessa non trovata'); return; }
+  const grandi=files.filter(f=>f.size>IST_MAX);
+  if(grandi.length) toast(grandi[0].name+': oltre 50 MB, non caricato');
+  const ok=files.filter(f=>f.size<=IST_MAX).sort((a,b)=>((istTipo(a)==='video'?0:1)-(istTipo(b)==='video'?0:1)) || a.name.localeCompare(b.name,'it',{numeric:true}));
+  if(!ok.length) return;
+  let ordine=(istCache[ctx.ref]||[]).reduce((m,x)=>Math.max(m, x.ordine||0), 0), fatti=0;
+  for(let i=0;i<ok.length;i++){
+    const f=ok[i];
+    showLoader(ok.length>1?`Caricamento ${i+1} di ${ok.length}…`:'Caricamento…');
+    const path=`${istNomeSicuro(ctx.ref)}/${Date.now()}_${istNomeSicuro(f.name)}`;
+    const up=await qs(sb.storage.from(IST_BUCKET).upload(path, f, { contentType:f.type||'application/octet-stream', upsert:false }));
+    if(up.error){ hideLoader(); toast('Errore nel caricamento di '+f.name+(up.error.message?': '+up.error.message:'')); break; }
+    const ins=await qs(sb.from('istruzioni_commessa').insert({ commessa_ref:ctx.ref, codice:ctx.codice, titolo:istTitolo(f.name), tipo:istTipo(f), file_path:path, file_nome:f.name, ordine:++ordine, creato_da:modChi() }));
+    if(ins.error){ qs(sb.storage.from(IST_BUCKET).remove([path])); hideLoader(); toast('Errore: '+(ins.error.message||'salvataggio non riuscito')); break; }
+    fatti++;
+  }
+  hideLoader();
+  if(fatti) toast(fatti===1?'File caricato':fatti+' file caricati');
+  istruzioniCarica(pref);
+}
+async function istElimina(pref,id){
+  if(!utente||utente.ruolo!=='admin') return;
+  const ctx=istCtx[pref]; const it=ctx&&(istCache[ctx.ref]||[]).find(x=>String(x.id)===String(id)); if(!it) return;
+  if(!confirm('Eliminare «'+it.titolo+'» dalle istruzioni della commessa?')) return;
+  showLoader('Eliminazione…');
+  const r=await qs(sb.from('istruzioni_commessa').delete().eq('id',it.id));
+  if(!r.error && it.file_path) await qs(sb.storage.from(IST_BUCKET).remove([it.file_path]));
+  hideLoader();
+  if(r.error){ toast('Errore: '+(r.error.message||'')); return; }
+  toast('Eliminato'); istruzioniCarica(pref);
+}
+
 function interventiCommessaHtml(list){
   const today=new Date().toISOString().slice(0,10);
   const stMap={da_fare:['Da fare','b-mu'],in_corso:['In corso','b-wa'],fatto:['Fatto','b-ok'],sospeso:['Sospeso','b-wa']};
