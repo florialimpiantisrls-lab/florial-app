@@ -993,14 +993,19 @@ function tiaMd(t){
   if(inList) html+='</ul>';
   return html;
 }
+function tiaFonti(f){
+  if(!Array.isArray(f)||!f.length) return '';
+  const nomi=[...new Set(f.map(x=>x&&(x.codice||x.titolo)).filter(Boolean))];
+  return nomi.length?`<p style="color:var(--muted);font-size:12px;margin-top:6px;">Fonti: ${nomi.map(esc).join(' · ')}</p>`:'';
+}
 function tiaRender(){
   const el=$('tia-log');
   if(!tiaMsgs.length){
     const sug=['Chi lavora questa settimana e dove?','Quali acconti sono ancora da incassare?','Cosa manca per chiudere Piccardo?','Commesse in fase 5 e 6','Prossime visite di manutenzione'];
-    el.innerHTML=`<div class="tia-msg a"><p><b>Ciao, sono Florial TIA.</b></p><p>Leggo calendario, commesse, fatture, contratti, rapporti e clienti dell'app e ti rispondo. Per ora sono in sola lettura: non modifico nulla.</p></div><div class="tia-sug">${sug.map(q=>`<button type="button" onclick="tiaChiedi(this.textContent)">${esc(q)}</button>`).join('')}</div>`;
+    el.innerHTML=`<div class="tia-msg a"><p><b>Ciao, sono Florial TIA.</b></p><p>Leggo calendario, commesse, fatture, contratti, rapporti e clienti dell'app, più i documenti aziendali caricati, e ti rispondo. Per ora sono in sola lettura: non modifico nulla.</p></div><div class="tia-sug">${sug.map(q=>`<button type="button" onclick="tiaChiedi(this.textContent)">${esc(q)}</button>`).join('')}</div>`;
     return;
   }
-  el.innerHTML=tiaMsgs.map(m=>m.role==='user'?`<div class="tia-msg u">${esc(m.content)}</div>`:`<div class="tia-msg a${m.err?' err':''}">${tiaMd(m.content)}</div>`).join('')+(tiaBusy?`<div class="tia-msg a" id="tia-wait"><p style="color:var(--muted);">TIA sta guardando i dati…</p></div>`:'');
+  el.innerHTML=tiaMsgs.map(m=>m.role==='user'?`<div class="tia-msg u">${esc(m.content)}</div>`:`<div class="tia-msg a${m.err?' err':''}">${tiaMd(m.content)}${tiaFonti(m.fonti)}</div>`).join('')+(tiaBusy?`<div class="tia-msg a" id="tia-wait"><p style="color:var(--muted);">TIA sta guardando i dati…</p></div>`:'');
   el.scrollTop=el.scrollHeight;
 }
 function openTia(){
@@ -1016,15 +1021,15 @@ async function tiaInvia(){
   if(tiaRec){ try{ tiaRec.stop(); }catch(e){} }
   inp.value=''; inp.style.height='auto';
   tiaMsgs.push({ role:'user', content:q }); tiaBusy=true; tiaRender();
-  let risposta='', err=false;
+  let risposta='', err=false, fonti=[];
   try{
     const hist=tiaMsgs.filter(m=>!m.err).map(m=>({ role:m.role, content:m.content })).slice(-16);
-    const { data, error } = await sb.functions.invoke('florial-tia', { body:{ messages:hist } });
+    const { data, error } = await sb.functions.invoke('tia', { body:{ messages:hist } });
     if(error){ err=true; risposta='Non riesco a raggiungere TIA: '+(error.message||'errore di rete')+'.'; }
     else if(!data||!data.ok){ err=true; risposta=(data&&data.errore)||'Risposta non valida.'; }
-    else risposta=data.risposta;
+    else { risposta=data.risposta; fonti=Array.isArray(data.fonti)?data.fonti:[]; }
   }catch(e){ err=true; risposta='Errore: '+(e.message||e); }
-  tiaBusy=false; tiaMsgs.push({ role:'assistant', content:risposta, err }); tiaSalva(); tiaRender();
+  tiaBusy=false; tiaMsgs.push({ role:'assistant', content:risposta, err, fonti }); tiaSalva(); tiaRender();
 }
 function tiaMic(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR) return;

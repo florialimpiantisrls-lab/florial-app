@@ -1,0 +1,22 @@
+{
+  "name": "florial-tia",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Florial TIA — prove e strumenti del motore a strati",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/unita.test.ts",
+    "test:db": "node --test test/base-dati.test.mjs",
+    "test:integrazione": "node --test test/integrazione.test.mjs",
+    "test:tutto": "node --test test/unita.test.ts test/base-dati.test.mjs test/integrazione.test.mjs",
+    "prova": "node test/prova-dal-vivo.mjs",
+    "carica": "node strumenti/carica-documenti.mjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.3.0",
+    "deno": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=22.18"
+  }
+}

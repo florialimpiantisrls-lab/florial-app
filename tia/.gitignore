@@ -1,0 +1,4 @@
+node_modules/
+segreti.env
+.env
+*.log
