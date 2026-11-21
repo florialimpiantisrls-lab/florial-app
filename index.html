@@ -281,6 +281,12 @@ details.gd-reg{background:var(--ok-bg);border-color:transparent;} details.gd-reg
     <div class="list" id="contr-list"></div>
   </section>
 
+  <!-- DETTAGLIO CONTRATTO: guida del locale, video, checklist e schede (21/11/2026) -->
+  <section class="screen" id="s-contr-dett">
+    <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title" id="contr-dett-title">Contratto</div></div>
+    <div class="form" id="contr-dett-body"></div>
+  </section>
+
   <!-- FATTURE (solo admin) -->
   <section class="screen" id="s-tia">
     <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title">Florial TIA</div><button class="topbar-back" style="margin-left:auto;" onclick="tiaNuova()" aria-label="Nuova conversazione"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg></button></div>
@@ -1245,6 +1251,7 @@ function tiaMic(){
 
 // ===== CONTRATTI MANUTENZIONE (admin/ufficio) =====
 function openContratti(){ renderContratti(); show('s-contratti'); }
+let contrCache=[];
 async function renderContratti(){
   const el=$('contr-list'); el.innerHTML=spinBox();
   const { data, error } = await sb.from('contratti_manutenzione')
@@ -1252,6 +1259,7 @@ async function renderContratti(){
     .eq('archiviata',false).order('codice');
   if(error){ el.innerHTML=emptyBox('Errore di caricamento'); return; }
   if(!data||!data.length){ el.innerHTML=emptyBox('Nessun contratto'); return; }
+  contrCache=data;
   el.innerHTML=data.map(itemContratto).join('');
 }
 function itemContratto(c){
@@ -1262,7 +1270,55 @@ function itemContratto(c){
   const canone=(c.canone!=null)? euro(c.canone)+per : '';
   const pros=c.prossima_visita? dataIt(c.prossima_visita):'—';
   const titolo=esc(loc.insegna)||esc(cli.ragione_sociale)||'—';
-  return `<div class="item"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></span><span class="bd"><span class="ti">${titolo}</span><span class="su">${esc(c.codice)}${cli.ragione_sociale?' · '+esc(cli.ragione_sociale):''}</span><span class="su">Prossima visita: ${pros}${canone?' · '+canone:''}</span></span><span class="badge ${st[1]}">${st[0]}</span></div>`;
+  return `<button class="item" onclick="apriContratto('${esc(String(c.id))}')"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></span><span class="bd"><span class="ti">${titolo}</span><span class="su">${esc(c.codice)}${cli.ragione_sociale?' · '+esc(cli.ragione_sociale):''}</span><span class="su">Prossima visita: ${pros}${canone?' · '+canone:''}</span></span><span class="badge ${st[1]}">${st[0]}</span></button>`;
+}
+// Dettaglio contratto: tutto quello che devono fare i ragazzi in quel locale (guida, video comuni,
+// video e file del locale) e, per admin e ufficio, il tasto per aggiungere altri video e checklist.
+// Il contratto si collega alla guida con il codice (guide_locali.contratto) o con le parole del locale.
+async function apriContratto(id){
+  const c=contrCache.find(x=>String(x.id)===String(id)); if(!c) return;
+  const loc=c.locali||{}, cli=c.clienti||{};
+  showLoader(); const guide=await guideCarica(true); hideLoader();
+  let trovate=guide.filter(g=>g.contratto && c.codice && normTesto(g.contratto)===normTesto(c.codice));
+  if(!trovate.length) trovate=guideTrova(guide,[loc.insegna,loc.citta,cli.ragione_sociale].join(' '));
+  const g=trovate.length===1? trovate[0] : null;
+  $('contr-dett-title').textContent=loc.insegna||cli.ragione_sociale||'Contratto';
+  const per={mese:'/mese',mensile:'/mese',anno:'/anno',annuale:'/anno',trimestre:'/trim',trimestrale:'/trim'}[String(c.canone_periodo||'').toLowerCase()]||'/trim';
+  let h=`<div class="sect"><div class="sect-t">Contratto</div>`
+    + dettRow('Locale', esc(loc.insegna)||'—') + dettRow('Cliente', esc(cli.ragione_sociale)||'—') + dettRow('Codice', esc(c.codice)||'—')
+    + dettRow('Prossima visita', c.prossima_visita? dataIt(c.prossima_visita):'—') + (c.canone!=null? dettRow('Canone', euro(c.canone)+per, true):'') + `</div>`;
+  if(g){
+    h+=guidaHtml(g,{aperta:true, titolo:'Cosa devono fare i ragazzi · '+g.gruppo});
+    h+=istruzioniSezione('cd', PROC_REF+g.gruppo, null).replace('<div class="sect-t">Istruzioni e video</div>', `<div class="sect-t">Video, checklist e schede del locale</div><div class="gd-sub">Li vedono anche i ragazzi, dentro ogni lavoro in questo locale e in Procedure.</div>`);
+    if(istPuoCaricare() && guide.length>1) h+=`<button type="button" class="btn sec" onclick="sceltaGuida('${esc(String(c.id))}')">Non è il locale giusto? Cambia guida</button>`;
+  } else {
+    h+=guideScelta(c, guide, trovate);
+  }
+  $('contr-dett-body').innerHTML=h;
+  show('s-contr-dett');
+  if(g) istruzioniCarica('cd');
+}
+function guideScelta(c, guide, trovate){
+  if(!guide.length) return `<div class="sect"><div class="sect-t">Guida del locale</div><div class="gd-sub" style="margin:0;">${istPuoCaricare()?'Le guide dei locali non sono ancora attive: esegui su Supabase gli script delle guide (prima quello del repository, poi quello privato).':'Guida del locale non ancora disponibile.'}</div></div>`;
+  const elenco=(trovate.length>1? trovate : guide);
+  return `<div class="sect"><div class="sect-t">Quale locale è?</div><div class="gd-sub" style="margin:0 0 4px;">${trovate.length>1?'Ci sono più guide possibili per questo contratto: scegli quella giusta.':'Questo contratto non è ancora collegato a una guida: scegli il locale.'}</div>`
+    + (istPuoCaricare()? elenco.map(x=>`<button type="button" class="btn sec" onclick="collegaGuida('${esc(String(x.id))}','${esc(String(c.id))}')">${esc(x.gruppo)}</button>`).join('') : '<div class="gd-sub">Chiedi in ufficio di collegarlo.</div>')
+    + `</div>`;
+}
+async function sceltaGuida(contrId){
+  const c=contrCache.find(x=>String(x.id)===String(contrId)); if(!c) return;
+  const guide=await guideCarica(true);
+  $('contr-dett-body').innerHTML=guideScelta(c, guide, []);
+}
+async function collegaGuida(guidaId, contrId){
+  const c=contrCache.find(x=>String(x.id)===String(contrId)); if(!c||!istPuoCaricare()) return;
+  if(!c.codice){ toast('Il contratto non ha un codice: aggiungilo prima'); return; }
+  showLoader();
+  const r=await qs(sb.from('guide_locali').update({ contratto:c.codice, aggiornato:new Date().toISOString(), aggiornato_da:(utente&&utente.nome)||null }).eq('id',guidaId));
+  hideLoader();
+  if(r.error){ toast('Collegamento non riuscito'); return; }
+  guideCache=null; toast('Contratto collegato alla guida');
+  apriContratto(contrId);
 }
 
 // ===== FATTURE (solo admin) =====
