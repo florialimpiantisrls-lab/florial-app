@@ -409,7 +409,12 @@ a.btn{text-decoration:none;}
     <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title">Procedure</div></div>
     <div class="list">
       <button class="item" onclick="openProcGas()"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg></span><span class="bd"><span class="ti">Prova del rivelatore di gas metano</span><span class="su">Istruzione operativa · Rev. 0 del 16/11/2026</span><span class="su">Con video tutorial (4:50) e scheda di verifica</span></span></button>
+      <button class="item" onclick="openProcVid(0)"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg></span><span class="bd"><span class="ti">Video 1 · La visita: esame a vista e controlli</span><span class="su">Per tutti i locali a contratto · video 3:15</span></span></button>
+      <button class="item" onclick="openProcVid(1)"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg></span><span class="bd"><span class="ti">Video 2 · Le prove con il Macrotest G3</span><span class="su">Per tutti i locali a contratto · video 3:47</span></span></button>
+      <button class="item" onclick="openProcVid(2)"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg></span><span class="bd"><span class="ti">Video 3 · Rivelatori di fumo e centrale</span><span class="su">Per tutti i locali a contratto · video 2:45</span></span></button>
     </div>
+    <div class="form" id="proc-lib"></div>
+    <div class="form" id="proc-add" style="padding-top:0;display:none;"><button type="button" class="btn sec" onclick="procNuovoGruppo()">+ Nuovo gruppo di video e checklist</button></div>
   </section>
 
   <!-- ISTRUZIONE OPERATIVA · PROVA DEL RIVELATORE DI GAS METANO (Rev. 0 del 16/11/2026) -->
@@ -479,6 +484,16 @@ a.btn{text-decoration:none;}
       </ul></div></details>
     </div>
     <div class="actionbar"><button class="btn" onclick="openVgas()">Compila la scheda di verifica</button></div>
+  </section>
+
+  <!-- FORMAZIONE · VIDEO PER TUTTI I LOCALI A CONTRATTO (Rev. 0 del 21/11/2026) -->
+  <section class="screen" id="s-proc-vid">
+    <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title" id="pv-title">Formazione</div></div>
+    <div class="proc">
+      <div class="proc-video"><video id="pv-video" controls playsinline preload="none"></video></div>
+      <div class="meta" id="pv-meta"></div>
+      <div id="pv-body"></div>
+    </div>
   </section>
 
   <!-- VERIFICA SEMESTRALE · RIVELAZIONE INCENDI E GAS (tutti) -->
@@ -2436,8 +2451,73 @@ let vgVideo=null, vgCorr=null;
 const VG_MAX=25*1024*1024;
 const VG_TIPI={rilievo:'Rilievo',maggio:'Maggio',novembre:'Novembre',straordinaria:'Straordinaria'};
 const VG_ICO='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>';
-function openProcedure(){ show('s-proc'); }
+// Libreria «Procedure»: gruppi di video, checklist e schemi (ad esempio «Per tutti i locali» o un locale a contratto).
+// Usa la tabella e la cartella privata delle istruzioni di commessa: riferimento «proc:<nome del gruppo>».
+// La vedono tutti gli utenti dell'app; admin e ufficio caricano; solo l'admin elimina.
+const PROC_REF='proc:';
+function openProcedure(){ show('s-proc'); $('proc-add').style.display=istPuoCaricare()?'':'none'; renderProcLib(); }
+async function renderProcLib(nuovo){
+  const box=$('proc-lib'); if(!box) return;
+  box.innerHTML='<div class="s-lbl" style="padding:6px 2px;">Caricamento…</div>';
+  const r=await qs(sb.from('istruzioni_commessa').select('commessa_ref').like('commessa_ref',PROC_REF+'%').limit(2000));
+  if(r.error){
+    const manca=/istruzioni_commessa|does not exist|schema cache/i.test(String(r.error.message||''));
+    box.innerHTML=`<div class="s-lbl" style="padding:6px 2px;line-height:1.5;">${manca&&istPuoCaricare()?'Da attivare: esegui su Supabase lo script «istruzioni_commessa».':'Video e checklist non disponibili in questo momento.'}</div>`;
+    return;
+  }
+  const nomi=[...new Set((r.data||[]).map(x=>String(x.commessa_ref).slice(PROC_REF.length)).filter(Boolean))];
+  if(nuovo && !nomi.includes(nuovo)) nomi.push(nuovo);
+  nomi.sort((a,b)=>(/^per tutti/i.test(a)?0:1)-(/^per tutti/i.test(b)?0:1) || a.localeCompare(b,'it',{numeric:true}));
+  if(!nomi.length){
+    box.innerHTML=`<div class="s-lbl" style="padding:6px 2px;line-height:1.5;">${istPuoCaricare()?'Nessun video ancora: crea un gruppo (ad esempio «Per tutti i locali» o il nome di un locale) e carica video e checklist.':'Nessun video ancora.'}</div>`;
+    return;
+  }
+  box.innerHTML=nomi.map((n,i)=>istruzioniSezione('pl'+i, PROC_REF+n, null).replace('<div class="sect-t">Istruzioni e video</div>', `<div class="sect-t">${esc(n)}</div>`)).join('');
+  nomi.forEach((n,i)=>istruzioniCarica('pl'+i));
+}
+function procNuovoGruppo(){
+  const n=(prompt('Nome del gruppo (ad esempio «Per tutti i locali» o il nome del locale):')||'').trim().replace(/\s+/g,' ').slice(0,60);
+  if(n) renderProcLib(n);
+}
 function openProcGas(){ show('s-proc-gas'); }
+// Video di formazione uguali per tutti i locali a contratto (file in formazione/, 720p)
+const PROC_VID=[
+  {f:'visita-esame-a-vista', t:'Esame a vista', ti:'Video 1 · La visita: esame a vista e controlli', d:'3:15', punti:[
+    'Locale chiuso e visita confermata: avvisa il responsabile che i differenziali scatteranno per pochi secondi.',
+    'Segna celle frigo, congelatori e cantine vini: dopo ogni prova controlla che ripartano.',
+    'Quadri integri e chiusi, con schema ed etichette, senza segni di caldo. Serraggi solo a quadro sezionato e se lo prevede la checklist.',
+    'Tasto T di ogni differenziale: deve scattare subito. Poi riarma e controlla che tutto riparta.',
+    'Prese, spine e cavi integri; prese industriali e quadretti stagni chiusi; niente ciabatte in cascata o prolunghe fisse.',
+    'Lampade di emergenza: togli la rete alla loro linea, si devono accendere tutte.',
+    'Terra: collegamenti su tubi, cappe, celle e piani in acciaio integri e serrati.',
+    'Ogni anomalia: foto, con quadro e linea. Lavori non previsti solo con Flogert; se c’è un pericolo, metti in sicurezza e chiama Flogert.']},
+  {f:'prove-macrotest-g3', t:'Macrotest G3', ti:'Video 2 · Le prove con il Macrotest G3', d:'3:47', punti:[
+    'Strumento con taratura valida e batterie cariche. Impostazioni: sistema TT, 50 V (se il locale ha una cabina sua, chiedi a Flogert).',
+    'Differenziali: tipo (AC o A) e IΔn come sull’etichetta, modalità AUTO, spina in una presa a valle. OK va bene, NOT OK: avvisa Flogert.',
+    'A ½ IΔn non deve scattare; a IΔn entro 300 ms; a 5 IΔn entro 40 ms. Selettivi (S): 60 secondi tra una prova e l’altra.',
+    'Terra: LOOP, Ra senza intervento. TT: Ra × IΔn ≤ 50 V (30 mA: fino a 1.666 Ω; 300 mA: fino a 166 Ω). Confronta con l’ultima visita.',
+    'Continuità dei conduttori di terra (LOW): senza tensione, dopo aver azzerato i puntali. Di solito sotto 1 Ω; alto o fuori scala = PE interrotto.',
+    'Isolamento (MΩ) solo se lo dice Flogert: linea sezionata, carichi scollegati, 500 V, almeno 1 MΩ.',
+    'Sequenza delle fasi su prese trifase e motori: 1-2-3 giusta, 2-1-3 invertita.',
+    'Ogni prova in memoria e sulla checklist del locale. Valori strani: non riparare di testa tua, chiama Flogert.']},
+  {f:'rivelatori-fumo-centrale', t:'Rivelatori di fumo', ti:'Video 3 · Rivelatori di fumo e centrale', d:'2:45', punti:[
+    'La manutenzione della rivelazione incendi la firma Flogert, tecnico qualificato D.M. 1/9/2021: tu lo assisti.',
+    'Prima: avvisa il responsabile e chi riceve le chiamate del combinatore, leggi la memoria eventi, guarda cosa comanda la centrale.',
+    'Centrale a riposo e nessuna zona esclusa; batterie con la data e non gonfie; senza rete deve segnalare il guasto e restare accesa.',
+    'Rivelatori di fumo: quelli della lista di Flogert. Coppetta dell’asta e uno spruzzo breve; allarme con il numero giusto, poi ripristino.',
+    'Rivelatori di calore con il tester di calore, mai con fiamme. Pulsanti con la chiave di prova, senza rompere il vetro.',
+    'In allarme: sirene, pannelli e sirena esterna, chiamata del combinatore, ripetitori, fermi porta, valvola gas se collegata.',
+    'Alla fine: centrale a riposo, tutto ripristinato, scheda nell’app e registro dei controlli firmato da Flogert.']},
+];
+function openProcVid(i){
+  const v=PROC_VID[i]; if(!v) return;
+  const el=$('pv-video'); try{ el.pause(); }catch(e){}
+  el.poster='formazione/'+v.f+'.jpg'; el.src='formazione/'+v.f+'.mp4';
+  $('pv-title').textContent=v.t;
+  $('pv-meta').textContent=v.ti+' · per tutti i locali a contratto · Rev. 0 del 21/11/2026 · dura '+v.d+': guardalo con il Wi-Fi.';
+  $('pv-body').innerHTML='<details open><summary>Punti chiave</summary><div class="pc"><ul>'+v.punti.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div></details>';
+  show('s-proc-vid');
+}
 function vgStaff(){ return !!utente && (utente.ruolo==='admin'||utente.ruolo==='ufficio'); }
 function openVgasHome(){ if(vgStaff()) openVgasList(); else openVgas(); }
 function vgEsito(el){ document.querySelectorAll('#vg-esiti .esito').forEach(c=>c.classList.remove('on')); el.classList.add('on'); }
@@ -2575,6 +2655,7 @@ let navStack = [];
 function show(id, opt){
   const cur=document.querySelector('.screen.active');
   if(cur && cur.id!==id){ prevScreen=cur.id; if(!(opt&&opt.noPush)){ navStack.push(cur.id); if(navStack.length>40) navStack.shift(); } }
+  if(cur && cur.id!==id) cur.querySelectorAll('video').forEach(v=>{ try{ v.pause(); }catch(e){} });
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); $(id).scrollTop=0;
 }
 function back(){ show(navStack.pop()||'s-home', {noPush:true}); }
