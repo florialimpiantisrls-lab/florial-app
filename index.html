@@ -171,6 +171,32 @@ textarea.in{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5;}
 .doc-txt{padding:8px 2px;color:var(--ink);line-height:1.55;white-space:pre-line;font-size:14px;overflow-wrap:anywhere;}
 a.btn{text-decoration:none;}
 @media(max-width:400px){.fg2,.esiti{grid-template-columns:1fr;}.foto-grid{grid-template-columns:1fr 1fr;}}
+.proc{padding:16px;display:flex;flex-direction:column;gap:12px;}
+.proc-video{background:#000;border-radius:12px;overflow:hidden;display:flex;justify-content:center;}
+.proc-video video{width:100%;max-height:72vh;display:block;background:#000;}
+.proc details{background:var(--s0);border:1px solid var(--bd);border-radius:12px;padding:0 14px;}
+.proc summary{list-style:none;cursor:pointer;padding:14px 0;font-weight:700;color:var(--teal-d);display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.proc summary::-webkit-details-marker{display:none;}
+.proc summary::after{content:"+";font-size:20px;line-height:1;color:var(--muted);}
+.proc details[open] summary::after{content:"\2013";}
+.proc .pc{padding:0 0 14px;display:flex;flex-direction:column;gap:8px;font-size:15px;line-height:1.5;}
+.proc .pc ol,.proc .pc ul{padding-left:20px;display:flex;flex-direction:column;gap:7px;}
+.proc .alarm{background:var(--err-bg);color:var(--err);border-left:4px solid var(--err);border-radius:8px;padding:12px;font-size:14px;line-height:1.5;}
+.proc .meta{font-size:12px;color:var(--muted);line-height:1.5;}
+.nc{color:var(--err);font-weight:700;}
+/* Guida dei locali a contratto: cosa fare, cosa NON fare, cosa portare e NON portare (21/11/2026) */
+.gd-sub{font-size:13px;color:var(--muted);line-height:1.45;margin-top:-4px;}
+details.gd{border:1px solid var(--bd);border-radius:12px;padding:0 14px;background:var(--s0);}
+details.gd summary{list-style:none;cursor:pointer;padding:12px 0;font-weight:700;color:var(--teal-d);display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:15px;}
+details.gd summary::-webkit-details-marker{display:none;}
+details.gd summary::after{content:"+";font-size:20px;line-height:1;color:var(--muted);}
+details.gd[open] summary::after{content:"\2013";}
+details.gd-no{background:var(--err-bg);border-color:transparent;} details.gd-no summary{color:var(--err);}
+details.gd-att{background:var(--warn-bg);border-color:transparent;} details.gd-att summary{color:var(--warn);}
+details.gd-reg{background:var(--ok-bg);border-color:transparent;} details.gd-reg summary{color:var(--ok);}
+.gd-l{margin:0 0 12px;padding-left:20px;display:flex;flex-direction:column;gap:7px;font-size:15px;line-height:1.45;color:var(--ink);}
+.gd-vid{display:flex;flex-direction:column;gap:8px;}
+.gd-vt{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:2px;}
 </style>
 </head>
 <body>
@@ -226,6 +252,8 @@ a.btn{text-decoration:none;}
           <button class="qa-card" onclick="go('preventivi')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="M9 13h6M9 17h4"></path></svg><span class="t">Commesse</span><span class="s">Stato trattative</span></button>
           <button class="qa-card" onclick="go('clienti')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path></svg><span class="t">Clienti</span><span class="s">Rubrica</span></button>
           <button class="qa-card" onclick="go('profilo')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><span class="t">Profilo</span><span class="s">Il mio codice</span></button>
+          <button class="qa-card" onclick="openVgasHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg><span class="t">Verifica gas</span><span class="s">Scheda incendi e gas</span></button>
+          <button class="qa-card" onclick="openProcedure()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg><span class="t">Procedure</span><span class="s">Istruzioni e video</span></button>
           <button class="qa-card" id="qa-tia" style="display:none;border-color:var(--teal);background:var(--s1);" onclick="openTia()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15.5l-1.9-4.6L5.5 9l4.6-1.4z"></path><path d="M19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"></path><path d="M5 17l.6 1.4L7 19l-1.4.6L5 21l-.6-1.4L3 19l1.4-.6z"></path></svg><span class="t">Florial TIA</span><span class="s">Chiedi all'assistente</span></button>
           <button class="qa-card" id="qa-contratti" style="display:none;" onclick="openContratti()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M9 13h6M9 17h6"></path></svg><span class="t">Contratti</span><span class="s">Manutenzione</span></button>
           <button class="qa-card" id="qa-fatture" style="display:none;" onclick="openFatture()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path><path d="M8 7h8M8 11h8M8 15h5"></path></svg><span class="t">Fatture</span><span class="s">Fatture in Cloud</span></button>
@@ -251,6 +279,12 @@ a.btn{text-decoration:none;}
   <section class="screen" id="s-contratti">
     <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title">Contratti manutenzione</div></div>
     <div class="list" id="contr-list"></div>
+  </section>
+
+  <!-- DETTAGLIO CONTRATTO: guida del locale, video, checklist e schede (21/11/2026) -->
+  <section class="screen" id="s-contr-dett">
+    <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title" id="contr-dett-title">Contratto</div></div>
+    <div class="form" id="contr-dett-body"></div>
   </section>
 
   <!-- FATTURE (solo admin) -->
@@ -389,6 +423,171 @@ a.btn{text-decoration:none;}
     </div>
   </section>
 
+  <!-- PROCEDURE E FORMAZIONE (tutti) -->
+  <section class="screen" id="s-proc">
+    <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title">Procedure</div></div>
+    <div class="list">
+      <button class="item" onclick="openProcGuida()"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></span><span class="bd"><span class="ti">Visita di manutenzione · cosa fare e cosa NON fare</span><span class="su">Guida generale · Rev. 1 del 21/11/2026</span><span class="su">I locali a contratto hanno la loro guida, qui sotto e dentro ogni lavoro</span></span></button>
+      <button class="item" onclick="openProcGas()"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg></span><span class="bd"><span class="ti">Prova del rivelatore di gas metano</span><span class="su">Istruzione operativa · Rev. 0 del 16/11/2026</span><span class="su">Con video tutorial (4:50) e scheda di verifica</span></span></button>
+      <button class="item" onclick="openProcVid(0)"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg></span><span class="bd"><span class="ti">Video 1 · La visita: esame a vista e controlli</span><span class="su">Per tutti i locali a contratto · video 3:15</span></span></button>
+      <button class="item" onclick="openProcVid(1)"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg></span><span class="bd"><span class="ti">Video 2 · Le prove con il Macrotest G3</span><span class="su">Per tutti i locali a contratto · video 3:47</span></span></button>
+      <button class="item" onclick="openProcVid(2)"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg></span><span class="bd"><span class="ti">Video 3 · Rivelatori di fumo e centrale</span><span class="su">Per tutti i locali a contratto · video 2:45</span></span></button>
+    </div>
+    <div class="form" id="proc-lib"></div>
+    <div class="form" id="proc-add" style="padding-top:0;display:none;"><button type="button" class="btn sec" onclick="procNuovoGruppo()">+ Nuovo gruppo di video e checklist</button></div>
+  </section>
+
+  <!-- ISTRUZIONE OPERATIVA · PROVA DEL RIVELATORE DI GAS METANO (Rev. 0 del 16/11/2026) -->
+  <section class="screen" id="s-proc-gas">
+    <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title">Prova rivelatore gas</div></div>
+    <div class="proc">
+      <div class="proc-video"><video id="pg-video" controls playsinline preload="none" poster="formazione/prova-rivelatore-gas.jpg"><source src="formazione/prova-rivelatore-gas.mp4" type="video/mp4"></video></div>
+      <div class="meta">Istruzione operativa · Rev. 0 del 16/11/2026 · approvata da Flogert Avduli, tecnico manutentore qualificato D.M. 1/9/2021. Il video dura 4:50: guardalo con il Wi-Fi.</div>
+      <details open><summary>A cosa serve</summary><div class="pc">
+        <p>Controlli che il rivelatore senta il metano e che il suo allarme chiuda l’elettrovalvola del gas e faccia partire i comandi collegati.</p>
+        <p>Florial controlla solo la <b>parte elettrica</b>: corpo valvola e tubazioni sono dell’installatore gas. Rivelatori di fumo, pulsanti, sirene e centrale antincendio li verifica <b>Flogert</b>, tecnico qualificato.</p>
+        <p><b>Quando:</b> a ogni rilievo e verifica semestrale (maggio e novembre), dopo ogni intervento su rivelatore, centrale o elettrovalvola, quando lo chiede il cliente.</p>
+        <p><b>Chi:</b> il tecnico che ha letto questa istruzione e ha fatto la prima prova insieme a Flogert.</p>
+      </div></details>
+      <details><summary>1 · Cosa ti serve</summary><div class="pc"><ul>
+        <li><b>Bombola di gas di prova:</b> metano in aria, certificata e non scaduta, alla concentrazione e al flusso indicati da Flogert per quel rivelatore. <b>Mai l’accendino, mai il gas della cucina, mai metano puro:</b> rovinano il sensore e la prova non vale.</li>
+        <li>Adattatore (cappuccio) per il rivelatore, tubetto e regolatore di flusso.</li>
+        <li>Scala a norma: il rivelatore del metano sta in alto, vicino al soffitto. Fattela tenere da un collega.</li>
+        <li>Telefono carico, con la fotocamera in HD 720p (non 1080p, non 4K).</li>
+        <li>La chiave o il codice della centrale per il reset.</li>
+      </ul></div></details>
+      <details><summary>2 · Prima di cominciare</summary><div class="pc"><ul>
+        <li>Locale chiuso al pubblico, cucina spenta, nessuna fiamma accesa.</li>
+        <li>Avvisa il responsabile del locale: suonerà l’allarme e l’elettrovalvola chiuderà il gas della cucina fino al riarmo.</li>
+        <li>Avvisa chi riceve le chiamate del combinatore (titolare, eventuale vigilanza) che è una prova.</li>
+        <li>Guarda la centrale: deve essere a riposo. Se segnala guasti, scrivili nelle note prima di iniziare.</li>
+        <li>Il rivelatore deve essere acceso da almeno 5 minuti: dopo un blackout aspetta che si scaldi.</li>
+      </ul>
+      <div class="alarm"><b>Odore di gas o rivelatore già in allarme? Non è una prova: può essere una fuga vera.</b><br>Non accendere fiamme, non toccare interruttori e prese, apri porte e finestre, chiudi il rubinetto generale del gas e fai uscire tutti. Da fuori chiama il pronto intervento del distributore gas (il numero è sulla bolletta del gas) o il 112, poi Flogert.</div>
+      </div></details>
+      <details><summary>3 · La prova, passo passo</summary><div class="pc"><ol>
+        <li><b>Fai partire il video</b> (punto 5) e non fermarlo fino all’allarme.</li>
+        <li><b>Guarda il rivelatore:</b> intero, ben fissato, LED verde acceso, griglia pulita. Se è sporco, solo panno asciutto o pennello: niente spray, solventi o silicone (avvelenano il sensore).</li>
+        <li><b>Metti l’adattatore sul rivelatore e apri la bombola</b> al flusso indicato. Il tempo lo rileggi poi sul video, dall’apertura del gas all’allarme.</li>
+        <li><b>Aspetta l’allarme</b> sulla centrale (e sul LED del rivelatore, se ce l’ha); con due soglie arriva prima il preallarme. Se non arriva entro 60 secondi (o il tempo indicato da Flogert), chiudi il gas: prova negativa, vai al punto 4.</li>
+        <li><b>Con l’allarme in corso controlla le uscite:</b> elettrovalvola chiusa (la leva di riarmo scatta), cartello «allarme gas» acceso se c’è, chiamata del combinatore (fattela confermare), porte con fermo elettromagnetico chiuse se collegate.</li>
+        <li><b>Chiudi la bombola e togli l’adattatore.</b> Lascia il rivelatore all’aria pulita finché la centrale non segnala più gas (1–2 minuti).</li>
+        <li><b>Fai il reset della centrale.</b> Poi, con tutti i rubinetti degli apparecchi della cucina chiusi, riarma a mano l’elettrovalvola. Se non si riarma non forzarla e non smontarla: chiama Flogert.</li>
+        <li><b>Fai riaccendere un fuoco al personale di cucina</b> per vedere che il gas arriva. Non lo accendi tu.</li>
+        <li><b>Lascia tutto come l’hai trovato:</b> centrale a riposo, nessuna zona esclusa, combinatore attivo, porte riagganciate.</li>
+      </ol></div></details>
+      <details><summary>4 · Se qualcosa non va</summary><div class="pc"><ul>
+        <li><b>Nessun allarme:</b> controlla che il rivelatore sia alimentato (LED verde) e rifai la prova una sola volta. Se ancora niente è <span class="nc">NON CONFORME</span>: dillo subito al responsabile del locale (la cucina resta senza protezione gas) e chiama Flogert.</li>
+        <li><b>L’elettrovalvola non chiude:</b> controlla l’uscita della centrale e i fili della bobina. Se il guasto è nel corpo valvola è <span class="nc">NON CONFORME</span> e Flogert avvisa l’installatore gas.</li>
+        <li><b>Il combinatore non chiama:</b> controlla SIM, credito e campo, e scrivilo nelle note.</li>
+        <li><b>L’allarme non si resetta all’aria pulita:</b> aspetta 5 minuti e riprova. Se resta, <span class="nc">NON CONFORME</span> e chiama Flogert.</li>
+      </ul></div></details>
+      <details><summary>5 · Il video della prova (obbligatorio)</summary><div class="pc"><ul>
+        <li><b>Uno per ogni rivelatore:</b> una sola ripresa senza tagli, in orizzontale, in HD 720p. Non riprendere in faccia clienti o personale.</li>
+        <li><b>Cosa si deve vedere, in ordine:</b> tu che dici locale, data e il tuo nome; l’etichetta del rivelatore; l’adattatore e il gas che parte; l’allarme (LED del rivelatore o display della centrale); se è lì vicino, la valvola scattata.</li>
+        <li><b>Centrale in un’altra stanza:</b> il collega tiene il gas sul rivelatore e tu raggiungi la centrale senza fermare il video.</li>
+        <li><b>Caricalo lo stesso giorno</b> nella scheda «Verifica gas» dell’app. L’app accetta fino a 25 MB, circa 35 secondi a 720p: se viene più lungo, mandalo subito a Flogert su WhatsApp e spunta la casella nella scheda.</li>
+      </ul></div></details>
+      <details><summary>6 · Come compili la scheda nell’app</summary><div class="pc"><ul>
+        <li><b>Visita:</b> cliente, locale, data e tipo di visita. «Straordinaria» è la prova fatta dopo un guasto o un intervento.</li>
+        <li><b>Prova del rivelatore:</b> «Allarme scattato» solo se è scattato davvero, con i secondi presi dal video; gas di prova (concentrazione, lotto e scadenza dall’etichetta della bombola); elettrovalvola; comandi collegati (quante porte, oppure «nessuno»); chi ha ricevuto la chiamata del combinatore.</li>
+        <li><b>Video:</b> caricalo dalla galleria del telefono.</li>
+        <li><b>Chiusura:</b> spunta quello che hai rimesso a posto.</li>
+        <li><b>Esito:</b> CONFORME o <span class="nc">NON CONFORME</span>. Se non è conforme, nelle note scrivi cosa non va e a chi l’hai detto.</li>
+        <li><b>Firme:</b> firmi tu e firma il responsabile del locale. Flogert firma come tecnico qualificato dopo aver visto il video.</li>
+        <li>Centrale, rivelatori di fumo, pulsanti e sirene li compila Flogert.</li>
+      </ul></div></details>
+      <details><summary>7 · Dopo la visita</summary><div class="pc"><ul>
+        <li>Salva la scheda prima di lasciare il locale: il video deve essere nell’app lo stesso giorno.</li>
+        <li>Flogert guarda il video, firma la scheda e scrive l’esito sul registro dei controlli antincendio del locale; la verifica entra nella storia del cliente.</li>
+        <li>Se la prova è <span class="nc">NON CONFORME</span>, Flogert organizza la riparazione con il cliente.</li>
+      </ul></div></details>
+    </div>
+    <div class="actionbar"><button class="btn" onclick="openVgas()">Compila la scheda di verifica</button></div>
+  </section>
+
+  <!-- GUIDA GENERALE DELLA VISITA DI MANUTENZIONE (Rev. 1 del 21/11/2026) -->
+  <section class="screen" id="s-proc-guida">
+    <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title">Visita di manutenzione</div></div>
+    <div class="form" id="proc-guida-body"></div>
+  </section>
+
+  <!-- FORMAZIONE · VIDEO PER TUTTI I LOCALI A CONTRATTO (Rev. 0 del 21/11/2026) -->
+  <section class="screen" id="s-proc-vid">
+    <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title" id="pv-title">Formazione</div></div>
+    <div class="proc">
+      <div class="proc-video"><video id="pv-video" controls playsinline preload="none"></video></div>
+      <div class="meta" id="pv-meta"></div>
+      <div id="pv-body"></div>
+    </div>
+  </section>
+
+  <!-- VERIFICA SEMESTRALE · RIVELAZIONE INCENDI E GAS (tutti) -->
+  <section class="screen" id="s-vgas">
+    <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title">Verifica incendi e gas</div><button class="topbar-action" onclick="openProcGas()">Procedura</button></div>
+    <div class="form">
+      <div class="sect">
+        <div class="sect-t">1 · Visita</div>
+        <div class="fg"><span class="lbl">Cliente (ragione sociale)</span><input class="in" id="vg-cli" list="dl-cli" placeholder="Chi paga il contratto"></div>
+        <div class="fg"><span class="lbl">Locale (insegna e indirizzo)</span><input class="in" id="vg-loc" placeholder="Insegna e via"></div>
+        <div class="fg"><span class="lbl">Data della visita</span><input class="in" type="date" id="vg-data"></div>
+        <div class="fg"><span class="lbl">Visita</span><div class="chips" id="vg-tipo"><button type="button" class="chip" onclick="colOne(this)">Rilievo</button><button type="button" class="chip" onclick="colOne(this)">Maggio</button><button type="button" class="chip" onclick="colOne(this)">Novembre</button><button type="button" class="chip" onclick="colOne(this)">Straordinaria</button></div></div>
+      </div>
+      <div class="sect">
+        <div class="sect-t">2 · Prova del rivelatore gas</div>
+        <div class="nota">Solo parte elettrica: corpo valvola e tubi sono dell’installatore gas.</div>
+        <div class="fg"><span class="lbl">Rivelatore con il gas di prova</span><div class="chips" id="vg-allarme"><button type="button" class="chip" onclick="colOne(this)">Allarme scattato</button><button type="button" class="chip" onclick="colOne(this)">Nessun allarme</button></div></div>
+        <div class="fg2">
+          <div class="fg"><span class="lbl">Secondi fino all’allarme</span><input class="in" id="vg-sec" type="number" min="0" max="600" inputmode="numeric" placeholder="Dal video"></div>
+          <div class="fg"><span class="lbl">Gas di prova</span><input class="in" id="vg-gasprova" placeholder="% vol, lotto, scadenza"></div>
+        </div>
+        <div class="fg"><span class="lbl">Elettrovalvola</span><div class="chips" id="vg-valv"><button type="button" class="chip" onclick="colOne(this)">Chiusa e riarmata</button><button type="button" class="chip" onclick="colOne(this)">Non collegata</button><button type="button" class="chip" onclick="colOne(this)">Non chiude</button></div></div>
+        <div class="fg"><span class="lbl">Comandi collegati</span><input class="in" id="vg-porte" placeholder="Es. 2 porte chiuse, oppure «nessuno»"></div>
+        <div class="fg"><span class="lbl">Combinatore: chiamata di prova ricevuta da</span><input class="in" id="vg-comb" placeholder="Es. titolare"></div>
+      </div>
+      <div class="sect">
+        <div class="sect-t">3 · Video della prova (obbligatorio)</div>
+        <button type="button" class="foto-drop" onclick="document.getElementById('vg-video-inp').click()">Tocca per caricare il video della prova</button>
+        <input type="file" id="vg-video-inp" accept="video/*" hidden onchange="vgVideoScelto(this)">
+        <div class="nota" id="vg-video-info"></div>
+        <label class="chk" style="border-bottom:none;padding:4px 0;"><input type="checkbox" id="vg-wa"><span>Video oltre 25 MB: l’ho mandato a Flogert su WhatsApp</span></label>
+      </div>
+      <div class="sect" id="vg-ai-sect">
+        <div class="sect-t">4 · Centrale e antincendio · tecnico qualificato</div>
+        <div class="chips" id="vg-ai"><button type="button" class="chip" onclick="this.classList.toggle('on')">Centrale senza guasti, memoria eventi letta</button><button type="button" class="chip" onclick="this.classList.toggle('on')">Rete e batterie OK</button><button type="button" class="chip" onclick="this.classList.toggle('on')">Rivelatori di fumo e calore provati</button><button type="button" class="chip" onclick="this.classList.toggle('on')">Ripetitori fuori porta OK</button><button type="button" class="chip" onclick="this.classList.toggle('on')">Pulsanti provati e riarmati</button><button type="button" class="chip" onclick="this.classList.toggle('on')">Sirene e pannelli OK</button><button type="button" class="chip" onclick="this.classList.toggle('on')">Combinatore: SIM attiva</button><button type="button" class="chip" onclick="this.classList.toggle('on')">Registro antincendio compilato</button></div>
+        <div class="fg"><span class="lbl">Quantità provate e batterie</span><input class="in" id="vg-ai-num" placeholder="Es. fumo 43/43 · pulsanti 11/11 · batterie 2×12 V"></div>
+      </div>
+      <div class="nota" id="vg-ai-nota">Centrale, rivelatori di fumo, pulsanti e sirene li verifica Flogert come tecnico qualificato.</div>
+      <div class="sect">
+        <div class="sect-t">5 · Chiusura</div>
+        <div class="chips" id="vg-chiu"><button type="button" class="chip" onclick="this.classList.toggle('on')">Centrale a riposo</button><button type="button" class="chip" onclick="this.classList.toggle('on')">Nessuna zona esclusa</button><button type="button" class="chip" onclick="this.classList.toggle('on')">Valvola riarmata, gas in cucina</button><button type="button" class="chip" onclick="this.classList.toggle('on')">Combinatore attivo</button><button type="button" class="chip" onclick="this.classList.toggle('on')">Porte riagganciate</button></div>
+      </div>
+      <div class="sect">
+        <div class="sect-t">6 · Esito</div>
+        <div class="esiti" id="vg-esiti"><button type="button" class="esito" data-v="conforme" onclick="vgEsito(this)">CONFORME</button><button type="button" class="esito" data-v="non_conforme" onclick="vgEsito(this)">NON CONFORME</button></div>
+        <div class="fg"><span class="lbl">Anomalie / note</span><textarea class="in" id="vg-note" placeholder="Cosa non va e a chi l’hai detto"></textarea></div>
+      </div>
+      <div class="sect">
+        <div class="sect-t">Firme</div>
+        <div class="fg"><span class="lbl">Eseguita da (tecnico)</span><div class="cnv-wrap" id="w-vg-tec"><canvas id="c-vg-tec"></canvas><div class="cnv-hint" id="hh-vg-tec">Firma qui</div></div><button type="button" class="clear" onclick="clearCnv('c-vg-tec','hh-vg-tec')">Cancella</button></div>
+        <div class="fg"><span class="lbl">Per il locale: nome</span><input class="in" id="vg-loc-nome"></div>
+        <div class="fg"><span class="lbl">Per il locale: firma</span><div class="cnv-wrap" id="w-vg-loc"><canvas id="c-vg-loc"></canvas><div class="cnv-hint" id="hh-vg-loc">Firma qui</div></div><button type="button" class="clear" onclick="clearCnv('c-vg-loc','hh-vg-loc')">Cancella</button></div>
+        <div class="nota">Flogert firma come tecnico qualificato dopo aver visto il video.</div>
+      </div>
+    </div>
+    <div class="actionbar"><button class="btn" onclick="salvaVgas()">Salva la verifica</button></div>
+  </section>
+
+  <!-- ARCHIVIO VERIFICHE INCENDI E GAS (admin e ufficio) -->
+  <section class="screen" id="s-vgas-list">
+    <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title">Verifiche incendi e gas</div><button class="topbar-action" onclick="openVgas()">Nuova</button></div>
+    <div class="list" id="vg-list"></div>
+  </section>
+  <section class="screen" id="s-vgas-dett">
+    <div class="topbar"><button class="topbar-back" onclick="back();renderVgasList();" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title" id="vgd-title">Verifica</div></div>
+    <div class="form" id="vgd-body"></div>
+  </section>
+
   <!-- MENU MODULI OPERATIVI (admin) -->
   <section class="screen" id="s-moduli">
     <div class="topbar"><button class="topbar-back" onclick="go('home')" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title">Moduli operativi</div></div>
@@ -399,6 +598,8 @@ a.btn{text-decoration:none;}
         <button class="btn" style="margin-bottom:8px;" onclick="openPrl()">Prelievi e resi magazzino</button>
         <button class="btn" style="margin-bottom:8px;" onclick="openVar()">Ordine lavori extra / variante</button>
         <button class="btn" style="margin-bottom:8px;" onclick="openCol16()">Rapporto di prova — verifiche strumentali</button>
+        <button class="btn" style="margin-bottom:8px;" onclick="openVgas()">Verifica semestrale — rivelazione incendi e gas</button>
+        <button class="btn sec" style="margin-bottom:8px;" onclick="openVgasList()">Archivio verifiche incendi e gas</button>
         <button class="btn" onclick="openReg()">Registro controlli e interventi</button>
       </div>
     </div>
@@ -916,6 +1117,7 @@ async function apriLavoro(id){
   let det=null;
   try{ const r=await sb.from('interventi').select('descrizione,materiale,stato').eq('id',id).maybeSingle(); det=r.data; }catch(e){}
   const istRef=await istRefIntervento(id);
+  const guide=await guideCarica();
   hideLoader();
   lavCorrente={ x, det };
   const stato=(det&&det.stato)||x.stato;
@@ -939,6 +1141,14 @@ async function apriLavoro(id){
   html+=`</div>`;
   const mat=(det&&det.materiale)||x.materiale;
   if(mat) html+=`<div class="sect"><div class="sect-t">Materiale da preparare</div><div style="padding:8px 2px;line-height:1.5;white-space:pre-line;">${esc(mat)}</div></div>`;
+  // guida del locale a contratto: cosa fare, cosa NON fare, cosa portare e NON portare, video e checklist
+  const visita=lavoroDiManutenzione(x, det);
+  const trovate=guideTrova(guide, [x.insegna, x.indirizzo, x.citta, x.lavorazione, x.commessa_titolo].join(' ')).slice(0,2);
+  trovate.forEach((g,i)=>{
+    html+=guidaHtml(g,{aperta:visita});
+    html+=istruzioniSezione('lg'+i, PROC_REF+g.gruppo, null).replace('<div class="sect-t">Istruzioni e video</div>', `<div class="sect-t">Video, checklist e schede · ${esc(g.gruppo)}</div>`);
+  });
+  if(!trovate.length && visita) html+=guidaHtml(GUIDA_GENERALE,{aperta:true, titolo:'Visita di manutenzione · guida generale'});
   if(istRef) html+=istruzioniSezione('l', istRef, null);
   // dove e quando
   html+=`<div class="sect"><div class="sect-t">Dove e quando</div>`
@@ -957,6 +1167,7 @@ async function apriLavoro(id){
   $('lav-dett-body').innerHTML=html;
   show('s-lav-dett');
   if(istRef) istruzioniCarica('l');
+  trovate.forEach((g,i)=>istruzioniCarica('lg'+i));
 }
 function spuntaVoce(id,i,el,tot){
   const a=chkLeggi(id); a[i]=el.checked; chkScrivi(id,a);
@@ -1040,6 +1251,7 @@ function tiaMic(){
 
 // ===== CONTRATTI MANUTENZIONE (admin/ufficio) =====
 function openContratti(){ renderContratti(); show('s-contratti'); }
+let contrCache=[];
 async function renderContratti(){
   const el=$('contr-list'); el.innerHTML=spinBox();
   const { data, error } = await sb.from('contratti_manutenzione')
@@ -1047,6 +1259,7 @@ async function renderContratti(){
     .eq('archiviata',false).order('codice');
   if(error){ el.innerHTML=emptyBox('Errore di caricamento'); return; }
   if(!data||!data.length){ el.innerHTML=emptyBox('Nessun contratto'); return; }
+  contrCache=data;
   el.innerHTML=data.map(itemContratto).join('');
 }
 function itemContratto(c){
@@ -1057,7 +1270,55 @@ function itemContratto(c){
   const canone=(c.canone!=null)? euro(c.canone)+per : '';
   const pros=c.prossima_visita? dataIt(c.prossima_visita):'—';
   const titolo=esc(loc.insegna)||esc(cli.ragione_sociale)||'—';
-  return `<div class="item"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></span><span class="bd"><span class="ti">${titolo}</span><span class="su">${esc(c.codice)}${cli.ragione_sociale?' · '+esc(cli.ragione_sociale):''}</span><span class="su">Prossima visita: ${pros}${canone?' · '+canone:''}</span></span><span class="badge ${st[1]}">${st[0]}</span></div>`;
+  return `<button class="item" onclick="apriContratto('${esc(String(c.id))}')"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></span><span class="bd"><span class="ti">${titolo}</span><span class="su">${esc(c.codice)}${cli.ragione_sociale?' · '+esc(cli.ragione_sociale):''}</span><span class="su">Prossima visita: ${pros}${canone?' · '+canone:''}</span></span><span class="badge ${st[1]}">${st[0]}</span></button>`;
+}
+// Dettaglio contratto: tutto quello che devono fare i ragazzi in quel locale (guida, video comuni,
+// video e file del locale) e, per admin e ufficio, il tasto per aggiungere altri video e checklist.
+// Il contratto si collega alla guida con il codice (guide_locali.contratto) o con le parole del locale.
+async function apriContratto(id){
+  const c=contrCache.find(x=>String(x.id)===String(id)); if(!c) return;
+  const loc=c.locali||{}, cli=c.clienti||{};
+  showLoader(); const guide=await guideCarica(true); hideLoader();
+  let trovate=guide.filter(g=>g.contratto && c.codice && normTesto(g.contratto)===normTesto(c.codice));
+  if(!trovate.length) trovate=guideTrova(guide,[loc.insegna,loc.citta,cli.ragione_sociale].join(' '));
+  const g=trovate.length===1? trovate[0] : null;
+  $('contr-dett-title').textContent=loc.insegna||cli.ragione_sociale||'Contratto';
+  const per={mese:'/mese',mensile:'/mese',anno:'/anno',annuale:'/anno',trimestre:'/trim',trimestrale:'/trim'}[String(c.canone_periodo||'').toLowerCase()]||'/trim';
+  let h=`<div class="sect"><div class="sect-t">Contratto</div>`
+    + dettRow('Locale', esc(loc.insegna)||'—') + dettRow('Cliente', esc(cli.ragione_sociale)||'—') + dettRow('Codice', esc(c.codice)||'—')
+    + dettRow('Prossima visita', c.prossima_visita? dataIt(c.prossima_visita):'—') + (c.canone!=null? dettRow('Canone', euro(c.canone)+per, true):'') + `</div>`;
+  if(g){
+    h+=guidaHtml(g,{aperta:true, titolo:'Cosa devono fare i ragazzi · '+g.gruppo});
+    h+=istruzioniSezione('cd', PROC_REF+g.gruppo, null).replace('<div class="sect-t">Istruzioni e video</div>', `<div class="sect-t">Video, checklist e schede del locale</div><div class="gd-sub">Li vedono anche i ragazzi, dentro ogni lavoro in questo locale e in Procedure.</div>`);
+    if(istPuoCaricare() && guide.length>1) h+=`<button type="button" class="btn sec" onclick="sceltaGuida('${esc(String(c.id))}')">Non è il locale giusto? Cambia guida</button>`;
+  } else {
+    h+=guideScelta(c, guide, trovate);
+  }
+  $('contr-dett-body').innerHTML=h;
+  show('s-contr-dett');
+  if(g) istruzioniCarica('cd');
+}
+function guideScelta(c, guide, trovate){
+  if(!guide.length) return `<div class="sect"><div class="sect-t">Guida del locale</div><div class="gd-sub" style="margin:0;">${istPuoCaricare()?'Le guide dei locali non sono ancora attive: esegui su Supabase gli script delle guide (prima quello del repository, poi quello privato).':'Guida del locale non ancora disponibile.'}</div></div>`;
+  const elenco=(trovate.length>1? trovate : guide);
+  return `<div class="sect"><div class="sect-t">Quale locale è?</div><div class="gd-sub" style="margin:0 0 4px;">${trovate.length>1?'Ci sono più guide possibili per questo contratto: scegli quella giusta.':'Questo contratto non è ancora collegato a una guida: scegli il locale.'}</div>`
+    + (istPuoCaricare()? elenco.map(x=>`<button type="button" class="btn sec" onclick="collegaGuida('${esc(String(x.id))}','${esc(String(c.id))}')">${esc(x.gruppo)}</button>`).join('') : '<div class="gd-sub">Chiedi in ufficio di collegarlo.</div>')
+    + `</div>`;
+}
+async function sceltaGuida(contrId){
+  const c=contrCache.find(x=>String(x.id)===String(contrId)); if(!c) return;
+  const guide=await guideCarica(true);
+  $('contr-dett-body').innerHTML=guideScelta(c, guide, []);
+}
+async function collegaGuida(guidaId, contrId){
+  const c=contrCache.find(x=>String(x.id)===String(contrId)); if(!c||!istPuoCaricare()) return;
+  if(!c.codice){ toast('Il contratto non ha un codice: aggiungilo prima'); return; }
+  showLoader();
+  const r=await qs(sb.from('guide_locali').update({ contratto:c.codice, aggiornato:new Date().toISOString(), aggiornato_da:(utente&&utente.nome)||null }).eq('id',guidaId));
+  hideLoader();
+  if(r.error){ toast('Collegamento non riuscito'); return; }
+  guideCache=null; toast('Contratto collegato alla guida');
+  apriContratto(contrId);
 }
 
 // ===== FATTURE (solo admin) =====
@@ -2269,6 +2530,296 @@ function salvaVar(){ const c=$('var-comm').value.trim(); if(!c){ toast('Scrivi i
 function openReg(){ modClear(['reg-tit','reg-loc','reg-ind','reg-ctr','reg-dico','reg-quadri']); modClearChips('s-reg'); rowsClear('regRig'); if(modCtx&&modCtx.cliente)$('reg-tit').value=modCtx.cliente; show('s-reg'); }
 function salvaReg(){ const t=$('reg-tit').value.trim(); if(!t){ toast('Scrivi il titolare / ragione sociale'); return; } modSave('registri',{ titolare:t, locale:$('reg-loc').value||null, indirizzo:$('reg-ind').value||null, ctr:$('reg-ctr').value||null, dico:$('reg-dico').value||null, quadri:$('reg-quadri').value||null, sistema:modChipOne('reg-sistema'), registro:rowsVal('regRig'), compilato_da:modChi(), commessa_ref:(modCtx&&modCtx.hub)||null, updated_at:new Date().toISOString() },'Registro controlli'); }
 
+// ===== Procedure e verifica semestrale rivelazione incendi e gas (17/11/2026) =====
+// Tutti i ruoli compilano la scheda e caricano il video della prova gas (cartella privata «verifiche-video»).
+// Admin e ufficio vedono l'archivio; Flogert (admin) firma come tecnico qualificato dopo aver visto il video.
+let vgVideo=null, vgCorr=null;
+const VG_MAX=25*1024*1024;
+const VG_TIPI={rilievo:'Rilievo',maggio:'Maggio',novembre:'Novembre',straordinaria:'Straordinaria'};
+const VG_ICO='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>';
+// Libreria «Procedure»: gruppi di video, checklist e schemi (ad esempio «Per tutti i locali» o un locale a contratto).
+// Usa la tabella e la cartella privata delle istruzioni di commessa: riferimento «proc:<nome del gruppo>».
+// La vedono tutti gli utenti dell'app; admin e ufficio caricano; solo l'admin elimina.
+const PROC_REF='proc:';
+function openProcedure(){ show('s-proc'); $('proc-add').style.display=istPuoCaricare()?'':'none'; renderProcLib(); }
+async function renderProcLib(nuovo){
+  const box=$('proc-lib'); if(!box) return;
+  box.innerHTML='<div class="s-lbl" style="padding:6px 2px;">Caricamento…</div>';
+  const [r, guide]=await Promise.all([qs(sb.from('istruzioni_commessa').select('commessa_ref').like('commessa_ref',PROC_REF+'%').limit(2000)), guideCarica(true)]);
+  if(r.error && !guide.length){
+    const manca=/istruzioni_commessa|does not exist|schema cache/i.test(String(r.error.message||''));
+    box.innerHTML=`<div class="s-lbl" style="padding:6px 2px;line-height:1.5;">${manca&&istPuoCaricare()?'Da attivare: esegui su Supabase lo script «istruzioni_commessa».':'Video e checklist non disponibili in questo momento.'}</div>`;
+    return;
+  }
+  const nomi=[...new Set([...guide.map(g=>g.gruppo), ...((r.data||[]).map(x=>String(x.commessa_ref).slice(PROC_REF.length)))].filter(Boolean))];
+  if(nuovo && !nomi.includes(nuovo)) nomi.push(nuovo);
+  nomi.sort((a,b)=>(/^per tutti/i.test(a)?0:1)-(/^per tutti/i.test(b)?0:1) || a.localeCompare(b,'it',{numeric:true}));
+  if(!nomi.length){
+    box.innerHTML=`<div class="s-lbl" style="padding:6px 2px;line-height:1.5;">${istPuoCaricare()?'Nessun video ancora: crea un gruppo (ad esempio «Per tutti i locali» o il nome di un locale) e carica video e checklist.':'Nessun video ancora.'}</div>`;
+    return;
+  }
+  box.innerHTML=nomi.map((n,i)=>{
+    const g=guide.find(x=>x.gruppo===n);
+    return (g? guidaHtml(g,{aperta:false, titolo:n}) : '')
+      + istruzioniSezione('pl'+i, PROC_REF+n, null).replace('<div class="sect-t">Istruzioni e video</div>', `<div class="sect-t">${g?'Video, checklist e schede · '+esc(n):esc(n)}</div>`);
+  }).join('');
+  nomi.forEach((n,i)=>istruzioniCarica('pl'+i));
+}
+function procNuovoGruppo(){
+  const n=(prompt('Nome del gruppo (ad esempio «Per tutti i locali» o il nome del locale):')||'').trim().replace(/\s+/g,' ').slice(0,60);
+  if(n) renderProcLib(n);
+}
+function openProcGas(){ show('s-proc-gas'); }
+// Video di formazione uguali per tutti i locali a contratto (file in formazione/, 720p)
+const PROC_VID=[
+  {f:'visita-esame-a-vista', t:'Esame a vista', ti:'Video 1 · La visita: esame a vista e controlli', d:'3:15', punti:[
+    'Locale chiuso e visita confermata: avvisa il responsabile che i differenziali scatteranno per pochi secondi.',
+    'Segna celle frigo, congelatori e cantine vini: dopo ogni prova controlla che ripartano.',
+    'Quadri integri e chiusi, con schema ed etichette, senza segni di caldo. Serraggi solo a quadro sezionato e se lo prevede la checklist.',
+    'Tasto T di ogni differenziale: deve scattare subito. Poi riarma e controlla che tutto riparta.',
+    'Prese, spine e cavi integri; prese industriali e quadretti stagni chiusi; niente ciabatte in cascata o prolunghe fisse.',
+    'Lampade di emergenza: togli la rete alla loro linea, si devono accendere tutte.',
+    'Terra: collegamenti su tubi, cappe, celle e piani in acciaio integri e serrati.',
+    'Ogni anomalia: foto, con quadro e linea. Lavori non previsti solo con Flogert; se c’è un pericolo, metti in sicurezza e chiama Flogert.']},
+  {f:'prove-macrotest-g3', t:'Macrotest G3', ti:'Video 2 · Le prove con il Macrotest G3', d:'3:47', punti:[
+    'Strumento con taratura valida e batterie cariche. Impostazioni: sistema TT, 50 V (se il locale ha una cabina sua, chiedi a Flogert).',
+    'Differenziali: tipo (AC o A) e IΔn come sull’etichetta, modalità AUTO, spina in una presa a valle. OK va bene, NOT OK: avvisa Flogert.',
+    'A ½ IΔn non deve scattare; a IΔn entro 300 ms; a 5 IΔn entro 40 ms. Selettivi (S): 60 secondi tra una prova e l’altra.',
+    'Terra: LOOP, Ra senza intervento. TT: Ra × IΔn ≤ 50 V (30 mA: fino a 1.666 Ω; 300 mA: fino a 166 Ω). Confronta con l’ultima visita.',
+    'Continuità dei conduttori di terra (LOW): senza tensione, dopo aver azzerato i puntali. Di solito sotto 1 Ω; alto o fuori scala = PE interrotto.',
+    'Isolamento (MΩ) solo se lo dice Flogert: linea sezionata, carichi scollegati, 500 V, almeno 1 MΩ.',
+    'Sequenza delle fasi su prese trifase e motori: 1-2-3 giusta, 2-1-3 invertita.',
+    'Ogni prova in memoria e sulla checklist del locale. Valori strani: non riparare di testa tua, chiama Flogert.']},
+  {f:'rivelatori-fumo-centrale', t:'Rivelatori di fumo', ti:'Video 3 · Rivelatori di fumo e centrale', d:'2:45', punti:[
+    'La manutenzione della rivelazione incendi la firma Flogert, tecnico qualificato D.M. 1/9/2021: tu lo assisti.',
+    'Prima: avvisa il responsabile e chi riceve le chiamate del combinatore, leggi la memoria eventi, guarda cosa comanda la centrale.',
+    'Centrale a riposo e nessuna zona esclusa; batterie con la data e non gonfie; senza rete deve segnalare il guasto e restare accesa.',
+    'Rivelatori di fumo: quelli della lista di Flogert. Coppetta dell’asta e uno spruzzo breve; allarme con il numero giusto, poi ripristino.',
+    'Rivelatori di calore con il tester di calore, mai con fiamme. Pulsanti con la chiave di prova, senza rompere il vetro.',
+    'In allarme: sirene, pannelli e sirena esterna, chiamata del combinatore, ripetitori, fermi porta, valvola gas se collegata.',
+    'Alla fine: centrale a riposo, tutto ripristinato, scheda nell’app e registro dei controlli firmato da Flogert.']},
+];
+function openProcVid(i){
+  const v=PROC_VID[i]; if(!v) return;
+  const el=$('pv-video'); try{ el.pause(); }catch(e){}
+  el.poster='formazione/'+v.f+'.jpg'; el.src='formazione/'+v.f+'.mp4';
+  $('pv-title').textContent=v.t;
+  $('pv-meta').textContent=v.ti+' · per tutti i locali a contratto · Rev. 0 del 21/11/2026 · dura '+v.d+': guardalo con il Wi-Fi.';
+  $('pv-body').innerHTML='<details open><summary>Punti chiave</summary><div class="pc"><ul>'+v.punti.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div></details>';
+  show('s-proc-vid');
+}
+
+// ===== Guide dei locali a contratto (21/11/2026) =====
+// Tabella guide_locali: per ogni locale cosa fare, cosa NON fare, cosa portare e cosa NON portare o preparare.
+// Compare da sola dentro ogni lavoro del locale (parole «cerca» trovate in insegna, indirizzo o titolo del lavoro)
+// e in Procedure, insieme ai video e alle checklist del gruppo con lo stesso nome.
+// I contenuti dei clienti stanno solo nel database (script privato), non nel codice.
+const GUIDA_GENERALE={
+  gruppo:'Visita di manutenzione', sottotitolo:'Guida generale per i locali a contratto. Se il locale ha la sua guida, dentro il lavoro trovi quella.',
+  regole:['Si entra nell’orario concordato con il responsabile; durante il servizio niente lavori che fermano cucina o sala.',
+    'Si fanno solo i lavori scritti nel lavoro dell’app: tutto il resto lo decide Flogert, con il preventivo.',
+    'Richieste del cliente: scrivile nel rapportino e passale a Flogert. Mai promettere tempi o prezzi.',
+    'Rapportino nell’app firmato dal responsabile, sempre, anche per un lavoro di cinque minuti.'],
+  fare:['Prima di partire: leggi la guida del locale, la checklist e le note dell’ultima visita',
+    'Presentati al responsabile: digli cosa provi e che alcune linee si spengono per pochi secondi',
+    'Segna celle, frigoriferi e cantine vini: dopo ogni prova controlli che ripartano',
+    'Esame a vista di quadri, prese, luci, emergenze e terra (Video 1)',
+    'Tasto T e prove dei differenziali con il Macrotest G3, terra e continuità (Video 2): valori sulla checklist',
+    'Lampade di emergenza: togli la rete alla loro linea, si devono accendere tutte',
+    'Telecamere e NVR: tutte le telecamere visibili, registrazione attiva, data e ora giuste',
+    'Dove c’è la rivelazione incendi, a maggio e novembre: prova insieme a Flogert (Video 3)',
+    'Dove c’è il rivelatore gas, a maggio e novembre: prova con il video e scheda «Verifica gas»',
+    'Fine visita: tutto riarmato, foto, rapportino firmato, checklist compilata'],
+  non_fare:['Non fare lavori, modifiche o riparazioni che non sono nel lavoro: li decide Flogert',
+    'Non lavorare sotto tensione: serraggi e interventi nei quadri solo a quadro sezionato',
+    'Non fare la prova di isolamento senza l’ok di Flogert',
+    'Non lasciare differenziali scattati o linee sezionate: celle, frigoriferi e cantine vini devono ripartire',
+    'Non escludere zone e non tacitare la centrale incendi senza Flogert; mai fiamme o accendini per le prove',
+    'Non toccare corpo valvola e tubi del gas: Florial fa solo la parte elettrica',
+    'Non andare via senza il rapportino firmato'],
+  portare:['Macrotest G3 con taratura valida e batterie cariche, puntali, cavo con spina schuko',
+    'Cercafase e attrezzi isolati; DPI: guanti isolanti, occhiali, scarpe',
+    'Scala, torcia, lucchetti e cartelli per le linee sezionate',
+    'Telefono carico per foto e video, con l’app aggiornata',
+    'Maggio e novembre, dove servono: asta con coppetta, spray, tester di calore, chiave dei pulsanti, bombola di gas di prova CH4 2,2% in aria'],
+  non_portare:['Niente materiale per lavori non approvati: ricambi solo se scritti in «Materiale da preparare» del lavoro',
+    'Non preparare materiale per le anomalie che trovi: foto e nota a Flogert, il resto lo decide lui',
+    'Niente prolunghe o ciabatte da lasciare al cliente',
+    'Nelle visite trimestrali senza incendi e gas: niente asta, spray, tester e bombola'],
+  attenzione:[],
+  fine:['Tutto riarmato e ripartito: celle, frigoriferi, cappe, orologi e timer',
+    'Foto di quadri, display dello strumento e anomalie',
+    'Rapportino nell’app firmato dal responsabile; checklist compilata e caricata',
+    'Con incendi e gas: centrale a riposo, valvola riarmata, «Verifica gas» con il video, registro firmato da Flogert'],
+  incendi:true, gas:true,
+};
+let guideCache=null, guideTs=0;
+async function guideCarica(forza){
+  if(guideCache && !forza && Date.now()-guideTs<5*60*1000) return guideCache;
+  const r=await qs(sb.from('guide_locali').select('*').eq('attiva',true).order('ordine'));
+  if(!r || r.error || !Array.isArray(r.data)) return guideCache||[];   // tabella non ancora creata: nessuna guida
+  guideCache=r.data; guideTs=Date.now(); return guideCache;
+}
+function normTesto(t){ return String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim(); }
+function guideTrova(guide, testo){
+  const h=' '+normTesto(testo)+' ';
+  return (guide||[]).filter(g=>(g.cerca||[]).some(k=>{ const n=normTesto(k); return !!n && h.includes(' '+n+' '); }));
+}
+function guidaLista(arr, ordinata){ const tag=ordinata?'ol':'ul'; return `<${tag} class="gd-l">`+arr.map(x=>'<li>'+esc(x)+'</li>').join('')+`</${tag}>`; }
+function guidaSez(titolo, arr, cls, aperta, ordinata){
+  if(!arr || !arr.length) return '';
+  return `<details class="gd ${cls||''}"${aperta?' open':''}><summary>${titolo}</summary>${guidaLista(arr, ordinata)}</details>`;
+}
+function guidaHtml(g, o){
+  o=o||{};
+  let h=`<div class="sect"><div class="sect-t">${esc(o.titolo||('Contratto di manutenzione · '+g.gruppo))}</div>`;
+  if(g.sottotitolo) h+=`<div class="gd-sub">${esc(g.sottotitolo)}</div>`;
+  h+=guidaSez('Regole del locale (ogni lavoro)', g.regole, 'gd-reg', true);
+  h+=guidaSez('Cosa NON fare', g.non_fare, 'gd-no', true);
+  h+=guidaSez('Attenzione in questo locale', g.attenzione, 'gd-att', true);
+  h+=guidaSez('Cosa fare, in ordine', g.fare, '', !!o.aperta, true);
+  h+=guidaSez('Da portare', g.portare, '', !!o.aperta);
+  h+=guidaSez('Da NON portare e NON preparare', g.non_portare, 'gd-no', !!o.aperta);
+  h+=guidaSez('Prima di andare via', g.fine, '', !!o.aperta);
+  h+=guidaSez('Impianti del locale', g.impianti, '', false);
+  const b=(lab,fn)=>`<button type="button" class="btn sec" onclick="${fn}">${lab}</button>`;
+  h+=`<div class="gd-vid"><div class="gd-vt">Video per tutti i locali</div>${b('Video 1 · Esame a vista','openProcVid(0)')}${b('Video 2 · Macrotest G3','openProcVid(1)')}${g.incendi?b('Video 3 · Rivelatori di fumo','openProcVid(2)'):''}${g.gas?b('Prova del rivelatore gas','openProcGas()'):''}</div>`;
+  return h+'</div>';
+}
+function lavoroDiManutenzione(x, det){
+  return /manutenz|visita|verific|controll|giro|trimestr|semestr|rilievo|collaudo/i.test([x&&x.lavorazione, x&&x.commessa_titolo, det&&det.descrizione].filter(Boolean).join(' '));
+}
+function openProcGuida(){ $('proc-guida-body').innerHTML=guidaHtml(GUIDA_GENERALE,{aperta:true, titolo:'Visita di manutenzione · guida generale'}); show('s-proc-guida'); }
+function vgStaff(){ return !!utente && (utente.ruolo==='admin'||utente.ruolo==='ufficio'); }
+function openVgasHome(){ if(vgStaff()) openVgasList(); else openVgas(); }
+function vgEsito(el){ document.querySelectorAll('#vg-esiti .esito').forEach(c=>c.classList.remove('on')); el.classList.add('on'); }
+function vgMb(n){ return (n/1024/1024).toFixed(1).replace('.',',')+' MB'; }
+function vgVideoInfo(msg,er){
+  const el=$('vg-video-info'); if(!el) return; el.className='nota'+(er?' er':'');
+  el.textContent = msg || (vgVideo ? 'Video pronto: '+(vgVideo.name||'video')+' · '+vgMb(vgVideo.size)+'. Si carica quando salvi.' : 'Una ripresa senza tagli, in orizzontale, in HD 720p. Massimo 25 MB (circa 35 secondi).');
+}
+function vgVideoScelto(input){
+  const f=input.files&&input.files[0]; input.value=''; if(!f) return;
+  if(f.type && !/^video\//.test(f.type)){ toast('Scegli un video'); return; }
+  if(f.size>VG_MAX){ vgVideo=null; vgVideoInfo('Video di '+vgMb(f.size)+': oltre 25 MB. Mandalo subito a Flogert su WhatsApp e spunta la casella qui sotto.', true); return; }
+  vgVideo=f; $('vg-wa').checked=false; vgVideoInfo();
+}
+function openVgas(){
+  modClear(['vg-cli','vg-loc','vg-sec','vg-gasprova','vg-porte','vg-comb','vg-ai-num','vg-note','vg-loc-nome']);
+  modClearChips('s-vgas');
+  vgVideo=null; $('vg-wa').checked=false; vgVideoInfo();
+  $('vg-data').value=oggiISO();
+  const adm=!!utente&&utente.ruolo==='admin';
+  $('vg-ai-sect').style.display=adm?'':'none'; $('vg-ai-nota').style.display=adm?'none':'';
+  if(modCtx&&modCtx.cliente) $('vg-cli').value=modCtx.cliente;
+  show('s-vgas');
+  requestAnimationFrame(()=>{ ['tec','loc'].forEach(k=>{ initSig('c-vg-'+k,'w-vg-'+k,'hh-vg-'+k); sizeSig('c-vg-'+k); clearCnv('c-vg-'+k,'hh-vg-'+k); }); });
+}
+function vgDaAttivare(e){ return /verifiche_gas|verifiche-video|bucket|exist|relation|schema|42p01/i.test(((e&&e.message)||'')+((e&&e.code)||'')+((e&&e.error)||'')); }
+async function salvaVgas(){
+  const cli=$('vg-cli').value.trim(), loc=$('vg-loc').value.trim();
+  if(!cli&&!loc){ toast('Scrivi cliente o locale'); return; }
+  const tipo=modChipOne('vg-tipo'); if(!tipo){ toast('Scegli il tipo di visita'); return; }
+  const allarme=modChipOne('vg-allarme'); if(!allarme){ toast('Scrivi se l’allarme è scattato'); return; }
+  const sec=parseInt($('vg-sec').value,10);
+  if(allarme==='Allarme scattato' && !(sec>0)){ toast('Scrivi i secondi fino all’allarme (dal video)'); return; }
+  const esitoEl=document.querySelector('#vg-esiti .esito.on'); if(!esitoEl){ toast('Scegli l’esito'); return; }
+  const valv=modChipOne('vg-valv');
+  if(esitoEl.dataset.v==='conforme' && (allarme==='Nessun allarme'||valv==='Non chiude')){ toast('Senza allarme o con la valvola che non chiude la prova è NON CONFORME'); return; }
+  const wa=$('vg-wa').checked;
+  if(!vgVideo&&!wa){ toast('Manca il video della prova'); return; }
+  const firmaTec=getFirma('c-vg-tec'); if(!firmaTec){ toast('Manca la tua firma'); return; }
+  let video_path=null;
+  if(vgVideo){
+    showLoader('Carico il video…');
+    try{
+      const { data:u } = await sb.auth.getUser();
+      const uid=(u&&u.user&&u.user.id)||'utente';
+      const ext=((vgVideo.name||'').match(/\.[A-Za-z0-9]{2,4}$/)||['.mp4'])[0].toLowerCase();
+      const path=`${uid}/${$('vg-data').value||oggiISO()}_${Date.now().toString(36)}${ext}`;
+      const { error } = await sb.storage.from('verifiche-video').upload(path, vgVideo, { contentType:vgVideo.type||'video/mp4', upsert:false });
+      if(error) throw error;
+      video_path=path;
+    }catch(e){ hideLoader(); toast(vgDaAttivare(e)?'Schermata pronta: per salvare serve attivare la tabella (sblocco).':'Video non caricato: '+(e.message||e)+'. Riprova, o mandalo a Flogert su WhatsApp.'); return; }
+  }
+  const c=clienti.find(x=>(x.ragione_sociale||'').trim().toLowerCase()===cli.toLowerCase());
+  const adm=!!utente&&utente.ruolo==='admin';
+  const row={ cliente_id:c?c.id:null, cliente:cli||null, locale:loc||cli, data_visita:$('vg-data').value||oggiISO(), tipo_visita:tipo.toLowerCase(),
+    gas:{ allarme:allarme==='Allarme scattato', secondi:sec>0?sec:null, gas_prova:$('vg-gasprova').value||null, valvola:valv, comandi:$('vg-porte').value||null, combinatore:$('vg-comb').value||null, video_whatsapp:!vgVideo&&wa },
+    antincendio: adm ? { controlli:modChips('vg-ai'), quantita:$('vg-ai-num').value||null } : {},
+    chiusura:modChips('vg-chiu'), esito:esitoEl.dataset.v, note:$('vg-note').value||null,
+    video_path, video_nome:vgVideo?(vgVideo.name||null):null,
+    firma_esecutore:firmaTec, firma_locale:getFirma('c-vg-loc'), nome_locale:$('vg-loc-nome').value||null,
+    compilato_da:modChi(), updated_at:new Date().toISOString() };
+  showLoader('Salvataggio…');
+  const { error } = await sb.from('verifiche_gas').insert(row);
+  hideLoader();
+  if(error){ toast(vgDaAttivare(error)?'Schermata pronta: per salvare serve attivare la tabella (sblocco).':'Errore: '+error.message); return; }
+  vgVideo=null;
+  toast(row.esito==='non_conforme'?'Salvata NON CONFORME: chiama Flogert':'Verifica salvata');
+  if(vgStaff()) openVgasList(); else go('home');
+}
+function openVgasList(){ show('s-vgas-list'); renderVgasList(); }
+async function renderVgasList(){
+  const el=$('vg-list'); if(!el) return; el.innerHTML=spinBox();
+  const { data, error } = await sb.from('verifiche_gas').select('id,cliente,locale,data_visita,tipo_visita,esito,verificata_il,compilato_da')
+    .order('data_visita',{ascending:false}).order('created_at',{ascending:false}).limit(300);
+  if(error){ el.innerHTML=emptyBox(vgDaAttivare(error)?'Da attivare: esegui in Supabase lo script delle verifiche gas':'Errore di caricamento'); return; }
+  if(!data||!data.length){ el.innerHTML=emptyBox('Nessuna verifica salvata'); return; }
+  el.innerHTML=data.map(v=>{
+    const badge = v.esito==='non_conforme' ? '<span class="badge b-er">Non conforme</span>' : (v.verificata_il ? '<span class="badge b-ok">Firmata</span>' : '<span class="badge b-wa">Da firmare</span>');
+    const sub=[dataIt(v.data_visita), VG_TIPI[v.tipo_visita]||v.tipo_visita||'', v.compilato_da||''].filter(Boolean).map(esc).join(' · ');
+    return `<button class="item" onclick="apriVgas('${esc(v.id)}')"><span class="ico">${VG_ICO}</span><span class="bd"><span class="ti">${esc(v.locale||v.cliente||'—')}</span><span class="su">${sub}</span></span>${badge}</button>`;
+  }).join('');
+}
+async function apriVgas(id){
+  showLoader();
+  const { data:v, error } = await sb.from('verifiche_gas').select('*').eq('id',id).maybeSingle();
+  hideLoader();
+  if(error||!v){ toast('Verifica non trovata'); return; }
+  vgCorr=v; renderVgasDett(); show('s-vgas-dett');
+}
+function renderVgasDett(){
+  const v=vgCorr; if(!v) return;
+  const g=v.gas||{}, ai=v.antincendio||{}, adm=!!utente&&utente.ruolo==='admin';
+  $('vgd-title').textContent=v.locale||v.cliente||'Verifica';
+  const img=(src,l)=>src?`<div class="fg"><span class="lbl">${esc(l)}</span><img src="${esc(src)}" alt="" style="width:100%;max-height:120px;object-fit:contain;background:var(--s1);border:1px solid var(--bd);border-radius:8px;"></div>`:'';
+  let h=`<div class="sect"><div class="sect-t">Visita</div>${dettRow('Cliente',esc(v.cliente||'—'))}${dettRow('Locale',esc(v.locale||'—'))}${dettRow('Data',esc(dataIt(v.data_visita)))}${dettRow('Visita',esc(VG_TIPI[v.tipo_visita]||v.tipo_visita||'—'))}${dettRow('Compilata da',esc(v.compilato_da||'—'))}</div>`;
+  h+=`<div class="sect"><div class="sect-t">Prova del rivelatore gas</div>${dettRow('Allarme', g.allarme?('Scattato'+(g.secondi?' dopo '+esc(g.secondi)+' s':'')):'<span class="nc">Nessun allarme</span>')}${dettRow('Gas di prova',esc(g.gas_prova||'—'))}${dettRow('Elettrovalvola',esc(g.valvola||'—'))}${dettRow('Comandi collegati',esc(g.comandi||'—'))}${dettRow('Combinatore',esc(g.combinatore||'—'))}</div>`;
+  h+=`<div class="sect"><div class="sect-t">Video della prova</div>${v.video_path?'<div class="proc-video"><video id="vgd-video" controls playsinline preload="metadata"></video></div>':`<div class="nota${g.video_whatsapp?'':' er'}">${g.video_whatsapp?'Mandato a Flogert su WhatsApp.':'Nessun video.'}</div>`}</div>`;
+  if((ai.controlli&&ai.controlli.length)||ai.quantita) h+=`<div class="sect"><div class="sect-t">Centrale e antincendio</div>${(ai.controlli||[]).length?`<div class="nota">${esc(ai.controlli.join(' · '))}</div>`:''}${ai.quantita?dettRow('Quantità e batterie',esc(ai.quantita)):''}</div>`;
+  h+=`<div class="sect"><div class="sect-t">Chiusura ed esito</div>${(v.chiusura||[]).length?`<div class="nota">${esc(v.chiusura.join(' · '))}</div>`:''}${dettRow('Esito', v.esito==='non_conforme'?'<span class="nc">NON CONFORME</span>':'<span style="color:var(--ok);">CONFORME</span>')}${v.note?`<div class="nota" style="white-space:pre-wrap;">${esc(v.note)}</div>`:''}</div>`;
+  h+=`<div class="sect"><div class="sect-t">Firme</div>${img(v.firma_esecutore,'Eseguita da · '+(v.compilato_da||''))}${img(v.firma_locale,'Per il locale'+(v.nome_locale?' · '+v.nome_locale:''))}${v.verificata_il?img(v.firma_qualificato,'Tecnico qualificato · '+(v.verificata_da||'')+' · '+dataIt(v.verificata_il)):''}</div>`;
+  if(adm && !v.verificata_il){
+    h+=`<div class="sect"><div class="sect-t">Firma del tecnico qualificato</div><div class="nota">Guarda il video prima di firmare.</div><div class="fg"><div class="cnv-wrap" id="w-vg-qual"><canvas id="c-vg-qual"></canvas><div class="cnv-hint" id="hh-vg-qual">Firma qui</div></div><button type="button" class="clear" onclick="clearCnv('c-vg-qual','hh-vg-qual')">Cancella</button></div><button class="btn" onclick="firmaVgas()">Ho visto il video: firmo</button></div>`;
+  }
+  $('vgd-body').innerHTML=h;
+  if(adm && !v.verificata_il) requestAnimationFrame(()=>{ initSig('c-vg-qual','w-vg-qual','hh-vg-qual'); sizeSig('c-vg-qual'); });
+  if(v.video_path){
+    qs(sb.storage.from('verifiche-video').createSignedUrl(v.video_path,3600)).then(res=>{
+      const el=$('vgd-video'); if(!el||vgCorr!==v) return;
+      if(res.data&&res.data.signedUrl) el.src=res.data.signedUrl; else el.outerHTML=`<div class="nota er">Video non raggiungibile: ${esc((res.error&&res.error.message)||'riprova')}</div>`;
+    });
+  }
+}
+async function firmaVgas(){
+  const v=vgCorr; if(!v) return;
+  const f=getFirma('c-vg-qual'); if(!f){ toast('Manca la firma'); return; }
+  const upd={ firma_qualificato:f, verificata_il:new Date().toISOString(), verificata_da:modChi(), updated_at:new Date().toISOString() };
+  showLoader('Salvataggio…');
+  const { error } = await sb.from('verifiche_gas').update(upd).eq('id',v.id);
+  if(error){ hideLoader(); toast('Errore: '+error.message); return; }
+  Object.assign(v,upd);
+  if(v.cliente_id){
+    const g=v.gas||{};
+    const descr=['Prova gas: '+(g.allarme?'allarme dopo '+(g.secondi||'?')+' s':'nessun allarme'), g.valvola?'elettrovalvola: '+g.valvola:'', 'eseguita da '+(v.compilato_da||'—'), 'firmata da '+upd.verificata_da, v.note||''].filter(Boolean).join(' · ');
+    await qs(sb.from('documenti').insert({ cliente_id:v.cliente_id, data:v.data_visita||oggiISO(), tipo:'verifica',
+      titolo:'Verifica semestrale incendi e gas · '+(VG_TIPI[v.tipo_visita]||v.tipo_visita||'')+(v.locale?' · '+v.locale:''),
+      stato:v.esito==='non_conforme'?'da_chiarire':'positivo', descrizione:descr, creato_da:modChi() }));
+  }
+  hideLoader(); toast('Verifica firmata'); renderVgasDett();
+}
+
 // ===== NAV =====
 // Storico delle schermate: «Indietro» torna davvero alla schermata precedente anche con più livelli
 // (es. Clienti → Scheda cliente → Commessa → Indietro → Scheda cliente → Indietro → Clienti).
@@ -2276,6 +2827,7 @@ let navStack = [];
 function show(id, opt){
   const cur=document.querySelector('.screen.active');
   if(cur && cur.id!==id){ prevScreen=cur.id; if(!(opt&&opt.noPush)){ navStack.push(cur.id); if(navStack.length>40) navStack.shift(); } }
+  if(cur && cur.id!==id) cur.querySelectorAll('video').forEach(v=>{ try{ v.pause(); }catch(e){} });
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); $(id).scrollTop=0;
 }
 function back(){ show(navStack.pop()||'s-home', {noPush:true}); }
