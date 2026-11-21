@@ -184,6 +184,19 @@ a.btn{text-decoration:none;}
 .proc .alarm{background:var(--err-bg);color:var(--err);border-left:4px solid var(--err);border-radius:8px;padding:12px;font-size:14px;line-height:1.5;}
 .proc .meta{font-size:12px;color:var(--muted);line-height:1.5;}
 .nc{color:var(--err);font-weight:700;}
+/* Guida dei locali a contratto: cosa fare, cosa NON fare, cosa portare e NON portare (21/11/2026) */
+.gd-sub{font-size:13px;color:var(--muted);line-height:1.45;margin-top:-4px;}
+details.gd{border:1px solid var(--bd);border-radius:12px;padding:0 14px;background:var(--s0);}
+details.gd summary{list-style:none;cursor:pointer;padding:12px 0;font-weight:700;color:var(--teal-d);display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:15px;}
+details.gd summary::-webkit-details-marker{display:none;}
+details.gd summary::after{content:"+";font-size:20px;line-height:1;color:var(--muted);}
+details.gd[open] summary::after{content:"\2013";}
+details.gd-no{background:var(--err-bg);border-color:transparent;} details.gd-no summary{color:var(--err);}
+details.gd-att{background:var(--warn-bg);border-color:transparent;} details.gd-att summary{color:var(--warn);}
+details.gd-reg{background:var(--ok-bg);border-color:transparent;} details.gd-reg summary{color:var(--ok);}
+.gd-l{margin:0 0 12px;padding-left:20px;display:flex;flex-direction:column;gap:7px;font-size:15px;line-height:1.45;color:var(--ink);}
+.gd-vid{display:flex;flex-direction:column;gap:8px;}
+.gd-vt{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:2px;}
 </style>
 </head>
 <body>
@@ -408,6 +421,7 @@ a.btn{text-decoration:none;}
   <section class="screen" id="s-proc">
     <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title">Procedure</div></div>
     <div class="list">
+      <button class="item" onclick="openProcGuida()"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></span><span class="bd"><span class="ti">Visita di manutenzione · cosa fare e cosa NON fare</span><span class="su">Guida generale · Rev. 1 del 21/11/2026</span><span class="su">I locali a contratto hanno la loro guida, qui sotto e dentro ogni lavoro</span></span></button>
       <button class="item" onclick="openProcGas()"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg></span><span class="bd"><span class="ti">Prova del rivelatore di gas metano</span><span class="su">Istruzione operativa · Rev. 0 del 16/11/2026</span><span class="su">Con video tutorial (4:50) e scheda di verifica</span></span></button>
       <button class="item" onclick="openProcVid(0)"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg></span><span class="bd"><span class="ti">Video 1 · La visita: esame a vista e controlli</span><span class="su">Per tutti i locali a contratto · video 3:15</span></span></button>
       <button class="item" onclick="openProcVid(1)"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg></span><span class="bd"><span class="ti">Video 2 · Le prove con il Macrotest G3</span><span class="su">Per tutti i locali a contratto · video 3:47</span></span></button>
@@ -484,6 +498,12 @@ a.btn{text-decoration:none;}
       </ul></div></details>
     </div>
     <div class="actionbar"><button class="btn" onclick="openVgas()">Compila la scheda di verifica</button></div>
+  </section>
+
+  <!-- GUIDA GENERALE DELLA VISITA DI MANUTENZIONE (Rev. 1 del 21/11/2026) -->
+  <section class="screen" id="s-proc-guida">
+    <div class="topbar"><button class="topbar-back" onclick="back()" aria-label="Indietro"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button><div class="topbar-title">Visita di manutenzione</div></div>
+    <div class="form" id="proc-guida-body"></div>
   </section>
 
   <!-- FORMAZIONE · VIDEO PER TUTTI I LOCALI A CONTRATTO (Rev. 0 del 21/11/2026) -->
@@ -1091,6 +1111,7 @@ async function apriLavoro(id){
   let det=null;
   try{ const r=await sb.from('interventi').select('descrizione,materiale,stato').eq('id',id).maybeSingle(); det=r.data; }catch(e){}
   const istRef=await istRefIntervento(id);
+  const guide=await guideCarica();
   hideLoader();
   lavCorrente={ x, det };
   const stato=(det&&det.stato)||x.stato;
@@ -1114,6 +1135,14 @@ async function apriLavoro(id){
   html+=`</div>`;
   const mat=(det&&det.materiale)||x.materiale;
   if(mat) html+=`<div class="sect"><div class="sect-t">Materiale da preparare</div><div style="padding:8px 2px;line-height:1.5;white-space:pre-line;">${esc(mat)}</div></div>`;
+  // guida del locale a contratto: cosa fare, cosa NON fare, cosa portare e NON portare, video e checklist
+  const visita=lavoroDiManutenzione(x, det);
+  const trovate=guideTrova(guide, [x.insegna, x.indirizzo, x.citta, x.lavorazione, x.commessa_titolo].join(' ')).slice(0,2);
+  trovate.forEach((g,i)=>{
+    html+=guidaHtml(g,{aperta:visita});
+    html+=istruzioniSezione('lg'+i, PROC_REF+g.gruppo, null).replace('<div class="sect-t">Istruzioni e video</div>', `<div class="sect-t">Video, checklist e schede · ${esc(g.gruppo)}</div>`);
+  });
+  if(!trovate.length && visita) html+=guidaHtml(GUIDA_GENERALE,{aperta:true, titolo:'Visita di manutenzione · guida generale'});
   if(istRef) html+=istruzioniSezione('l', istRef, null);
   // dove e quando
   html+=`<div class="sect"><div class="sect-t">Dove e quando</div>`
@@ -1132,6 +1161,7 @@ async function apriLavoro(id){
   $('lav-dett-body').innerHTML=html;
   show('s-lav-dett');
   if(istRef) istruzioniCarica('l');
+  trovate.forEach((g,i)=>istruzioniCarica('lg'+i));
 }
 function spuntaVoce(id,i,el,tot){
   const a=chkLeggi(id); a[i]=el.checked; chkScrivi(id,a);
@@ -2459,20 +2489,24 @@ function openProcedure(){ show('s-proc'); $('proc-add').style.display=istPuoCari
 async function renderProcLib(nuovo){
   const box=$('proc-lib'); if(!box) return;
   box.innerHTML='<div class="s-lbl" style="padding:6px 2px;">Caricamento…</div>';
-  const r=await qs(sb.from('istruzioni_commessa').select('commessa_ref').like('commessa_ref',PROC_REF+'%').limit(2000));
-  if(r.error){
+  const [r, guide]=await Promise.all([qs(sb.from('istruzioni_commessa').select('commessa_ref').like('commessa_ref',PROC_REF+'%').limit(2000)), guideCarica(true)]);
+  if(r.error && !guide.length){
     const manca=/istruzioni_commessa|does not exist|schema cache/i.test(String(r.error.message||''));
     box.innerHTML=`<div class="s-lbl" style="padding:6px 2px;line-height:1.5;">${manca&&istPuoCaricare()?'Da attivare: esegui su Supabase lo script «istruzioni_commessa».':'Video e checklist non disponibili in questo momento.'}</div>`;
     return;
   }
-  const nomi=[...new Set((r.data||[]).map(x=>String(x.commessa_ref).slice(PROC_REF.length)).filter(Boolean))];
+  const nomi=[...new Set([...guide.map(g=>g.gruppo), ...((r.data||[]).map(x=>String(x.commessa_ref).slice(PROC_REF.length)))].filter(Boolean))];
   if(nuovo && !nomi.includes(nuovo)) nomi.push(nuovo);
   nomi.sort((a,b)=>(/^per tutti/i.test(a)?0:1)-(/^per tutti/i.test(b)?0:1) || a.localeCompare(b,'it',{numeric:true}));
   if(!nomi.length){
     box.innerHTML=`<div class="s-lbl" style="padding:6px 2px;line-height:1.5;">${istPuoCaricare()?'Nessun video ancora: crea un gruppo (ad esempio «Per tutti i locali» o il nome di un locale) e carica video e checklist.':'Nessun video ancora.'}</div>`;
     return;
   }
-  box.innerHTML=nomi.map((n,i)=>istruzioniSezione('pl'+i, PROC_REF+n, null).replace('<div class="sect-t">Istruzioni e video</div>', `<div class="sect-t">${esc(n)}</div>`)).join('');
+  box.innerHTML=nomi.map((n,i)=>{
+    const g=guide.find(x=>x.gruppo===n);
+    return (g? guidaHtml(g,{aperta:false, titolo:n}) : '')
+      + istruzioniSezione('pl'+i, PROC_REF+n, null).replace('<div class="sect-t">Istruzioni e video</div>', `<div class="sect-t">${g?'Video, checklist e schede · '+esc(n):esc(n)}</div>`);
+  }).join('');
   nomi.forEach((n,i)=>istruzioniCarica('pl'+i));
 }
 function procNuovoGruppo(){
@@ -2518,6 +2552,88 @@ function openProcVid(i){
   $('pv-body').innerHTML='<details open><summary>Punti chiave</summary><div class="pc"><ul>'+v.punti.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div></details>';
   show('s-proc-vid');
 }
+
+// ===== Guide dei locali a contratto (21/11/2026) =====
+// Tabella guide_locali: per ogni locale cosa fare, cosa NON fare, cosa portare e cosa NON portare o preparare.
+// Compare da sola dentro ogni lavoro del locale (parole «cerca» trovate in insegna, indirizzo o titolo del lavoro)
+// e in Procedure, insieme ai video e alle checklist del gruppo con lo stesso nome.
+// I contenuti dei clienti stanno solo nel database (script privato), non nel codice.
+const GUIDA_GENERALE={
+  gruppo:'Visita di manutenzione', sottotitolo:'Guida generale per i locali a contratto. Se il locale ha la sua guida, dentro il lavoro trovi quella.',
+  regole:['Si entra nell’orario concordato con il responsabile; durante il servizio niente lavori che fermano cucina o sala.',
+    'Si fanno solo i lavori scritti nel lavoro dell’app: tutto il resto lo decide Flogert, con il preventivo.',
+    'Richieste del cliente: scrivile nel rapportino e passale a Flogert. Mai promettere tempi o prezzi.',
+    'Rapportino nell’app firmato dal responsabile, sempre, anche per un lavoro di cinque minuti.'],
+  fare:['Prima di partire: leggi la guida del locale, la checklist e le note dell’ultima visita',
+    'Presentati al responsabile: digli cosa provi e che alcune linee si spengono per pochi secondi',
+    'Segna celle, frigoriferi e cantine vini: dopo ogni prova controlli che ripartano',
+    'Esame a vista di quadri, prese, luci, emergenze e terra (Video 1)',
+    'Tasto T e prove dei differenziali con il Macrotest G3, terra e continuità (Video 2): valori sulla checklist',
+    'Lampade di emergenza: togli la rete alla loro linea, si devono accendere tutte',
+    'Telecamere e NVR: tutte le telecamere visibili, registrazione attiva, data e ora giuste',
+    'Dove c’è la rivelazione incendi, a maggio e novembre: prova insieme a Flogert (Video 3)',
+    'Dove c’è il rivelatore gas, a maggio e novembre: prova con il video e scheda «Verifica gas»',
+    'Fine visita: tutto riarmato, foto, rapportino firmato, checklist compilata'],
+  non_fare:['Non fare lavori, modifiche o riparazioni che non sono nel lavoro: li decide Flogert',
+    'Non lavorare sotto tensione: serraggi e interventi nei quadri solo a quadro sezionato',
+    'Non fare la prova di isolamento senza l’ok di Flogert',
+    'Non lasciare differenziali scattati o linee sezionate: celle, frigoriferi e cantine vini devono ripartire',
+    'Non escludere zone e non tacitare la centrale incendi senza Flogert; mai fiamme o accendini per le prove',
+    'Non toccare corpo valvola e tubi del gas: Florial fa solo la parte elettrica',
+    'Non andare via senza il rapportino firmato'],
+  portare:['Macrotest G3 con taratura valida e batterie cariche, puntali, cavo con spina schuko',
+    'Cercafase e attrezzi isolati; DPI: guanti isolanti, occhiali, scarpe',
+    'Scala, torcia, lucchetti e cartelli per le linee sezionate',
+    'Telefono carico per foto e video, con l’app aggiornata',
+    'Maggio e novembre, dove servono: asta con coppetta, spray, tester di calore, chiave dei pulsanti, bombola di gas di prova CH4 2,2% in aria'],
+  non_portare:['Niente materiale per lavori non approvati: ricambi solo se scritti in «Materiale da preparare» del lavoro',
+    'Non preparare materiale per le anomalie che trovi: foto e nota a Flogert, il resto lo decide lui',
+    'Niente prolunghe o ciabatte da lasciare al cliente',
+    'Nelle visite trimestrali senza incendi e gas: niente asta, spray, tester e bombola'],
+  attenzione:[],
+  fine:['Tutto riarmato e ripartito: celle, frigoriferi, cappe, orologi e timer',
+    'Foto di quadri, display dello strumento e anomalie',
+    'Rapportino nell’app firmato dal responsabile; checklist compilata e caricata',
+    'Con incendi e gas: centrale a riposo, valvola riarmata, «Verifica gas» con il video, registro firmato da Flogert'],
+  incendi:true, gas:true,
+};
+let guideCache=null, guideTs=0;
+async function guideCarica(forza){
+  if(guideCache && !forza && Date.now()-guideTs<5*60*1000) return guideCache;
+  const r=await qs(sb.from('guide_locali').select('*').eq('attiva',true).order('ordine'));
+  if(!r || r.error || !Array.isArray(r.data)) return guideCache||[];   // tabella non ancora creata: nessuna guida
+  guideCache=r.data; guideTs=Date.now(); return guideCache;
+}
+function normTesto(t){ return String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim(); }
+function guideTrova(guide, testo){
+  const h=' '+normTesto(testo)+' ';
+  return (guide||[]).filter(g=>(g.cerca||[]).some(k=>{ const n=normTesto(k); return !!n && h.includes(' '+n+' '); }));
+}
+function guidaLista(arr, ordinata){ const tag=ordinata?'ol':'ul'; return `<${tag} class="gd-l">`+arr.map(x=>'<li>'+esc(x)+'</li>').join('')+`</${tag}>`; }
+function guidaSez(titolo, arr, cls, aperta, ordinata){
+  if(!arr || !arr.length) return '';
+  return `<details class="gd ${cls||''}"${aperta?' open':''}><summary>${titolo}</summary>${guidaLista(arr, ordinata)}</details>`;
+}
+function guidaHtml(g, o){
+  o=o||{};
+  let h=`<div class="sect"><div class="sect-t">${esc(o.titolo||('Contratto di manutenzione · '+g.gruppo))}</div>`;
+  if(g.sottotitolo) h+=`<div class="gd-sub">${esc(g.sottotitolo)}</div>`;
+  h+=guidaSez('Regole del locale (ogni lavoro)', g.regole, 'gd-reg', true);
+  h+=guidaSez('Cosa NON fare', g.non_fare, 'gd-no', true);
+  h+=guidaSez('Attenzione in questo locale', g.attenzione, 'gd-att', true);
+  h+=guidaSez('Cosa fare, in ordine', g.fare, '', !!o.aperta, true);
+  h+=guidaSez('Da portare', g.portare, '', !!o.aperta);
+  h+=guidaSez('Da NON portare e NON preparare', g.non_portare, 'gd-no', !!o.aperta);
+  h+=guidaSez('Prima di andare via', g.fine, '', !!o.aperta);
+  h+=guidaSez('Impianti del locale', g.impianti, '', false);
+  const b=(lab,fn)=>`<button type="button" class="btn sec" onclick="${fn}">${lab}</button>`;
+  h+=`<div class="gd-vid"><div class="gd-vt">Video per tutti i locali</div>${b('Video 1 · Esame a vista','openProcVid(0)')}${b('Video 2 · Macrotest G3','openProcVid(1)')}${g.incendi?b('Video 3 · Rivelatori di fumo','openProcVid(2)'):''}${g.gas?b('Prova del rivelatore gas','openProcGas()'):''}</div>`;
+  return h+'</div>';
+}
+function lavoroDiManutenzione(x, det){
+  return /manutenz|visita|verific|controll|giro|trimestr|semestr|rilievo|collaudo/i.test([x&&x.lavorazione, x&&x.commessa_titolo, det&&det.descrizione].filter(Boolean).join(' '));
+}
+function openProcGuida(){ $('proc-guida-body').innerHTML=guidaHtml(GUIDA_GENERALE,{aperta:true, titolo:'Visita di manutenzione · guida generale'}); show('s-proc-guida'); }
 function vgStaff(){ return !!utente && (utente.ruolo==='admin'||utente.ruolo==='ufficio'); }
 function openVgasHome(){ if(vgStaff()) openVgasList(); else openVgas(); }
 function vgEsito(el){ document.querySelectorAll('#vg-esiti .esito').forEach(c=>c.classList.remove('on')); el.classList.add('on'); }
