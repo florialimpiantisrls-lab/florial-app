@@ -270,8 +270,13 @@ details.gd-reg{background:var(--ok-bg);border-color:transparent;} details.gd-reg
     <div class="hdr">
       <div class="eyebrow">Florial Impianti</div>
       <h1>I miei lavori</h1>
-      <div class="who">Interventi in programma, giorno per giorno</div>
+      <div class="who" id="cal-who">Interventi in programma, giorno per giorno</div>
     </div>
+    <div class="chips" id="cal-modo" style="padding:12px 16px 0;">
+      <button type="button" class="chip on" data-m="prog" onclick="calModo('prog')">In programma</button>
+      <button type="button" class="chip" data-m="arch" onclick="calModo('arch')">Archivio lavori eseguiti</button>
+    </div>
+    <div class="search" id="cal-cerca" style="display:none;"><input id="q-cal" placeholder="Cerca cliente, lavoro, città…" oninput="filtraArch(this.value)"></div>
     <div class="list" id="cal-list"></div>
   </section>
 
@@ -941,7 +946,7 @@ details.gd-reg{background:var(--ok-bg);border-color:transparent;} details.gd-reg
 // ===== CONFIG (progetto di PROVA) =====
 const SB_URL = 'https://pubwwimufjqftikqyjpj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1Ynd3aW11ZmpxZnRpa3F5anBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MzIwOTcsImV4cCI6MjEwNzIwODA5N30.sDCZYxg_jZ685qcEYen-7Xdm_SpYI8kgTpCstIdHlzE';
-const APP_VERSION = '2026.10.28-3';
+const APP_VERSION = '2026.11.24-1';
 const DOMINIO = 'interno.florial.it';
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true, storageKey:'florial_auth' } });
 
@@ -1079,7 +1084,42 @@ async function salvaCodiceExtra(){
 
 // ===== CALENDARIO / LAVORI =====
 let calCache={};
+// Due viste: «In programma» (da oggi in avanti) e «Archivio lavori eseguiti» (tutto il passato + i lavori già segnati come fatti).
+let calVista='prog', archDati=[];
+function calModo(m){
+  calVista=m;
+  document.querySelectorAll('#cal-modo .chip').forEach(c=>c.classList.toggle('on',c.dataset.m===m));
+  $('cal-cerca').style.display = m==='arch' ? '' : 'none';
+  $('cal-who').textContent = m==='arch' ? 'Tutti i lavori delle date precedenti, dal più recente' : 'Interventi in programma, giorno per giorno';
+  renderCal();
+}
+async function renderArch(){
+  const el=$('cal-list'); el.innerHTML=spinBox();
+  const fine=new Date(Date.now()+800*864e5).toISOString().slice(0,10);
+  const { data, error } = await sb.rpc('calendario',{ da:'2020-01-01', a:fine });
+  if(error){ el.innerHTML=emptyBox('Errore di caricamento'); return; }
+  const oggi=oggiISO();
+  archDati=(data||[]).filter(x=>(x.data&&x.data<oggi)||x.stato==='fatto')
+    .sort((a,b)=>String(b.data||'').localeCompare(String(a.data||''))||String(b.ora_inizio||'').localeCompare(String(a.ora_inizio||'')));
+  archDati.forEach(x=>{ calCache[x.intervento_id]=x; });
+  filtraArch($('q-cal').value||'');
+}
+function filtraArch(q){
+  const el=$('cal-list');
+  const t=String(q||'').toLowerCase().trim();
+  const lista=t ? archDati.filter(x=>[x.insegna,x.lavorazione,x.citta,x.indirizzo,x.ragione_sociale,x.cliente].filter(Boolean).join(' ').toLowerCase().includes(t)) : archDati;
+  if(!lista.length){ el.innerHTML=emptyBox(t?'Nessun lavoro trovato':'Nessun lavoro eseguito in archivio'); return; }
+  let html=`<div class="s-lbl" style="margin:8px 2px 0;">${lista.length} lavori in archivio</div>`, mese='', cur='';
+  lista.forEach(x=>{
+    const m=String(x.data||'').slice(0,7);
+    if(m!==mese){ mese=m; cur=''; const lab=m?new Date(m+'-01T00:00:00').toLocaleDateString('it-IT',{month:'long',year:'numeric'}):'Senza data'; html+=`<div class="sect-t" style="margin:18px 2px 4px;text-transform:capitalize;">${esc(lab)}</div>`; }
+    if(x.data!==cur){ cur=x.data; html+=`<div class="s-lbl" style="margin:10px 2px 2px;">${x.data?giornoLabel(x.data):'Data da definire'}</div>`; }
+    html+=itemCal(x);
+  });
+  el.innerHTML=html;
+}
 async function renderCal(){
+  if(calVista==='arch') return renderArch();
   const el=$('cal-list'); el.innerHTML=spinBox();
   const oggi=new Date(); const da=oggi.toISOString().slice(0,10);
   const oriz=(utente&&utente.ruolo==='tecnico')?90:800;
